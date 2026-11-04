@@ -11,10 +11,10 @@ Este repositório distribui fontes e testes. Compilar gera os arquivos em `Relea
 o script não instala nada na partição EFI e não configura o firmware.
 
 No Linux x86-64, instale GCC/G++, binutils, make, NASM, Python 3.10+, Clang/LLD,
-OpenSSL e sbsigntools. Em Ubuntu:
+OpenSSL, uuid-dev e sbsigntools. Em Ubuntu:
 
 ```sh
-sudo apt-get install gcc g++ binutils make nasm python3 clang lld openssl sbsigntool
+sudo apt-get install gcc g++ binutils make nasm python3 clang lld openssl uuid-dev sbsigntool
 ./Build-BootLoaderSelector-Release.command
 ```
 
@@ -49,7 +49,7 @@ instale `lld@21` separadamente e exponha `$(brew --prefix lld@21)/bin`;
 o pacote `llvm@21` sozinho não fornece esse comando.
 Clang e GNU GCC são identificados pela implementação, não apenas pelo nome.
 Recursos de sanitizer indisponíveis são informados como `SKIP`, não como aprovados.
-O CI exige os gates Linux e macOS antes de compilar os artefatos de entrega e
+O CI executa build e testes em paralelo, exige os gates Linux e macOS antes da publicação e
 exercita o chainload de um child dedicado em OVMF.
 
 O manifesto cobre os arquivos de fonte, documentação e CI. Alterações legítimas

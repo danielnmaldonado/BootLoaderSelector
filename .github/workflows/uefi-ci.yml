@@ -10,6 +10,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   host-sanitizers:
     runs-on: ubuntu-24.04
@@ -35,7 +39,6 @@ jobs:
         run: BLS_QUALITY_BUILD=0 AuditTests/Run-Release-Quality-Gate.command
 
   linux-release-compile:
-    needs: [host-sanitizers, macos-quality]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -117,7 +120,7 @@ jobs:
           rm -f "$victim"
           : > BuildLogs/BootLoaderSelector-Build.log
       - name: Install native build and PE/COFF signing tools
-        run: sudo apt-get update && sudo apt-get install -y nasm sbsigntool clang lld
+        run: sudo apt-get update && sudo apt-get install -y gcc g++ binutils make python3 openssl uuid-dev nasm sbsigntool clang lld
       - name: Ad-hoc PE/COFF signing regression
         shell: bash
         run: |
@@ -254,7 +257,7 @@ jobs:
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [linux-release-compile, macos-artifact-verification, ovmf-smoke]
+    needs: [host-sanitizers, macos-quality, linux-release-compile, macos-artifact-verification, ovmf-smoke]
     runs-on: ubuntu-24.04
     permissions:
       contents: write
