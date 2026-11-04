@@ -1,0 +1,300 @@
+name: BootLoaderSelector UEFI CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  host-sanitizers:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install host verification dependencies
+        run: sudo apt-get update && sudo apt-get install -y clang lld gcc g++ make binutils nasm sbsigntool openssl
+      - name: Complete Linux quality gate
+        run: BLS_QUALITY_BUILD=0 AuditTests/Run-Release-Quality-Gate.command
+
+  macos-quality:
+    runs-on: macos-15-intel
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install host verification dependencies
+        run: brew install jsign llvm@21 gcc@15 openssl@3
+      - name: Expose LLVM linker and Clang
+        run: |
+          echo "$(brew --prefix llvm@21)/bin" >> "$GITHUB_PATH"
+          echo "$(brew --prefix openssl@3)/bin" >> "$GITHUB_PATH"
+      - name: Complete macOS quality gate
+        run: BLS_QUALITY_BUILD=0 AuditTests/Run-Release-Quality-Gate.command
+
+  linux-release-compile:
+    needs: [host-sanitizers, macos-quality]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Release pipeline integrity regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x Build-BootLoaderSelector-Release.command Build-Debug-Full-Log.command edksetup.sh
+          test -e .git
+
+          victim="$(mktemp)"
+          hard_victim="BuildLogs/round19-hardlink-victim.txt"
+          mode_victim="BuildLogs/round19-mode-victim.txt"
+          cleanup() {
+            rm -f AuditTests/round19-immutable-link BuildLogs/BootLoaderSelector-Build.log \
+              "$hard_victim" "$mode_victim" "$victim"
+            if [ -L edksetup.sh ]; then rm -f edksetup.sh; fi
+            git checkout -- edksetup.sh
+            mkdir -p BuildLogs
+            : > BuildLogs/BootLoaderSelector-Build.log
+          }
+          trap cleanup EXIT
+
+          # Canonical log symlink must never redirect Release/Debug writes.
+          printf 'round19-symlink-victim-unchanged\n' > "$victim"
+          mkdir -p BuildLogs
+          rm -f BuildLogs/BootLoaderSelector-Build.log
+          ln -s "$victim" BuildLogs/BootLoaderSelector-Build.log
+          if ./Build-BootLoaderSelector-Release.command; then
+            echo "Release builder accepted a symbolic-link build log" >&2
+            exit 1
+          fi
+          if ./Build-Debug-Full-Log.command; then
+            echo "Debug builder accepted a symbolic-link build log" >&2
+            exit 1
+          fi
+          grep -Fx 'round19-symlink-victim-unchanged' "$victim"
+
+          # A multiply-linked regular log is equally unsafe: truncating it would
+          # modify the other pathname sharing the inode.
+          rm -f BuildLogs/BootLoaderSelector-Build.log
+          printf 'round19-hardlink-victim-unchanged\n' > "$hard_victim"
+          ln "$hard_victim" BuildLogs/BootLoaderSelector-Build.log
+          if ./Build-BootLoaderSelector-Release.command; then
+            echo "Release builder accepted a multiply-linked build log" >&2
+            exit 1
+          fi
+          if ./Build-Debug-Full-Log.command; then
+            echo "Debug builder accepted a multiply-linked build log" >&2
+            exit 1
+          fi
+          grep -Fx 'round19-hardlink-victim-unchanged' "$hard_victim"
+
+          # No pre-integrity chmod may follow a source symlink and mutate its target.
+          rm -f BuildLogs/BootLoaderSelector-Build.log "$hard_victim"
+          : > BuildLogs/BootLoaderSelector-Build.log
+          printf 'round19-mode-victim-unchanged\n' > "$mode_victim"
+          chmod 600 "$mode_victim"
+          rm -f edksetup.sh
+          ln -s BuildLogs/round19-mode-victim.txt edksetup.sh
+          if ./Build-BootLoaderSelector-Release.command; then
+            echo "Release builder accepted a symbolic-link source script" >&2
+            exit 1
+          fi
+          test "$(stat -c '%a' "$mode_victim")" = 600
+          grep -Fx 'round19-mode-victim-unchanged' "$mode_victim"
+          rm -f edksetup.sh "$mode_victim"
+          git checkout -- edksetup.sh
+
+          # Any symbolic link in immutable source must be rejected.
+          : > BuildLogs/BootLoaderSelector-Build.log
+          ln -s ../INFO.txt AuditTests/round19-immutable-link
+          if ./Build-BootLoaderSelector-Release.command; then
+            echo "Release builder accepted a symbolic link in immutable source" >&2
+            exit 1
+          fi
+          rm -f AuditTests/round19-immutable-link
+          trap - EXIT
+          rm -f "$victim"
+          : > BuildLogs/BootLoaderSelector-Build.log
+      - name: Install native build and PE/COFF signing tools
+        run: sudo apt-get update && sudo apt-get install -y nasm sbsigntool clang lld
+      - name: Ad-hoc PE/COFF signing regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x AuditTools/Sign-PeCoff-AdHoc.command AuditTests/Test-AdHoc-Signing.command
+          AuditTests/Test-AdHoc-Signing.command
+      - name: Native Linux release build (including stale-output regression)
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x Build-BootLoaderSelector-Release.command Build-Debug-Full-Log.command edksetup.sh
+          mkdir -p Build/Stale Conf Release
+          printf 'stale generated output\n' > Build/Stale/round19-marker.bin
+          printf 'stale generated output\n' > Conf/round19-marker.txt
+          printf 'stale generated output\n' > Release/round19-marker.txt
+          ./Build-BootLoaderSelector-Release.command
+          test ! -e Build/Stale/round19-marker.bin
+          test ! -e Conf/round19-marker.txt
+          test ! -e Release/round19-marker.txt
+          ./Build-BootLoaderSelector-Release.command
+      - name: Verify Linux release artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s Release/BootLoaderSelector.efi
+          test -s Release/BOOTX64.efi
+          cmp -s Release/BootLoaderSelector.efi Release/BOOTX64.efi
+          file Release/BOOTX64.efi | grep -E 'PE32\+.*EFI.*application.*x86-64'
+          test -s Release/BootLoaderSelector-AdHoc.pem
+          sbverify --cert Release/BootLoaderSelector-AdHoc.pem Release/BootLoaderSelector.efi
+          sbverify --cert Release/BootLoaderSelector-AdHoc.pem Release/BOOTX64.efi
+          grep -Fx 'Signature verification: PASS' Release/BUILD-PROVENANCE.txt
+          grep -Fx 'Private key published: no' Release/BUILD-PROVENANCE.txt
+          grep -F 'Toolchain mode: native' Release/BUILD-PROVENANCE.txt
+
+      - name: Sign smoke child for isolated UEFI integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          SMOKE_CHILD="$(find Build/BootLoaderSelector/RELEASE_GCC53/X64 -name 'SmokeChild.efi' -print -quit)"
+          test -s "$SMOKE_CHILD"
+          BLS_VERSION="$(sed -n 's/^#define BLS_VERSION_ASCII "\([^"]*\)"/\1/p' BootLoaderSelectorPkg/BootLoaderSelector/Utils.h)"
+          test -n "$BLS_VERSION"
+          AuditTools/Sign-PeCoff-AdHoc.command sign "$SMOKE_CHILD" Release/SmokeChild.efi Release/SmokeChild-AdHoc.pem "$BLS_VERSION" Release/SmokeChild-SIGNING.txt
+          AuditTools/Sign-PeCoff-AdHoc.command verify Release/SmokeChild.efi Release/SmokeChild-AdHoc.pem
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BootLoaderSelector-release
+          path: Release/
+          if-no-files-found: error
+
+  macos-artifact-verification:
+    needs: linux-release-compile
+    runs-on: macos-15-intel
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: BootLoaderSelector-release
+          path: Release
+      - name: Install PE/COFF verifier
+        run: brew install jsign openssl@3
+      - name: Expose OpenSSL instead of system LibreSSL
+        run: echo "$(brew --prefix openssl@3)/bin" >> "$GITHUB_PATH"
+      - name: Independently verify Linux-built artifacts on macOS
+        shell: bash
+        run: |
+          set -euo pipefail
+          AuditTools/Sign-PeCoff-AdHoc.command verify Release/BootLoaderSelector.efi Release/BootLoaderSelector-AdHoc.pem
+          AuditTools/Sign-PeCoff-AdHoc.command verify Release/BOOTX64.efi Release/BootLoaderSelector-AdHoc.pem
+          AuditTools/Sign-PeCoff-AdHoc.command verify Release/SmokeChild.efi Release/SmokeChild-AdHoc.pem
+          cmp Release/BootLoaderSelector.efi Release/BOOTX64.efi
+
+  ovmf-smoke:
+    needs: linux-release-compile
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: BootLoaderSelector-release
+          path: Release
+      - name: Install OVMF/QEMU tools
+        run: sudo apt-get update && sudo apt-get install -y qemu-system-x86 ovmf dosfstools mtools
+      - name: Build EFI system partition image
+        shell: bash
+        run: |
+          truncate -s 64M esp.img
+          mkfs.vfat -F 32 esp.img
+          mmd -i esp.img ::/EFI ::/EFI/BOOT ::/EFI/OC
+          mcopy -i esp.img Release/BOOTX64.efi ::/EFI/BOOT/BOOTX64.EFI
+          # Use a dedicated child that returns EFI_SUCCESS immediately. This
+          # exercises a real LoadImage/StartImage/return lifecycle without the
+          # recursive self-chainload that would occur if BOOTX64.EFI were copied
+          # to the OpenCore path.
+          mcopy -i esp.img Release/SmokeChild.efi ::/EFI/OC/OpenCore.efi
+          cat > BLS.plist <<'PLIST'
+          <plist version="1.0"><dict>
+            <key>DefaultBootloader</key><string>OpenCore</string>
+            <key>DefaultPath</key><string>\EFI\OC\OpenCore.efi</string>
+            <key>DefaultVolumeLabel</key><string></string>
+            <key>DefaultVolumeDevicePath</key><string></string>
+            <key>Timeout</key><integer>0</integer>
+            <key>Debug</key><true/>
+            <key>ShowHardwareInfo</key><false/>
+            <key>RememberLastSelected</key><true/>
+            <key>HasRememberedSelection</key><true/>
+          </dict></plist>
+          PLIST
+          mcopy -i esp.img BLS.plist ::/EFI/BOOT/BLS.plist
+      - name: Boot release under OVMF
+        shell: bash
+        run: |
+          OVMF_CODE="/usr/share/OVMF/OVMF_CODE_4M.fd"
+          test -f "$OVMF_CODE"
+          cp /usr/share/OVMF/OVMF_VARS_4M.fd ovmf-vars.fd
+          set +e
+          timeout 12s qemu-system-x86_64 \
+            -machine q35,accel=tcg -m 256 -nodefaults -display none \
+            -drive if=pflash,format=raw,readonly=on,file="$OVMF_CODE" \
+            -drive if=pflash,format=raw,file=ovmf-vars.fd \
+            -drive if=virtio,format=raw,cache=none,file=esp.img \
+            -serial none -monitor none
+          RC=$?
+          set -e
+          # A timeout is expected because the selector remains interactive.
+          test "$RC" -eq 124 || test "$RC" -eq 0
+          mcopy -i esp.img ::/EFI/BOOT/BootLoaderSelector.log BootLoaderSelector.log
+          BLS_VERSION="$(sed -n 's/^#define BLS_VERSION_ASCII "\([^"]*\)"/\1/p' BootLoaderSelectorPkg/BootLoaderSelector/Utils.h)"
+          test -n "$BLS_VERSION"
+          grep -F "BootLoaderSelector ${BLS_VERSION} started" BootLoaderSelector.log
+          grep -F 'Starting selected bootloader' BootLoaderSelector.log
+          grep -F 'Bootloader returned: call=0x0 child=0x0' BootLoaderSelector.log
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [linux-release-compile, macos-artifact-verification, ovmf-smoke]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: BootLoaderSelector-release
+          path: Release
+      - name: Package verified release
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          VERSION="$(sed -n 's/^#define BLS_VERSION_ASCII "\([^"]*\)"/\1/p' BootLoaderSelectorPkg/BootLoaderSelector/Utils.h)"
+          test "$RELEASE_TAG" = "v$VERSION"
+          test -s Release/LICENSE
+          test -s Release/LICENSES/BSD-2-Clause-Patent.txt
+          git archive --format=zip --prefix="BootLoaderSelector-$VERSION/" HEAD > "BootLoaderSelector-$VERSION-Source.zip"
+          (cd Release && zip -qr "../BootLoaderSelector-$VERSION-EFI.zip" \
+            BootLoaderSelector.efi BOOTX64.efi BootLoaderSelector-AdHoc.pem \
+            BUILD-PROVENANCE.txt LICENSE LICENSES THIRD-PARTY-NOTICES.txt)
+          sha256sum "BootLoaderSelector-$VERSION-Source.zip" "BootLoaderSelector-$VERSION-EFI.zip" > SHA256SUMS.txt
+          cat > RELEASE-NOTES.txt <<'NOTES'
+          Correções de limites e alocação na DevicePathLib, política criptográfica
+          de certificados, portabilidade dos testes e recuperação de publicação.
+
+          Esta pré-release exige os gates Linux/macOS, verificação de assinatura
+          e smoke test OVMF antes de publicar. Os arquivos incluem licenças e
+          hashes. A assinatura ad-hoc não estabelece confiança para Secure Boot.
+          Boot em hardware real permanece sem homologação.
+          NOTES
+      - name: Publish prerelease after all checks
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          gh release create "$RELEASE_TAG" --verify-tag --prerelease \
+            --title "BootLoaderSelector $RELEASE_TAG" --notes-file RELEASE-NOTES.txt \
+            "BootLoaderSelector-${RELEASE_TAG#v}-Source.zip" \
+            "BootLoaderSelector-${RELEASE_TAG#v}-EFI.zip" SHA256SUMS.txt

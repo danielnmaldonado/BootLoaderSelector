@@ -1,0 +1,189 @@
+--- v2.18/BootLoaderSelectorPkg/BootLoaderSelector/Menu.c
++++ v2.19/BootLoaderSelectorPkg/BootLoaderSelector/Menu.c
+@@ -1089,6 +1089,7 @@
+   EFI_EVENT CreatedEvent;
+   EFI_INPUT_KEY Key;
+   UINTN Remaining;
++  UINTN LastCountdownRendered;
+   UINTN Cols;
+   BOOLEAN CountdownActive;
+   UINTN SpuriousSignals;
+@@ -1107,6 +1108,7 @@
+   ReturnStatus = EFI_SUCCESS;
+   Selected = BlsDefaultIndex(Config, List);
+   Remaining = (Config != NULL) ? Config->Timeout : 0;
++  LastCountdownRendered = MAX_UINTN;
+   if (Remaining > BLS_TIMEOUT_MAX) Remaining = BLS_TIMEOUT_MAX;
+   CountdownActive = (!SuppressCountdown && List->Count > 0 && Remaining > 0);
+   SpuriousSignals = 0;
+@@ -1159,7 +1161,14 @@
+   while (TRUE) {
+     EventIndex = MAX_UINTN;
+     if (CountdownActive && TimerEvent != NULL && DeadlineEvent != NULL) {
+-      BlsDrawCountdownStatus(Cols, Remaining);
++      /* Repaint the counter only when its text actually changes. A spurious
++         WaitForKey signal may return repeatedly without consuming a second;
++         redrawing on each pass needlessly invokes slow console firmware and
++         can flicker on affected UEFI implementations. */
++      if (Remaining != LastCountdownRendered) {
++        BlsDrawCountdownStatus(Cols, Remaining);
++        LastCountdownRendered = Remaining;
++      }
+       Events[0] = gST->ConIn->WaitForKey;
+       Events[1] = DeadlineEvent;
+       Events[2] = TimerEvent;
+--- v2.18/AuditTests/Host/test_menu_countdown_starvation.c
++++ v2.19/AuditTests/Host/test_menu_countdown_starvation.c
+@@ -206,14 +206,14 @@
+   }
+   assert(Event == gTimerEvent);
+   gTimerChecks++;
+-  return EFI_SUCCESS;
++  return (gInputMode == 10U) ? EFI_NOT_READY : EFI_SUCCESS;
+ }
+ 
+ static EFI_STATUS EFIAPI TestReadKeyStroke(IN EFI_SIMPLE_TEXT_INPUT_PROTOCOL *This, OUT EFI_INPUT_KEY *Key) {
+   (void)This;
+   assert(Key != NULL);
+   gReadCalls++;
+-  if (gInputMode == 0U) return EFI_NOT_READY;
++  if (gInputMode == 0U || gInputMode == 10U) return EFI_NOT_READY;
+   if (gInputMode == 1U) {
+     Key->ScanCode = SCAN_NULL;
+     Key->UnicodeChar = CHAR_NULL;
+@@ -261,6 +261,7 @@
+   gCloseCalls = 0U;
+   gCreateCalls = 0U;
+   gSetTimerCalls = 0U;
++  gUiPrintCalls = 0U;
+   gScreenshotVolumeSeen = NULL;
+   gCreateMode = 0U;
+ }
+@@ -287,6 +288,10 @@
+   assert(gReadCalls == 3U);
+   assert(gDeadlineChecks == 3U);
+   assert(gTimerChecks == 2U);
++  /* Three spurious keyboard wakeups must not repaint the unchanged counter.
++     This is 20 prints (including one initial counter) rather than the
++     previous 22, which included two redundant firmware draw operations. */
++  assert(gUiPrintCalls == ((InputMode == 10U) ? 20U : 22U));
+   assert(gCloseCalls == 2U);
+ }
+ 
+@@ -316,6 +321,7 @@
+ 
+   RunStarvationCase(0U); /* spurious WaitForKey + EFI_NOT_READY */
+   RunStarvationCase(1U); /* success with a null/non-key input record */
++  RunStarvationCase(10U); /* spurious input without a timer tick: no repaint */
+ 
+   /* A real key must retain priority at the timer boundary and cancel autoboot. */
+   memset(&Config, 0, sizeof(Config));
+--- v2.18/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h
++++ v2.19/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h
+@@ -9,8 +9,8 @@
+ #include <Protocol/SimpleFileSystem.h>
+ #include <Guid/FileInfo.h>
+ 
+-#define BLS_VERSION_ASCII "2.18"
+-#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.18"
++#define BLS_VERSION_ASCII "2.19"
++#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.19"
+ 
+ #define BLS_MAX_TEXT      128
+ #define BLS_MAX_PATH      192
+--- v2.18/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf
++++ v2.19/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf
+@@ -8,7 +8,7 @@
+   BASE_NAME                      = BootLoaderSelector
+   FILE_GUID                      = F9C8E131-0A87-4C6C-A3E4-CA03DE31F6F1
+   MODULE_TYPE                    = UEFI_APPLICATION
+-  VERSION_STRING = 2.18
++  VERSION_STRING = 2.19
+   ENTRY_POINT                    = UefiMain
+ 
+ [Sources]
+--- v2.18/BootLoaderSelector.dsc
++++ v2.19/BootLoaderSelector.dsc
+@@ -6,7 +6,7 @@
+ [Defines]
+   PLATFORM_NAME                  = BootLoaderSelector
+   PLATFORM_GUID                  = 3F71A792-6E03-4D84-9F1D-F3C81EC80F44
+-  PLATFORM_VERSION = 2.18
++  PLATFORM_VERSION = 2.19
+   DSC_SPECIFICATION              = 0x00010006
+   OUTPUT_DIRECTORY               = Build/BootLoaderSelector
+   SUPPORTED_ARCHITECTURES        = X64
+--- v2.18/INFO.txt
++++ v2.19/INFO.txt
+@@ -1,11 +1,32 @@
+ BootLoaderSelector — INFORMAÇÕES COMPLETAS DO PROJETO
+ =====================================================
+ 
+-Versão atual: 2.18
+-Base imediata: BootLoaderSelector v2.17 Professional Evolution Round71 (2026-10-05)
+-SHA-256 do ZIP-base recebido nesta rodada: 294b3d041f0adbd8b6e8d307a542fb86c9cb3ed938a3d3b2a1cfe1e08f54889c
++Versão atual: 2.19
++Base imediata: BootLoaderSelector v2.18 Professional Evolution Round72 (2026-10-08)
++SHA-256 do ZIP-base recebido nesta rodada: 70af2371e1f145bfad3a3e2b82074975f7a235102f0778c2a29e9b46e070b769
+ Data desta rodada: 2026-10-08
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++VERSÃO 2.19 — PROFESSIONAL EVOLUTION ROUND 73 — 2026-10-08
++------------------------------------------------------------
++Base exclusiva: FULL-SOURCE v2.18/Round72 recebido neste chat.
++SHA-256 do ZIP-base: 70af2371e1f145bfad3a3e2b82074975f7a235102f0778c2a29e9b46e070b769
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++Correção comprovada em Menu.c: renderização do contador de autoboot passa
++apenas quando Remaining muda; firmware não recebe redesenhos redundantes
++após Wake/WaitForKey espúrio enquanto o tick periódico está pendente.
++Regressão RED→GREEN em AuditTests/Host/test_menu_countdown_starvation.c;
++sem alterar política de hotkeys, seleção, boot, cancelamento ou geometria.
++
++Testes: 17 testes host com Clang ASan/UBSan ×3, GCC ASan/UBSan ×2,
++IntegerSan e ThreadSanitizer; fuzz/limites BaseTools Clang e GCC;
++analisadores de Clang e GCC nos nove .c; verificações de publicação
++segura e assinatura (preparação/política). Release binário EFI assinado,
++boot UEFI/QEMU/OVMF e medições em firmware físico não foram concluídos
++neste Linux pela indisponibilidade de ferramentas e de DNS para Jsign.
++O código-fonte compilou em checagens de sintaxe de host; isso NÃO substitui
++compilar e iniciar o binário PE/COFF de Release.
+ 
+ VERSÃO 2.18 — PROFESSIONAL EVOLUTION ROUND 72 — 2026-10-08
+ ------------------------------------------------------------
+--- v2.18/CHANGELOG.txt
++++ v2.19/CHANGELOG.txt
+@@ -1,8 +1,31 @@
+ BootLoaderSelector — CHANGELOG
+ ===========================
+ 
+-Versão atual: 2.18
+-Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++Versão atual: 2.19
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++VERSÃO 2.19 — PROFESSIONAL EVOLUTION ROUND 73 — 2026-10-08
++------------------------------------------------------------
++Base exclusiva: FULL-SOURCE v2.18/Round72 (ZIP SHA-256: 70af2371e1f145bfad3a3e2b82074975f7a235102f0778c2a29e9b46e070b769).
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++- UI / firmware I/O: o contador de autoboot agora é redesenhado somente quando
++  o tempo restante muda. Sinais espúrios de WaitForKey não repetem chamadas
++  firmware nem refrescam pixels já inalterados, evitando flicker e trabalho extra.
++- Teste RED→GREEN: contador imóvel durante três sinais espúrios sem ticks;
++  regressão reproduzida com 22 chamadas de desenho anteriores vs. 20 depois.
++  Os dois sinais de tick válidos continuam atualizando o contador normalmente.
++- Mantidos comportamento de teclas, política de autoboot, layout, timing,
++  resolução do console, identidade visual, arquivos de configuração, volumes
++  e todos os demais recursos existentes.
++- Testes realizados: Clang ASan/LSan/UBSan ×3, GCC ASan/UBSan ×2, Clang
++  IntegerSan, GCC ThreadSanitizer, BaseTools deep tests com Clang e GCC,
++  análise estática e warnings estritos em 9 módulos C, verificações de
++  publicação/rollback/lock e testes de política/bootstrapping de assinaturas.
++- Release EFI assinado: NÃO PRODUZIDO neste Linux. Faltam NASM e utilitário
++  verificador/assinador PE/COFF; acesso de rede a github.com falhou, impedindo
++  o bootstrap pinado do Jsign. O builder permanece fail-closed.
++- Versão/build: 2.19 / Round73. Manifesto SHA-256 renovado.
+ 
+ VERSÃO 2.18 — PROFESSIONAL EVOLUTION ROUND 72 — 2026-10-08
+ ------------------------------------------------------------

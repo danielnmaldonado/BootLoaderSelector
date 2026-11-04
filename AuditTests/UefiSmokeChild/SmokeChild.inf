@@ -1,0 +1,20 @@
+## @file
+# Deterministic CI-only child UEFI application.
+# Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
+##
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = SmokeChild
+  FILE_GUID                      = 76D4931B-3C55-49E6-9C69-6E62BEB78C1F
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = UefiMain
+
+[Sources]
+  SmokeChild.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+
+[LibraryClasses]
+  UefiApplicationEntryPoint

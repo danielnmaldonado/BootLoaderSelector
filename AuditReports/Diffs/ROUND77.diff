@@ -1,0 +1,264 @@
+# Round77 patch, baseline exclusively v2.22/Round76
+--- v2.22/AuditReports/AUDIT-REPORT.txt
++++ v2.23/AuditReports/AUDIT-REPORT.txt
+@@ -1,3 +1,32 @@
++BootLoaderSelector v2.23 — Professional Evolution Round77
++Data: 2026-10-08
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++Origem EXCLUSIVA: FULL-SOURCE v2.22/Round76
++SHA-256 ZIP-base: c56e6771b37dc15321fbf2c33e81443f3598a6cba828265e5ef84eb45b002b7e
++
++DEFEITO COM REPRODUÇÃO RED → GREEN
++---------------------------------
++SCREENSHOT.SAVEDPATH-TRUNCATION: o código anterior podia criar o arquivo BMP
++com êxito e então truncar SavedPath de um chamador que forneceu capacidade
++insuficiente. Teste host novo no v2.22 falhou (assert EFI_BUFFER_TOO_SMALL,
++exit 134). Correção em Screenshot.c devolve EFI_BUFFER_TOO_SMALL antes de
++abrir/criar o arquivo. Mesmo mock reproduzido em verde. Formato, GOP,
++criação de diretórios, renderização e política de captura preservados.
++
++VALIDAÇÕES E LIMITAÇÕES
++----------------------
++Ver ROUND77-VALIDATION.txt para resultados pontuais, timeouts e gates.
++Somente Screenshot.c modificado no runtime; teste host, metadados,
++CHANGELOG, documentação, diff e manifesto atualizados. Dependências
++vendorizadas preservadas; nenhum arquivo original removido.
++Assinatura real PE/COFF, build EFI Release, boot UEFI, OVMF e profiling
++físico dependem de ambiente compatível e NÃO foram homologados.
++Não houve execução literal de rodadas cronometradas de 30 minutos.
++
++========================================================================
++HISTÓRICO: RELATÓRIO ORIGINAL ROUND76 (preservado integralmente)
++========================================================================
++
+ BootLoaderSelector v2.22 — Professional Evolution Round76
+ Data: 2026-10-08
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+--- /dev/null
++++ v2.23/AuditReports/ROUND77-VALIDATION.txt
+@@ -0,0 +1,28 @@
++BootLoaderSelector v2.23 / Round77 — Validation matrix — 2026-10-08
++Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
++Source: only v2.22/Round76 FULL-SOURCE, ZIP SHA-256 c56e6771b37dc15321fbf2c33e81443f3598a6cba828265e5ef84eb45b002b7e
++
++- Source ZIP decompression integrity + baseline SHA-256 manifest (3,506 paths): PASS.
++- Screenshot SavedPath truncated success reproduction on base: RED (assert, exit 134).
++- Screenshot fixed output contract ASan/UBSan: GREEN (screenshot_bounds PASS).
++- Clang host runtime 17 tests ×2, ASan/UBSan: PASS.
++- GCC runtime 17 tests ×1, ASan/UBSan: PASS.
++- GCC whole-suite 2×: TIMEOUT in second config-parser 200k fuzz pass; not counted as PASS.
++- Clang/GCC -Wall/-Wextra/-Werror syntax, all 9 C modules: PASS.
++- Clang static analyzer individually on BootScan, Config, HardwareInfo, Logger, Main: PASS.
++- Clang static analysis attempt over all modules: TIMEOUT; cannot claim full PASS.
++- GCC -fanalyzer on Menu, Screenshot, Ui, Utils: PASS.
++- bash -n scripts and CI YAML parsing (4 jobs): PASS.
++- Release publish/rollback/lock, Authenticode policy, bootstrap mocked signer: PASS.
++- BaseTools deep bounds/fuzz Clang: PASS.
++- Clang Address/IntegerSan 17 host tests ×1: PASS.
++- GCC ThreadSanitizer 17 host tests ×1: PASS.
++- GCC BaseTools deep bounds/fuzz: PASS.
++- Screenshot regression -O2 with ASan/UBSan, Clang/GCC: PASS.
++- Release builder preflight: v2.23 version recognized; signing backend missing,
++  intentionally blocked (exit 1), no Release/ or .BlsBuild.lock left behind.
++- Final source hash coverage: 3,508 manifest entries verified after preflight.
++- EFI Release binary, ad-hoc PE/COFF signed image, OVMF/physical firmware: NOT VERIFIED;
++  missing nasm / signing backend and macOS native environment.
++- RAM/CPU/GPU/energy/hardware profiling and 30-minute timed cycles: NOT PERFORMED.
++- Existing functionality untouched outside Screenshot.c and its host regression.
+--- v2.22/AuditTests/Host/test_screenshot_bounds.c
++++ v2.23/AuditTests/Host/test_screenshot_bounds.c
+@@ -46,6 +46,8 @@
+ static UINTN gFileOpenCalls;
+ static BOOLEAN gPretendPathsExist;
+ static EFI_FILE_PROTOCOL gExistingFile;
++static BOOLEAN gAllowVolumeOpen;
++static UINTN gScreenshotCreateCalls;
+ 
+ VOID *EFIAPI AllocateZeroPool(IN UINTN AllocationSize) {
+   gAllocationCalls++;
+@@ -70,10 +72,11 @@
+   IN CONST CHAR16 *FormatString,
+   ...
+   ) {
+-  (void)StartOfBuffer;
+-  (void)BufferSize;
+   (void)FormatString;
+-  return 0;
++  /* Deterministic valid path for the pathname-buffer regression. */
++  BlsSafeStrCpy(StartOfBuffer, BufferSize / sizeof(CHAR16),
++                L"\\EFI\\BOOT\\Screenshots\\BLS-123456789ABCDEF0-001.bmp");
++  return BlsStrLen16Bounded(StartOfBuffer, BufferSize / sizeof(CHAR16));
+ }
+ 
+ UINTN BlsStrLen16Bounded(IN CONST CHAR16 *Str, IN UINTN MaxChars) {
+@@ -97,8 +100,8 @@
+ 
+ EFI_STATUS BlsOpenVolumeRoot(IN EFI_HANDLE VolumeHandle, OUT EFI_FILE_PROTOCOL **Root) {
+   (void)VolumeHandle;
+-  if (Root != NULL) *Root = NULL;
+-  return EFI_UNSUPPORTED;
++  if (Root != NULL) *Root = gAllowVolumeOpen ? &gExistingFile : NULL;
++  return gAllowVolumeOpen ? EFI_SUCCESS : EFI_UNSUPPORTED;
+ }
+ 
+ EFI_STATUS BlsFileOpen(
+@@ -114,6 +117,19 @@
+   (void)Attributes;
+   gFileOpenCalls++;
+   if (File == NULL) return EFI_INVALID_PARAMETER;
++  if (gAllowVolumeOpen) {
++    if ((Attributes & EFI_FILE_DIRECTORY) != 0U) {
++      *File = &gExistingFile;
++      return EFI_SUCCESS;
++    }
++    if ((OpenMode & EFI_FILE_MODE_CREATE) != 0U) {
++      gScreenshotCreateCalls++;
++      *File = &gExistingFile;
++      return EFI_SUCCESS;
++    }
++    *File = NULL;
++    return EFI_NOT_FOUND;
++  }
+   if (gPretendPathsExist) {
+     *File = &gExistingFile;
+     return EFI_SUCCESS;
+@@ -461,6 +477,25 @@
+     gPretendPathsExist = FALSE;
+   }
+ 
++  /* REGRESSION: report-path buffers must be checked before opening/creating
++     the BMP. Returning success with a truncated SavedPath loses the only path
++     the caller received for an otherwise successful capture. */
++  {
++    CHAR16 tinyPath[8];
++    gAllowVolumeOpen = TRUE;
++    gAllowAllocations = TRUE;
++    gDirectGopAvailable = TRUE;
++    gGopInfo.HorizontalResolution = 64U;
++    gGopInfo.VerticalResolution = 64U;
++    gScreenshotCreateCalls = 0U;
++    status = BlsSaveScreenshot((EFI_HANDLE)(UINTN)1, tinyPath, ARRAY_SIZE(tinyPath));
++    assert(status == EFI_BUFFER_TOO_SMALL);
++    assert(gScreenshotCreateCalls == 0U);
++    assert(tinyPath[0] == L'\0');
++    gAllowVolumeOpen = FALSE;
++    gAllowAllocations = FALSE;
++  }
++
+   puts("screenshot_bounds: PASS");
+   return 0;
+ }
+--- v2.22/BootLoaderSelector.dsc
++++ v2.23/BootLoaderSelector.dsc
+@@ -6,7 +6,7 @@
+ [Defines]
+   PLATFORM_NAME                  = BootLoaderSelector
+   PLATFORM_GUID                  = 3F71A792-6E03-4D84-9F1D-F3C81EC80F44
+-  PLATFORM_VERSION = 2.22
++  PLATFORM_VERSION = 2.23
+   DSC_SPECIFICATION              = 0x00010006
+   OUTPUT_DIRECTORY               = Build/BootLoaderSelector
+   SUPPORTED_ARCHITECTURES        = X64
+--- v2.22/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf
++++ v2.23/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf
+@@ -8,7 +8,7 @@
+   BASE_NAME                      = BootLoaderSelector
+   FILE_GUID                      = F9C8E131-0A87-4C6C-A3E4-CA03DE31F6F1
+   MODULE_TYPE                    = UEFI_APPLICATION
+-  VERSION_STRING = 2.22
++  VERSION_STRING = 2.23
+   ENTRY_POINT                    = UefiMain
+ 
+ [Sources]
+--- v2.22/BootLoaderSelectorPkg/BootLoaderSelector/Screenshot.c
++++ v2.23/BootLoaderSelectorPkg/BootLoaderSelector/Screenshot.c
+@@ -291,6 +291,16 @@
+     return Status;
+   }
+ 
++  /* A caller that requests the saved pathname must receive it in full.
++     Validate before opening the BMP: silently truncating only the returned
++     pathname would report a successful screenshot with an unusable location. */
++  if (SavedPath != NULL && SavedPathChars > 0U &&
++      BlsStrLen16Bounded(Path, ARRAY_SIZE(Path)) + 1U > SavedPathChars) {
++    BlsFileCloseBestEffort(&Root);
++    FreePool(BltRow);
++    return EFI_BUFFER_TOO_SMALL;
++  }
++
+   File = NULL;
+   Status = BlsFileOpen(Root, &File, Path, EFI_FILE_MODE_READ | EFI_FILE_MODE_WRITE | EFI_FILE_MODE_CREATE, 0);
+   if (Status != EFI_SUCCESS) {
+--- v2.22/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h
++++ v2.23/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h
+@@ -9,8 +9,8 @@
+ #include <Protocol/SimpleFileSystem.h>
+ #include <Guid/FileInfo.h>
+ 
+-#define BLS_VERSION_ASCII "2.22"
+-#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.22"
++#define BLS_VERSION_ASCII "2.23"
++#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.23"
+ 
+ #define BLS_MAX_TEXT      128
+ #define BLS_MAX_PATH      192
+--- v2.22/CHANGELOG.txt
++++ v2.23/CHANGELOG.txt
+@@ -1,8 +1,22 @@
+ BootLoaderSelector — CHANGELOG
+ ===========================
+ 
+-Versão atual: 2.22
+-Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++Versão atual: 2.23
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++VERSÃO 2.23 — PROFESSIONAL EVOLUTION ROUND 77 — 2026-10-08
++------------------------------------------------------------
++Base exclusiva: FULL-SOURCE v2.22/Round76 (ZIP SHA-256: c56e6771b37dc15321fbf2c33e81443f3598a6cba828265e5ef84eb45b002b7e).
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++- Screenshot: valida o espaço disponível em SavedPath antes de criar o
++  arquivo BMP, evitando falso sucesso com nome de arquivo truncado.
++- Regressão RED→GREEN no host: buffer pequeno retorna EFI_BUFFER_TOO_SMALL,
++  sem abrir/criar o arquivo de captura. Sem mudanças no GOP/formato BMP.
++- Testes, política do signer, publicação/rollback e limites de ambiente
++  documentados em AuditReports/ROUND77-VALIDATION.txt.
++- Versão/build incrementados para v2.23 / Round77. Nenhum recurso removido.
++- EFI assinado e boot físico: NÃO VALIDADO neste host Linux.
+ 
+ VERSÃO 2.22 — PROFESSIONAL EVOLUTION ROUND 76 — 2026-10-08
+ ------------------------------------------------------------
+--- v2.22/INFO.txt
++++ v2.23/INFO.txt
+@@ -1,11 +1,27 @@
+ BootLoaderSelector — INFORMAÇÕES COMPLETAS DO PROJETO
+ =====================================================
+ 
+-Versão atual: 2.22
+-Base imediata: BootLoaderSelector v2.21 Professional Evolution Round75 (2026-10-08)
+-SHA-256 do ZIP-base recebido nesta rodada: 7a9f101b7e50993f23ab1dc34d41f62f96f6bb73bfb4c814b8fd64d0e9b7894c
++Versão atual: 2.23
++Base imediata: BootLoaderSelector v2.22 Professional Evolution Round76 (2026-10-08)
++SHA-256 do ZIP-base recebido nesta rodada: c56e6771b37dc15321fbf2c33e81443f3598a6cba828265e5ef84eb45b002b7e
+ Data desta rodada: 2026-10-08
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++VERSÃO 2.23 — PROFESSIONAL EVOLUTION ROUND 77 — 2026-10-08
++------------------------------------------------------------
++Base exclusiva: FULL-SOURCE v2.22/Round76, SHA-256 c56e6771b37dc15321fbf2c33e81443f3598a6cba828265e5ef84eb45b002b7e.
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++BlsSaveScreenshot() verificava o tamanho do buffer SavedPath apenas na
++cópia final: a captura podia terminar com sucesso e devolver um caminho
++truncado. A rotina agora rejeita um buffer insuficiente antes de criar o
++BMP, retornando EFI_BUFFER_TOO_SMALL sem alterar o formato, GOP ou UI.
++O teste test_screenshot_bounds.c reproduziu RED no v2.22 (assert falhou)
++e GREEN após a correção em Screenshot.c, com criação de arquivo == zero.
++
++Matriz de validação, limites, testes de host e falta de assinador PE/COFF:
++AuditReports/ROUND77-VALIDATION.txt. Não se declara Release EFI homologado,
++boot real ou rounds cronometrados de 30 minutos nesta execução.
+ 
+ VERSÃO 2.22 — PROFESSIONAL EVOLUTION ROUND 76 — 2026-10-08
+ ------------------------------------------------------------

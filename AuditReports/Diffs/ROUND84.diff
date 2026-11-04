@@ -1,0 +1,838 @@
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND84.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.29-DNMTechLabs-Professional-Evolution-Round83-2026-10-10-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt /mnt/data/bls_r84_work/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.29-DNMTechLabs-Professional-Evolution-Round83-2026-10-10-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt	2026-10-10 04:25:31.000000000 +0000
++++ /mnt/data/bls_r84_work/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt	2026-10-10 04:44:56.605690684 +0000
+@@ -1,129 +1,135 @@
+-BootLoaderSelector v2.29 — Professional Evolution Round83
++BootLoaderSelector v2.30 — Professional Evolution Round84
+ Data: 2026-10-10
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+-Origem EXCLUSIVA: FULL-SOURCE v2.28/Round82
+-SHA-256 ZIP-base: c3ee4f939f86f88ca5fe373a390f7710fd50fe4a0bb511616bca4b01b9d7a6eb
++Origem EXCLUSIVA: FULL-SOURCE v2.29/Round83
++SHA-256 ZIP-base: d905651b1674a414dae1deeeabfdf7d0dfc72dcc76c607321cfea2ed536d53e1
+ 
+ ESCOPO E PRESERVAÇÃO
+ ====================
+-A auditoria desta rodada partiu somente do ZIP v2.28/Round82 recebido. Nenhum
+-arquivo de versões anteriores foi incorporado. A árvore-base foi extraída,
+-inventariada e verificada antes das alterações. Os 9 módulos C de runtime UEFI
+-(7.983 linhas / 222 definições AST) permanecem byte a byte idênticos ao source
+-v2.28; apenas metadados de VERSION/BUILD, ferramentas/testes de auditoria,
+-documentação, relatório e higiene do pacote foram alterados.
+-
+-ACHADO R83-AUTH-POLICY-01 — política X.509 incompleta no verificador
+-===================================================================
+-Severidade: alta para integridade do pipeline de Release; não altera o runtime EFI.
++Esta rodada usa exclusivamente o ZIP v2.29/Round83 recebido nesta conversa.
++A integridade do baseline foi conferida antes de alterações: ZIP testável,
++3.522 arquivos regulares, manifesto com 3.520 entradas, zero hash divergente,
++zero entrada ausente/stale. As únicas exclusões deliberadas do manifesto são
++o próprio AuditReports/MANIFEST.sha256 e BuildLogs/BootLoaderSelector-Build.log.
++
++Os 9 módulos C do runtime UEFI (7.983 linhas / 222 definições por Clang AST)
++permanecem byte a byte idênticos ao v2.29. Nenhuma alteração de UI, boot,
++configuração, hardware discovery, logger, screenshot ou dependência vendorizada
++foi realizada. A única correção funcional desta rodada é no verificador de
++política X.509 usado pelo pipeline de Release, com regressões associadas.
++
++ACHADO R84-AUTH-CRITICAL-01 — criticality X.509 não era imposta
++================================================================
++Severidade: alta para consistência da política de assinatura; não afeta o EFI.
+ 
+ Causa-raiz:
+-AuditTools/Sign-PeCoff-AdHoc.command cria certificado efêmero com o contrato:
++AuditTools/Sign-PeCoff-AdHoc.command emite explicitamente:
+   Basic Constraints = critical, CA:FALSE
+   Key Usage         = critical, digitalSignature
+   Extended Key Usage= codeSigning
+-Porém AuditTools/Verify-PeCoff-Authenticode.py validava validade, self-sign
+-criptográfico e EKU codeSigning, sem exigir Basic Constraints nem Key Usage.
++O verificador v2.29 decodificava e exigia CA:FALSE, digitalSignature e
++codeSigning, porém ignorava o BOOLEAN `critical` das extensões X.509. Assim,
++certificados autoassinados RSA-3072/SHA-256 que mantivessem os demais requisitos
++mas marcassem Basic Constraints e/ou Key Usage como não críticas eram aceitos.
++
++Reprodução RED no baseline v2.29:
++um certificado com Basic Constraints=CA:FALSE e Key Usage=digitalSignature,
++ambos não críticos, mais EKU codeSigning, foi aceito por
++verify_certificate_policy(). Resultado observado:
++  BASELINE_ACCEPTED_NONCRITICAL_BC_AND_KU
++
++Correção mínima:
++- o parser DER passa a decodificar o BOOLEAN opcional `critical` da Extension;
++- valida BOOLEAN DER primitivo de um byte (00/FF);
++- Basic Constraints precisa ser crítica e CA:FALSE;
++- Key Usage precisa ser crítica e conter digitalSignature;
++- EKU codeSigning, validade, RSA/SHA-256, self-sign criptográfico e demais
++  controles preexistentes permanecem inalterados.
++
++Regressões GREEN:
++AuditTests/Test-Authenticode-Verifier-Policy.command inclui negativos separados
++para Basic Constraints não crítica e Key Usage não crítica. O controle positivo
++e os negativos anteriores (sem EKU, CA:TRUE, sem digitalSignature, sem Basic
++Constraints, sem Key Usage, certificado futuro e self-issued não self-signed)
++continuam passando.
++
++PASSAGENS TÉCNICAS EXECUTADAS
++=============================
++1. Arquitetura/estrutura: árvore completa, manifesto, metadados, DSC/INF,
++   scripts de build/signing, CI, EDK2/MdePkg, BaseTools e toolchain vendorizada.
++2. Bugs/funcionalidade: 222 funções runtime inventariadas por AST; fluxos de
++   boot/config/hardware/logger/menu/UI/screenshot revisados e exercitados.
++3. Memória/concorrência: ASan+UBSan em Clang/GCC, IntegerSan e GCC TSan.
++4. Performance/recursos: loops, bounds, retries, caches, alocações, eventos e
++   lifecycle examinados; nenhuma otimização especulativa aplicada.
++5. UI/responsividade: fast-path de autoboot, mode bounds, countdown e eventos
++   cobertos por source review/gates/testes; nenhum novo defeito reproduzido.
++6. Robustez/extremos: parsers, UTF-8/XML, SMBIOS, memory map, GOP, MP topology,
++   filesystem, PE/COFF/ASN.1 e BaseTools bounds/fuzz.
++7. Build/Release/compatibilidade: BaseTools build completo, scripts/configs,
++   policy/bootstrap/publish e quality gate até o blocker externo de signing.
++8. Regressão final: suítes repetidas sobre v2.30 e runtime comparado por SHA-256.
++
++RESULTADOS EXECUTADOS
++=====================
++- Clang ASan+UBSan: 17/17 testes x3, PASS; 13.87 s, max RSS 57.964 KiB.
++- GCC ASan+UBSan: 17/17 testes x3, PASS; 11.21 s, max RSS 66.068 KiB.
++- Clang Address+IntegerSan: 17/17, PASS; 6.17 s, max RSS 52.736 KiB.
++- GCC ThreadSanitizer: 17/17, PASS; 10.18 s, max RSS 40.028 KiB.
++- Clang ThreadSanitizer: BLOCKED no linker do runtime instalado por símbolos
++  Blocks/libdispatch ausentes; nenhum teste de projeto chegou a executar.
++- 9 módulos runtime: Clang/GCC syntax estrita, Clang Static Analyzer,
++  GCC -fanalyzer e objetos -O2, todos PASS sem diagnóstico.
++- BaseTools deep bounds/fuzz: PASS em Clang e GCC.
++- BaseTools build completo em cópia descartável: `make -C BaseTools -j2` rc=0,
++  285/285 testes oficiais OK; 18.92 s, max RSS 244.708 KiB.
++- Python AST: 320 arquivos, PASS; plists: 9, PASS; YAML CI: 4 jobs, PASS;
++  shell *.command/*.sh: 13 arquivos, `bash -n` PASS.
++- Verificador ASN.1/PE fuzz externo: 20.000 entradas parse_node + 10.000
++  entradas authenticode_digest_sha256, somente erros tratados, PASS.
++- Policy regression, signer bootstrap e publish/rollback/lock: PASS.
++- Quality gate v2.30 com build desabilitado: passou todos os gates anteriores
++  e parou no PE/COFF signing regression por ausência de signer local.
++
++BUILD / RELEASE — LIMITAÇÕES REAIS
++==================================
++Este host Linux não possui NASM nativo, sbsign/sbverify, Jsign nem QEMU/OVMF.
++O NASM vendorizado é Mach-O para macOS e não executa neste host. Portanto não
++se declara EFI Release compilado, assinatura ad-hoc real do EFI final, boot
++OVMF/hardware ou profiling de firmware. A integração de signing real foi
++classificada como BLOCKED, não PASS. Builder canônico: versão/manifesto PASS;
++rc=1 no signer preflight; Release/, Build/, Conf/ e lock ficaram ausentes.
++
++COBERTURA DE ÁRVORE
++===================
++Arquivos finais regulares: 0003524
++Entradas imutáveis esperadas no manifesto: 0003522
++Arquivos UTF-8/texto percorridos automaticamente: 0003407
++Arquivos binários/não-UTF8 byte-lidos: 0000117
++Linhas de texto percorridas automaticamente: 001318929
++Todo arquivo regular é byte-lido durante inventário/hash. O scan automatizado
++de todas as linhas não é apresentado como equivalente a revisão semântica
++humana linha por linha das aproximadamente 1,4 milhão de linhas vendorizadas.
++O runtime próprio recebe adicionalmente AST, compilação, analyzers, sanitizers
++e revisão semântica focada. Não se declara cobertura humana que não ocorreu.
++
++ARQUIVOS ALTERADOS/ADICIONADOS NESTA RODADA
++===========================================
++AuditTools/Verify-PeCoff-Authenticode.py — correção de policy criticality.
++AuditTests/Test-Authenticode-Verifier-Policy.command — regressões associadas.
++BootLoaderSelectorPkg/BootLoaderSelector/Utils.h — VERSION 2.30.
++BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf — VERSION 2.30.
++BootLoaderSelector.dsc — PLATFORM_VERSION 2.30.
++INFO.txt / CHANGELOG.txt / SECURITY-NOTES.txt — documentação coerente.
++AuditReports/AUDIT-REPORT.txt — este relatório.
++AuditReports/ROUND84-VALIDATION.txt — matriz detalhada e 222 funções.
++AuditReports/ROUND84.diff — diff consolidado v2.29 -> v2.30.
++AuditReports/MANIFEST.sha256 — regenerado somente após o fechamento da árvore.
++BuildLogs/BootLoaderSelector-Build.log permanece o único log mutável deliberado.
+ 
+-Reprodução no baseline v2.28 (RED): quatro certificados deliberadamente fora
+-da política foram aceitos pelo verificador: CA:TRUE; Key Usage sem
+-`digitalSignature`; ausência de Basic Constraints; ausência de Key Usage.
+-
+-Correção:
+-- parser DER passou a reconhecer OIDs Basic Constraints (2.5.29.19) e Key Usage
+-  (2.5.29.15), validar estruturas e padding do BIT STRING;
+-- certificado deve possuir Basic Constraints e ser CA:FALSE;
+-- certificado deve possuir Key Usage com digitalSignature;
+-- codeSigning EKU, validade e self-sign criptográfico continuam obrigatórios;
+-- extensões Basic Constraints/Key Usage duplicadas são recusadas.
+-
+-Regressões:
+-AuditTests/Test-Authenticode-Verifier-Policy.command mantém o controle positivo
+-e verifica rejeição de CA:TRUE, falta de Basic Constraints, falta de Key Usage,
+-Key Usage sem digitalSignature, falta de EKU, validade futura e certificado
+-self-issued mas assinado por outra chave. Resultado final: PASS.
+-
+-ACHADO R83-PACKAGE-02 — bytecode Python não rastreado quebrava o próprio builder
+-===============================================================================
+-Severidade: alta para reconstruibilidade do FULL-SOURCE; não altera runtime EFI.
+-
+-Causa observada no ZIP-base:
+-AuditTools/__pycache__/Verify-PeCoff-Authenticode.cpython-313.pyc estava presente
+-no pacote, mas fora de AuditReports/MANIFEST.sha256. O builder canônico enumera
+-todo arquivo imutável exceto o manifesto e o BuildLogs mutável; portanto, sobre
+-uma cópia exata do ZIP v2.28, ele falhava antes do signer com:
+-  Project SHA-256 manifest coverage mismatch
+-  ./AuditTools/__pycache__/Verify-PeCoff-Authenticode.cpython-313.pyc
+-
+-Correção:
+-- removido o __pycache__/.pyc gerado do FULL-SOURCE v2.29;
+-- o generated-residue gate passou de BaseTools-only para projeto inteiro,
+-  recusando qualquer __pycache__, *.pyc ou *.pyo antes de declarar qualidade.
+-Não foi adicionado cleanup global ao builder para mascarar source contaminado;
+-o pacote deve permanecer limpo e o manifesto continuar fail-closed.
+-
+-TEMPO REGISTRADO
+-=================
+-Janela da execução técnica desta rodada: 2026-10-10 04:02–04:25 UTC, cerca de
+-23 minutos entre a validação inicial do baseline e o fechamento do builder final.
+-As oito passagens foram intercaladas com compilações/testes; não se declara que
+-cada passagem individual durou 20–30 minutos quando isso não ocorreu.
+-
+-PASSAGENS EXECUTADAS
+-====================
+-1. Arquitetura/estrutura: inventário completo, manifesto, versões, layout,
+-   scripts Release, workflow CI, módulos UEFI, dependências EDK2/BaseTools.
+-2. Bugs/funcionalidade: revisão das 222 funções do runtime e contratos dos
+-   scripts; reprodução RED dos dois achados acima; nenhum novo defeito de
+-   runtime comprovado.
+-3. Memória/concorrência: ASan+UBSan Clang/GCC, IntegerSan e GCC TSan; lifecycle
+-   de arquivos/eventos/watchdog/imagem/config/log coberto pela suíte host.
+-4. Performance/recursos: revisão de loops/bounds/caches/alocações; runtime .c
+-   inalterado, logo nenhuma otimização especulativa foi introduzida.
+-5. UI/janelas/responsividade: Ui.c/Menu.c e testes de mode bounds/countdown;
+-   nenhum novo flicker/stutter/reposicionamento reproduzido.
+-6. Robustez/extremos: parser XML/UTF-8, SMBIOS, memory map, MP topology, GOP,
+-   filesystem e BaseTools bounds/fuzz.
+-7. Build/Release/compatibilidade: BaseTools completo, 285 testes oficiais,
+-   shell/YAML/plist/Python AST, signer policy/bootstrap/publish invariants.
+-8. Regressão final: suítes repetidas sobre v2.29; runtime comparado por SHA-256
+-   com v2.28; pacote/manifesto/build canônico verificados conforme limitações.
+-
+-LIMITAÇÕES REAIS
+-================
+-O host Linux desta execução não possui NASM nativo, sbsign/sbverify, Jsign nem
+-QEMU/OVMF. O NASM vendorizado é Mach-O x86_64 para macOS e não executa neste
+-host. O helper de assinatura tentou o bootstrap Jsign 7.5 pinado, mas DNS para
+-github.com falhou. Portanto não se declara EFI Release compilado, assinatura
+-ad-hoc real, boot OVMF, boot físico ou profiling de firmware.
+-
+-Clang ThreadSanitizer também não é utilizável nesta instalação: o runtime TSan
+-incluído pelo Clang falha no linker por símbolos Blocks/libdispatch ausentes.
+-GCC ThreadSanitizer foi executado e passou 17/17.
+-
+-COBERTURA
++CONCLUSÃO
+ =========
+-Todos os arquivos do pacote foram enumerados e lidos para inventário/hash e todos
+-os arquivos UTF-8 foram percorridos linha a linha por varredura automatizada.
+-O runtime próprio recebeu AST, compilação/análise estática e revisão semântica
+-função por função. BaseTools foi compilado por completo em cópia descartável e
+-sua suíte oficial executou 285 testes OK, além dos bounds/fuzz específicos.
+-Não se declara revisão semântica humana função por função das ~1,44 milhão de
+-linhas vendorizadas de EDK2/BaseTools/toolchain; isso seria diferente de
+-inventário/verificação automatizada e não foi simulado como cobertura total.
+-
+-BUILD FINAL / FAIL-CLOSED
+-========================
+-O builder canônico foi executado sobre a árvore v2.29 com manifesto atualizado.
+-Version metadata e manifest coverage passaram; o preflight do signer tentou o
+-Jsign 7.5 pinado e falhou por DNS de github.com. Exit code 1. Após o cleanup:
+-Release/, Build/, Conf/ e .BlsBuild.lock estavam ausentes. Nenhum EFI unsigned
+-ou artefato stale foi publicado.
+-
+-Árvore final antes do ZIP: 3.522 arquivos; manifesto: 3.520 entradas, todas
+-verificadas por SHA-256 e com cobertura exata. As únicas exclusões previstas são
+-o próprio manifesto e BuildLogs/BootLoaderSelector-Build.log mutável.
+-
+-VERSION/BUILD final: v2.29 / Round83.
+-Detalhes, matriz de 222 funções e resultados: AuditReports/ROUND83-VALIDATION.txt
+-Diff consolidado: AuditReports/ROUND83.diff
++Foi comprovada e corrigida uma divergência de política X.509 no pipeline de
++Release. Nenhum defeito adicional de runtime foi reproduzido que justificasse
++alteração do EFI, portanto o runtime foi preservado integralmente. v2.30/Round84
++não é declarado como Release EFI 100% homologado sem signer/NASM/OVMF disponíveis.
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND84.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.29-DNMTechLabs-Professional-Evolution-Round83-2026-10-10-FULL-SOURCE/AuditReports/ROUND84-VALIDATION.txt /mnt/data/bls_r84_work/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/AuditReports/ROUND84-VALIDATION.txt
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.29-DNMTechLabs-Professional-Evolution-Round83-2026-10-10-FULL-SOURCE/AuditReports/ROUND84-VALIDATION.txt	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bls_r84_work/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/AuditReports/ROUND84-VALIDATION.txt	2026-10-10 04:44:56.605863466 +0000
+@@ -0,0 +1,345 @@
++BootLoaderSelector — ROUND84 VALIDATION MATRIX
++==============================================
++Version/build: v2.30 / Professional Evolution Round84
++Date: 2026-10-10
++Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
++Exclusive baseline: FULL-SOURCE v2.29/Round83
++Baseline ZIP SHA-256: d905651b1674a414dae1deeeabfdf7d0dfc72dcc76c607321cfea2ed536d53e1
++
++BASELINE INTEGRITY
++------------------
++ZIP integrity: PASS.
++Regular files: 3,522.
++Manifest entries: 3,520; malformed=0; missing=0; bad hash=0; stale=0.
++Manifest exclusions: AuditReports/MANIFEST.sha256 and mutable
++BuildLogs/BootLoaderSelector-Build.log only.
++No symlink/FIFO/socket was present in the source tree.
++
++PROJECT INVENTORY
++-----------------
++Top-level source groups: .github, AuditReports, AuditTests, AuditTools,
++BaseTools, BootLoaderSelectorPkg, MdePkg, toolchain.gcc102.snb plus root metadata.
++Runtime C modules: 9; C lines: 7,983; Clang-AST definitions: 222.
++All 9 runtime .c files are SHA-256/byte-identical to v2.29: PASS.
++
++COVERAGE MATRIX
++---------------
++Architecture / dependency graph             PASS / reviewed
++Boot discovery / LoadImage/StartImage       PASS / tests + static review
++Config parse/save/recovery                   PASS / tests + sanitizers
++Hardware/SMBIOS/memory/CPU/MP/GPU           PASS / bounds + static review
++Logger lifecycle / I/O rollback             PASS / tests + sanitizers
++Menu/UI/events/countdown/autoboot            PASS / tests + quality gates
++Screenshot geometry/buffer bounds           PASS / tests + analyzers
++UTF-8/XML/parser edge cases                  PASS / tests + fuzz/static
++Memory ownership / allocations              PASS / ASan + analyzers
++Concurrency / event lifecycle               PASS / GCC TSan + tests
++Performance/resource hot paths              PASS / review; no speculative fix
++BaseTools vendored host code                PASS / deep fuzz + full build/tests
++Release signing policy                      PASS / policy regression
++Signer bootstrap + publish transaction      PASS / regression suites
++Real PE/COFF signing                        BLOCKED / no signer on host
++Canonical UEFI Release compile              BLOCKED / no native NASM on host
++OVMF/hardware boot                           NOT EXECUTED / QEMU/OVMF unavailable
++Physical firmware profiling                 NOT EXECUTED
++
++FINAL v2.30 DYNAMIC TESTS
++-------------------------
++Clang ASan+UBSan: 17/17 x3 PASS (13.87 s; max RSS 57,964 KiB).
++GCC ASan+UBSan: 17/17 x3 PASS (11.21 s; max RSS 66,068 KiB).
++Clang Address+IntegerSan: 17/17 PASS (6.17 s; max RSS 52,736 KiB).
++GCC ThreadSanitizer: 17/17 PASS (10.18 s; max RSS 40,028 KiB).
++Clang ThreadSanitizer: BLOCKED at linker by this Clang runtime's unresolved
++Blocks/libdispatch symbols; project tests did not execute under Clang TSan.
++
++STATIC / STRUCTURAL
++-------------------
++Each of 9 runtime C modules: Clang strict syntax PASS; Clang Static Analyzer
++PASS; GCC strict syntax PASS; GCC -fanalyzer PASS; Clang -O2 object PASS;
++GCC -O2 -Wmaybe-uninitialized object PASS. Warnings treated as errors.
++Python AST: 320/320 PASS. Plists: 9/9 PASS. YAML workflow: PASS, 4 jobs.
++Shell syntax: 13/13 PASS. Generated Python cache in final source: zero.
++
++BASETOOLS / VENDORED
++--------------------
++Deep bounds/fuzz with Clang: PASS (3.32 s; max RSS 44,712 KiB).
++Deep bounds/fuzz with GCC: PASS (3.38 s; max RSS 33,804 KiB).
++Full disposable BaseTools build: `make -C BaseTools -j2` rc=0;
++official test suite 285/285 OK (18.92 s; max RSS 244,708 KiB).
++No objects/libs/bin generated by this audit were retained in final source.
++
++R84-AUTH-CRITICAL-01 — RED -> GREEN
++-----------------------------------
++Baseline v2.29 accepted a self-signed RSA-3072/SHA-256 codeSigning certificate
++whose Basic Constraints=CA:FALSE and Key Usage=digitalSignature were both
++non-critical: RED reproduced (`BASELINE_ACCEPTED_NONCRITICAL_BC_AND_KU`).
++Final v2.30 rejects non-critical Basic Constraints and rejects non-critical Key
++Usage independently while preserving the valid signer-profile positive case.
++Full Authenticode certificate-policy regression: PASS.
++Verifier robustness after patch: 20,000 random ASN.1 parser inputs + 10,000
++random/truncated PE digest inputs; no uncaught project exception: PASS.
++
++RELEASE PIPELINE
++----------------
++Signer bootstrap regression: PASS.
++Publish/rollback/lock regression: PASS.
++Quality gate (BLS_QUALITY_BUILD=0, signer auto-download disabled): metadata,
++credits, DSE scope, UI deferral, hardware bound, signing invariant, Jsign route,
++certificate-policy and bootstrap gates PASS; then external PE/COFF signing test
++BLOCKED because no supported signer is installed. Exit 1 is expected fail-closed.
++Canonical builder: version/manifest PASS; rc=1 at signer preflight; post-failure
++Release/, Build/, Conf/ and .BlsBuild.lock all ABSENT; manifest remained valid.
++
++FULL TREE FINAL SCAN
++--------------------
++Final regular files: 0003524
++Final immutable manifest entries: 0003522
++UTF-8/text files byte+line traversed: 0003407
++Binary/non-UTF8 files byte traversed: 0000117
++Text lines traversed: 001318929
++Automated traversal is evidence of file/line coverage, not a claim of human
++semantic line-by-line review of all vendored EDK2/toolchain code.
++
++FUNCTION MATRIX — CLANG AST, FINAL RUNTIME
++------------------------------------------
++Columns: file, start line, end line, function.
++## BootScan.c	25
++BootScan.c	31	38	BlsSetChildBootWatchdog
++BootScan.c	51	57	BlsRor32
++BootScan.c	59	133	BlsSha256Transform
++BootScan.c	135	178	BlsSha256
++BootScan.c	180	199	BlsDevicePathGptGuid
++BootScan.c	201	213	BlsFormatSha256Identity
++BootScan.c	224	231	BlsLocateFsHandles
++BootScan.c	233	275	BlsRegularFileExistsInRoot
++BootScan.c	277	308	BlsReadVolumeLabelFromRoot
++BootScan.c	310	358	BlsReadVolumeDevicePath
++BootScan.c	360	363	BlsChar16Lower
++BootScan.c	365	388	BlsStrContains16Insensitive
++BootScan.c	390	412	BlsUsbDevicePathNodeIsConforming
++BootScan.c	414	424	BlsDevicePathHasUsbNode
++BootScan.c	426	439	BlsVolumeIsUsb
++BootScan.c	441	446	BlsTypeFromPath
++BootScan.c	448	455	BlsDuplicateEntry
++BootScan.c	457	475	BlsPreferredCandidate
++BootScan.c	477	500	BlsFillEntry
++BootScan.c	502	531	BlsAddEntry
++BootScan.c	533	621	BlsScanBootloadersPreferred
++BootScan.c	623	625	BlsScanBootloaders
++BootScan.c	627	667	BlsBuildFileDevicePath
++BootScan.c	669	820	BlsStartBootEntryEx
++BootScan.c	822	824	BlsStartBootEntry
++## Config.c	49
++Config.c	34	36	BlsConfigReadMayFallback
++Config.c	38	43	BlsMergeConfigReadCleanupStatus
++Config.c	45	47	BlsAsciiIsSpace
++Config.c	49	53	BlsSkipAsciiSpace
++Config.c	55	65	BlsConfigDefaults
++Config.c	67	86	BlsConfigMatchesEntry
++Config.c	88	96	BlsConfigRememberedEntryNeedsUpdate
++Config.c	98	105	BlsConfigRememberEntry
++Config.c	107	203	BlsReadWholeFile
++Config.c	205	211	BlsXmlCodePointIsValid
++Config.c	213	236	BlsAppendCodePoint
++Config.c	238	295	BlsDecodeUtf8CodePoint
++Config.c	297	377	BlsDecodeXmlEntity
++Config.c	379	404	BlsCountAsciiTokenInRange
++Config.c	406	444	BlsCountPlistValuesAfterKey
++Config.c	446	497	BlsExtractString
++Config.c	499	537	BlsExtractInteger
++Config.c	538	608	BlsExtractBoolean
++Config.c	610	615	BlsXmlHasKey
++Config.c	617	628	BlsConfigHasKnownKey
++Config.c	630	642	BlsXmlHasDuplicateKey
++Config.c	644	655	BlsConfigHasDuplicateKnownKey
++Config.c	657	737	BlsParseConfigDict
++Config.c	739	752	BlsFindXmlCommentClose
++Config.c	754	781	BlsSkipXmlIgnorable
++Config.c	785	824	BlsFindPlistOpen
++Config.c	826	875	BlsFindRootDictClose
++Config.c	877	901	BlsKeyRangeIsKnown
++Config.c	908	912	BlsXmlNameStart
++Config.c	914	918	BlsXmlNameChar
++Config.c	920	930	BlsXmlTagNameEquals
++Config.c	932	954	BlsFindXmlTagEnd
++Config.c	956	990	BlsStripXmlIgnorableMarkup
++Config.c	992	1173	BlsValidateAndSanitizeRootDict
++Config.c	1175	1231	BlsCopyValidatedPlistDict
++Config.c	1233	1252	BlsParseConfig
++Config.c	1255	1272	BlsAppendAsciiText
++Config.c	1274	1314	BlsAppendUtf8CodePoint
++Config.c	1316	1368	BlsUnicodeToUtf8XmlEscape
++Config.c	1370	1381	BlsDeleteFileIfPresent
++Config.c	1383	1392	BlsDeleteFileOnVolumeBestEffort
++Config.c	1394	1435	BlsWriteBufferToPath
++Config.c	1437	1476	BlsEnsureConfigDirectoryHierarchy
++Config.c	1478	1600	BlsSaveConfigInternal
++Config.c	1602	1604	BlsSaveConfig
++Config.c	1607	1616	BlsGetImageVolumeHandle
++Config.c	1618	1648	BlsLoadConfigSnapshot
++Config.c	1650	1693	BlsLoadConfigFromVolume
++Config.c	1695	1756	BlsLoadConfig
++## HardwareInfo.c	44
++HardwareInfo.c	32	44	BlsAsciiIsJunk
++HardwareInfo.c	46	58	BlsChecksum8IsZero
++HardwareInfo.c	60	64	BlsMemoryMapDescriptorBudgetExceeded
++HardwareInfo.c	66	79	BlsFirmwareDescriptorIsReadable
++HardwareInfo.c	88	92	BlsFirmwareMemoryMapRelease
++HardwareInfo.c	94	152	BlsFirmwareMemoryMapAcquire
++HardwareInfo.c	154	206	BlsFirmwareMappedPrefixLengthInMap
++HardwareInfo.c	208	215	BlsFirmwareRangeIsMappedInMap
++HardwareInfo.c	218	226	BlsSmbiosVersionAtLeast
++HardwareInfo.c	228	246	BlsSmbios3EntryPointIsValid
++HardwareInfo.c	248	288	BlsSmbios2EntryPointIsValid
++HardwareInfo.c	290	305	BlsSmbiosStructureFitsMaximum
++HardwareInfo.c	307	325	BlsSmbiosMarkHandleUnique
++HardwareInfo.c	327	351	BlsDecodeSmbiosProcessorCount
++HardwareInfo.c	359	385	BlsSmbiosEnabledThreadCount
++HardwareInfo.c	387	415	BlsSmbiosMemoryDeviceSizeMb
++HardwareInfo.c	417	420	BlsSmbiosExtendedSpeedIfValid
++HardwareInfo.c	422	458	BlsSmbiosMemoryDeviceSpeed
++HardwareInfo.c	460	517	BlsDecodeUtf8CodePointBounded
++HardwareInfo.c	519	590	BlsSmbiosStringToUnicode
++HardwareInfo.c	592	628	BlsBuildNameFromSmbios
++HardwareInfo.c	630	648	BlsReadCpuBrand
++HardwareInfo.c	650	701	BlsReadCpuTopologyLeaf
++HardwareInfo.c	703	751	BlsReadCpuTopologyFallback
++HardwareInfo.c	758	769	BlsCompareMpCpuLocation
++HardwareInfo.c	771	781	BlsSwapMpCpuLocation
++HardwareInfo.c	783	802	BlsSiftDownMpCpuLocations
++HardwareInfo.c	804	816	BlsSortMpCpuLocations
++HardwareInfo.c	818	910	BlsReadMpServicesTopology
++HardwareInfo.c	912	938	BlsFindConfigTableInMap
++HardwareInfo.c	941	980	BlsGetSmbiosString
++HardwareInfo.c	982	1000	BlsNextSmbiosStruct
++HardwareInfo.c	1002	1016	BlsMemoryTypeName
++HardwareInfo.c	1018	1062	BlsReadMemoryMapFallback
++HardwareInfo.c	1064	1075	BlsSmbiosStructureScanLimit
++HardwareInfo.c	1077	1472	BlsReadSmbios
++HardwareInfo.c	1474	1481	BlsGpuVendorName
++HardwareInfo.c	1483	1510	BlsGpuFriendlyName
++HardwareInfo.c	1512	1529	BlsDevicePathIsPrefix
++HardwareInfo.c	1531	1604	BlsFindConsoleGopDevicePath
++HardwareInfo.c	1606	1612	BlsFormatGpu
++HardwareInfo.c	1614	1678	BlsReadGpuInfo
++HardwareInfo.c	1680	1686	BlsNormalizeHardwareInfo
++HardwareInfo.c	1688	1706	BlsReadHardwareInfo
++## Logger.c	9
++Logger.c	19	50	BlsLogRestoreFileSize
++Logger.c	52	82	BlsLogSnapshotFile
++Logger.c	84	101	BlsLogRestoreSnapshot
++Logger.c	103	108	BlsLogClear
++Logger.c	110	123	BlsLogEnsureDirectory
++Logger.c	125	130	BlsLogInit
++Logger.c	132	146	BlsLogSetEnabled
++Logger.c	148	186	BlsLog
++Logger.c	188	366	BlsLogFlush
++## Main.c	11
++Main.c	27	45	BlsFindRememberedEntry
++Main.c	47	57	BlsMoveEntry
++Main.c	59	71	BlsPrioritizeVolume
++Main.c	73	90	BlsUnicodeToAsciiLogField
++Main.c	92	102	BlsLogStatus
++Main.c	104	147	BlsLogBootScan
++Main.c	150	191	BlsWaitForRealKey
++Main.c	193	202	BlsTryDisableInheritedBootWatchdog
++Main.c	206	209	BlsSelectorHotkeyTimerExpired
++Main.c	211	302	BlsWaitForSelectorHotkey
++Main.c	304	532	UefiMain
++## Menu.c	38
++Menu.c	21	24	BlsInputKeyIsEmpty
++Menu.c	26	34	BlsFooterRow
++Menu.c	36	41	BlsFooterLineRow
++Menu.c	43	50	BlsDefaultIndex
++Menu.c	52	54	BlsSelectableCount
++Menu.c	56	58	BlsSelectionIsOptions
++Menu.c	60	62	BlsCountdownCol
++Menu.c	64	66	BlsCountdownWidth
++Menu.c	68	70	BlsClearCountdownStatus
++Menu.c	72	74	BlsDrawCountdownStatus
++Menu.c	76	122	BlsDrawHardwareField
++Menu.c	124	143	BlsCancelCountdown
++Menu.c	145	214	BlsDrawHeader
++Menu.c	216	226	BlsMenuStartRow
++Menu.c	228	244	BlsSelectDisplayHardware
++Menu.c	256	307	BlsGetEntryView
++Menu.c	309	345	BlsDrawSelectableRow
++Menu.c	347	376	BlsDrawSelectionDelta
++Menu.c	378	426	BlsDrawEntries
++Menu.c	428	458	BlsDrawFooter
++Menu.c	460	465	BlsDrawScreen
++Menu.c	467	475	BlsPanelWidth
++Menu.c	477	490	BlsTextEllipsis
++Menu.c	492	515	BlsPrintFixedRow
++Menu.c	518	548	BlsWaitForModalDismiss
++Menu.c	550	623	BlsDrawWrappedField
++Menu.c	625	663	BlsDrawHelpScreen
++Menu.c	665	707	BlsDrawEntryDetails
++Menu.c	725	753	BlsGetOptionsLayout
++Menu.c	755	792	BlsDrawOptionRow
++Menu.c	794	809	BlsDrawOptionsSelectionDelta
++Menu.c	811	817	BlsDrawOptionValueDelta
++Menu.c	819	878	BlsDrawOptionsScreen
++Menu.c	880	897	BlsCommitOptions
++Menu.c	899	1053	BlsRunOptions
++Menu.c	1055	1057	BlsIsTimeoutKey
++Menu.c	1059	1070	BlsConsumeSignaledCountdownTick
++Menu.c	1072	1358	BlsRunMenu
++## Screenshot.c	7
++Screenshot.c	29	32	BlsPutLe16
++Screenshot.c	34	39	BlsPutLe32
++Screenshot.c	41	53	BlsEnsureDirectory
++Screenshot.c	56	106	BlsFindScreenshotPath
++Screenshot.c	108	121	BlsFillBmpHeader
++Screenshot.c	126	220	BlsResolveConsoleGop
++Screenshot.c	222	377	BlsSaveScreenshot
++## Ui.c	16
++Ui.c	29	54	BlsUiCaptureOriginalState
++Ui.c	57	59	BlsUiLastModeStatus
++Ui.c	61	64	BlsUiDimensionsAreUsable
++Ui.c	66	103	BlsUiCanRestoreCursorPosition
++Ui.c	105	164	BlsUiRestoreOriginalState
++Ui.c	166	174	BlsUiCacheSize
++Ui.c	176	204	BlsUiCacheCurrentSize
++Ui.c	206	433	BlsUiInitReadableMode
++Ui.c	435	439	BlsUiGetSize
++Ui.c	441	447	BlsUiInvalidateSizeCache
++Ui.c	449	471	BlsUiClear
++Ui.c	473	489	BlsUiSet
++Ui.c	491	529	BlsUiPrintAt
++Ui.c	531	564	BlsUiHLine
++Ui.c	566	576	BlsUiCentered
++Ui.c	578	600	BlsUiBox
++## Utils.c	23
++Utils.c	14	19	BlsStrLen16Bounded
++Utils.c	21	23	BlsStrLen16
++Utils.c	25	36	BlsSafeStrCpy
++Utils.c	38	47	BlsSafeStrCat
++Utils.c	49	56	BlsStrEq
++Utils.c	60	138	BlsLocateProtocolHandlesBounded
++Utils.c	140	143	BlsAsciiLower
++Utils.c	145	152	BlsStriEqAscii
++Utils.c	154	159	BlsAsciiLenBounded
++Utils.c	161	179	BlsAsciiContains
++Utils.c	181	192	BlsAsciiToUnicode
++Utils.c	194	208	BlsTrimAscii
++Utils.c	211	238	BlsGetProtocolInterface
++Utils.c	240	264	BlsOpenVolumeRoot
++Utils.c	266	302	BlsFileOpen
++Utils.c	304	358	BlsFileGetInfoAlloc
++Utils.c	361	381	BlsFileReadExact
++Utils.c	383	401	BlsFileWriteAll
++Utils.c	403	407	BlsFileFlush
++Utils.c	409	427	BlsFileDelete
++Utils.c	429	438	BlsFileClose
++Utils.c	440	459	BlsCloseTimerEvent
++Utils.c	461	464	BlsFileCloseBestEffort
++## TOTAL	222
++
++
++LIMITATIONS
++-----------
++No EFI Release/signature/OVMF/hardware result is claimed unless actually
++executed. This host lacks native NASM, sbsign/sbverify, Jsign and QEMU/OVMF;
++the bundled NASM is Mach-O. Clang TSan is unusable because its installed Linux
++runtime links libdispatch interceptors without the required Blocks runtime.
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND84.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.29-DNMTechLabs-Professional-Evolution-Round83-2026-10-10-FULL-SOURCE/AuditTests/Test-Authenticode-Verifier-Policy.command /mnt/data/bls_r84_work/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/AuditTests/Test-Authenticode-Verifier-Policy.command
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.29-DNMTechLabs-Professional-Evolution-Round83-2026-10-10-FULL-SOURCE/AuditTests/Test-Authenticode-Verifier-Policy.command	2026-10-10 04:11:48.000000000 +0000
++++ /mnt/data/bls_r84_work/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/AuditTests/Test-Authenticode-Verifier-Policy.command	2026-10-10 04:36:30.638743027 +0000
+@@ -58,6 +58,28 @@
+   -keyout "$TMP_ROOT/positive-key.pem" -out "$TMP_ROOT/positive-cert.pem" >/dev/null 2>&1
+ check_policy accept "$TMP_ROOT/positive-cert.pem"
+ 
++# Regression: the signer emits Basic Constraints as critical. A non-critical
++# CA:FALSE extension is semantically weaker than the release certificate
++# profile and must not be accepted as an exact policy match.
++openssl req -new -x509 -newkey rsa:3072 -sha256 -nodes -days 1 \
++  -subj '/CN=DNMTechLabs Noncritical BC Policy Negative/O=DNMTechLabs' \
++  -addext 'basicConstraints=CA:FALSE' \
++  -addext 'keyUsage=critical,digitalSignature' \
++  -addext 'extendedKeyUsage=codeSigning' \
++  -keyout "$TMP_ROOT/noncritical-bc-key.pem" -out "$TMP_ROOT/noncritical-bc-cert.pem" >/dev/null 2>&1
++check_policy reject "$TMP_ROOT/noncritical-bc-cert.pem"
++
++# Regression: Key Usage is also critical in the signer profile. Preserve that
++# invariant so verification detects certificate-profile drift instead of merely
++# checking that digitalSignature happens to be present.
++openssl req -new -x509 -newkey rsa:3072 -sha256 -nodes -days 1 \
++  -subj '/CN=DNMTechLabs Noncritical KU Policy Negative/O=DNMTechLabs' \
++  -addext 'basicConstraints=critical,CA:FALSE' \
++  -addext 'keyUsage=digitalSignature' \
++  -addext 'extendedKeyUsage=codeSigning' \
++  -keyout "$TMP_ROOT/noncritical-ku-key.pem" -out "$TMP_ROOT/noncritical-ku-cert.pem" >/dev/null 2>&1
++check_policy reject "$TMP_ROOT/noncritical-ku-cert.pem"
++
+ # Regression: the old verifier searched all of `openssl x509 -text` for the
+ # words "Code Signing". A certificate with that text only in its subject could
+ # therefore bypass the EKU requirement.
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND84.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.29-DNMTechLabs-Professional-Evolution-Round83-2026-10-10-FULL-SOURCE/AuditTools/Verify-PeCoff-Authenticode.py /mnt/data/bls_r84_work/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/AuditTools/Verify-PeCoff-Authenticode.py
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.29-DNMTechLabs-Professional-Evolution-Round83-2026-10-10-FULL-SOURCE/AuditTools/Verify-PeCoff-Authenticode.py	2026-10-10 04:10:45.000000000 +0000
++++ /mnt/data/bls_r84_work/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/AuditTools/Verify-PeCoff-Authenticode.py	2026-10-10 04:36:30.638524967 +0000
+@@ -236,7 +236,7 @@
+     return bool(bits[1] & 0x80)
+ 
+ 
+-def _certificate_policy_fields(cert_der: bytes) -> tuple[datetime, datetime, bool, bool, bool, bool]:
++def _certificate_policy_fields(cert_der: bytes) -> tuple[datetime, datetime, bool, bool, bool, bool, bool, bool]:
+     root = parse_node(cert_der)
+     require_universal(root, 16, "X.509 Certificate SEQUENCE")
+     if root.end != len(cert_der):
+@@ -263,8 +263,10 @@
+ 
+     has_basic_constraints = False
+     basic_constraints_is_ca = False
++    basic_constraints_is_critical = False
+     has_key_usage = False
+     key_usage_has_digital_signature = False
++    key_usage_is_critical = False
+     has_code_signing_eku = False
+     extensions_wrapper = next(
+         (node for node in fields[offset + 6:] if node.tag_class == 2 and node.tag_number == 3),
+@@ -282,17 +284,26 @@
+             if len(extension_fields) not in (2, 3):
+                 raise VerifyError("X.509 Extension has an invalid structure")
+             oid = decode_oid(extension_fields[0])
++            critical = False
++            if len(extension_fields) == 3:
++                critical_node = extension_fields[1]
++                require_universal(critical_node, 1, "X.509 Extension critical BOOLEAN")
++                if critical_node.constructed or len(critical_node.content) != 1 or critical_node.content[0] not in (0x00, 0xFF):
++                    raise VerifyError("X.509 Extension critical flag is invalid")
++                critical = critical_node.content[0] != 0
+             extn_value = extension_fields[-1]
+             if oid == OID_BASIC_CONSTRAINTS:
+                 if has_basic_constraints:
+                     raise VerifyError("X.509 certificate contains duplicate Basic Constraints extensions")
+                 has_basic_constraints = True
+                 basic_constraints_is_ca = _parse_basic_constraints_ca(extn_value)
++                basic_constraints_is_critical = critical
+             elif oid == OID_KEY_USAGE:
+                 if has_key_usage:
+                     raise VerifyError("X.509 certificate contains duplicate Key Usage extensions")
+                 has_key_usage = True
+                 key_usage_has_digital_signature = _parse_key_usage_has_digital_signature(extn_value)
++                key_usage_is_critical = critical
+             elif oid == OID_EXTENDED_KEY_USAGE:
+                 require_universal(extn_value, 4, "X.509 extnValue OCTET STRING")
+                 eku_sequence = parse_node(extn_value.content)
+@@ -308,7 +319,9 @@
+         not_after,
+         has_basic_constraints,
+         basic_constraints_is_ca,
++        basic_constraints_is_critical,
+         has_key_usage and key_usage_has_digital_signature,
++        key_usage_is_critical,
+         has_code_signing_eku,
+     )
+ 
+@@ -321,7 +334,9 @@
+         not_after,
+         has_basic_constraints,
+         basic_constraints_is_ca,
++        basic_constraints_is_critical,
+         key_usage_has_digital_signature,
++        key_usage_is_critical,
+         has_code_signing_eku,
+     ) = _certificate_policy_fields(cert_der)
+     now = datetime.now(timezone.utc)
+@@ -343,8 +358,12 @@
+         raise VerifyError("signer certificate does not contain Basic Constraints")
+     if basic_constraints_is_ca:
+         raise VerifyError("signer certificate Basic Constraints must be CA:FALSE")
++    if not basic_constraints_is_critical:
++        raise VerifyError("signer certificate Basic Constraints must be critical")
+     if not key_usage_has_digital_signature:
+         raise VerifyError("signer certificate Key Usage does not contain digitalSignature")
++    if not key_usage_is_critical:
++        raise VerifyError("signer certificate Key Usage must be critical")
+     if not has_code_signing_eku:
+         raise VerifyError("signer certificate does not contain the codeSigning EKU")
+ 
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND84.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.29-DNMTechLabs-Professional-Evolution-Round83-2026-10-10-FULL-SOURCE/BootLoaderSelector.dsc /mnt/data/bls_r84_work/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/BootLoaderSelector.dsc
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.29-DNMTechLabs-Professional-Evolution-Round83-2026-10-10-FULL-SOURCE/BootLoaderSelector.dsc	2026-10-10 04:17:51.000000000 +0000
++++ /mnt/data/bls_r84_work/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/BootLoaderSelector.dsc	2026-10-10 04:39:31.397206035 +0000
+@@ -6,7 +6,7 @@
+ [Defines]
+   PLATFORM_NAME                  = BootLoaderSelector
+   PLATFORM_GUID                  = 3F71A792-6E03-4D84-9F1D-F3C81EC80F44
+-  PLATFORM_VERSION = 2.29
++  PLATFORM_VERSION = 2.30
+   DSC_SPECIFICATION              = 0x00010006
+   OUTPUT_DIRECTORY               = Build/BootLoaderSelector
+   SUPPORTED_ARCHITECTURES        = X64
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND84.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.29-DNMTechLabs-Professional-Evolution-Round83-2026-10-10-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf /mnt/data/bls_r84_work/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.29-DNMTechLabs-Professional-Evolution-Round83-2026-10-10-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf	2026-10-10 04:17:51.000000000 +0000
++++ /mnt/data/bls_r84_work/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf	2026-10-10 04:39:31.397153315 +0000
+@@ -8,7 +8,7 @@
+   BASE_NAME                      = BootLoaderSelector
+   FILE_GUID                      = F9C8E131-0A87-4C6C-A3E4-CA03DE31F6F1
+   MODULE_TYPE                    = UEFI_APPLICATION
+-  VERSION_STRING = 2.29
++  VERSION_STRING = 2.30
+   ENTRY_POINT                    = UefiMain
+ 
+ [Sources]
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND84.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.29-DNMTechLabs-Professional-Evolution-Round83-2026-10-10-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h /mnt/data/bls_r84_work/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.29-DNMTechLabs-Professional-Evolution-Round83-2026-10-10-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h	2026-10-10 04:17:51.000000000 +0000
++++ /mnt/data/bls_r84_work/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h	2026-10-10 04:39:31.397033874 +0000
+@@ -9,8 +9,8 @@
+ #include <Protocol/SimpleFileSystem.h>
+ #include <Guid/FileInfo.h>
+ 
+-#define BLS_VERSION_ASCII "2.29"
+-#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.29"
++#define BLS_VERSION_ASCII "2.30"
++#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.30"
+ 
+ #define BLS_MAX_TEXT      128
+ #define BLS_MAX_PATH      192
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND84.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.29-DNMTechLabs-Professional-Evolution-Round83-2026-10-10-FULL-SOURCE/CHANGELOG.txt /mnt/data/bls_r84_work/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/CHANGELOG.txt
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.29-DNMTechLabs-Professional-Evolution-Round83-2026-10-10-FULL-SOURCE/CHANGELOG.txt	2026-10-10 04:17:51.000000000 +0000
++++ /mnt/data/bls_r84_work/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/CHANGELOG.txt	2026-10-10 04:39:31.398273983 +0000
+@@ -1,9 +1,25 @@
+ BootLoaderSelector — CHANGELOG
+ ===========================
+ 
+-Versão atual: 2.29
++Versão atual: 2.30
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+ 
++VERSÃO 2.30 — PROFESSIONAL EVOLUTION ROUND 84 — 2026-10-10
++------------------------------------------------------------
++Base EXCLUSIVA: FULL-SOURCE v2.29/Round83 (ZIP SHA-256 d905651b1674a414dae1deeeabfdf7d0dfc72dcc76c607321cfea2ed536d53e1).
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++- Corrigida divergência de política X.509 no verificador Authenticode: Basic
++  Constraints e Key Usage agora também precisam estar marcadas como críticas,
++  correspondendo exatamente ao perfil produzido pelo signer do projeto.
++- Adicionadas regressões negativas específicas para Basic Constraints e Key
++  Usage não críticas; controles de CA:FALSE, digitalSignature, codeSigning,
++  validade e self-sign permanecem ativos.
++- Runtime UEFI preservado: 9 arquivos .c / 222 funções sem alteração funcional
++  ou de conteúdo em relação à v2.29.
++- VERSION/BUILD incrementados conforme solicitado: v2.30 / Round84.
++- Resultados completos: AuditReports/ROUND84-VALIDATION.txt.
++
+ VERSÃO 2.29 — PROFESSIONAL EVOLUTION ROUND 83 — 2026-10-10
+ ------------------------------------------------------------
+ Base EXCLUSIVA: FULL-SOURCE v2.28/Round82 (ZIP SHA-256 c3ee4f939f86f88ca5fe373a390f7710fd50fe4a0bb511616bca4b01b9d7a6eb).
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND84.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.29-DNMTechLabs-Professional-Evolution-Round83-2026-10-10-FULL-SOURCE/INFO.txt /mnt/data/bls_r84_work/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/INFO.txt
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.29-DNMTechLabs-Professional-Evolution-Round83-2026-10-10-FULL-SOURCE/INFO.txt	2026-10-10 04:21:58.000000000 +0000
++++ /mnt/data/bls_r84_work/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/INFO.txt	2026-10-10 04:39:31.397964895 +0000
+@@ -1,12 +1,29 @@
+ BootLoaderSelector — INFORMAÇÕES COMPLETAS DO PROJETO
+ =====================================================
+ 
+-Versão atual: 2.29
+-Base imediata: BootLoaderSelector v2.28 Professional Evolution Round82 (2026-10-10)
+-SHA-256 do ZIP-base recebido nesta rodada: c3ee4f939f86f88ca5fe373a390f7710fd50fe4a0bb511616bca4b01b9d7a6eb
++Versão atual: 2.30
++Base imediata: BootLoaderSelector v2.29 Professional Evolution Round83 (2026-10-10)
++SHA-256 do ZIP-base recebido nesta rodada: d905651b1674a414dae1deeeabfdf7d0dfc72dcc76c607321cfea2ed536d53e1
+ Data desta rodada: 2026-10-10
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+ 
++VERSÃO 2.30 — PROFESSIONAL EVOLUTION ROUND 84 — 2026-10-10
++------------------------------------------------------------
++Base exclusiva: FULL-SOURCE v2.29/Round83, ZIP SHA-256 d905651b1674a414dae1deeeabfdf7d0dfc72dcc76c607321cfea2ed536d53e1.
++
++- Authenticode/X.509: o verificador de compatibilidade agora exige que Basic
++  Constraints e Key Usage sejam extensões críticas, exatamente como o signer
++  canônico as emite. O baseline v2.29 aceitava indevidamente certificados com
++  essas duas extensões não críticas apesar do restante da política ser válido.
++- Regressões específicas cobrem Basic Constraints não crítica e Key Usage não
++  crítica, preservando os controles anteriores para CA:FALSE, digitalSignature,
++  EKU codeSigning, validade, RSA/SHA-256 e self-sign criptográfico.
++- Runtime UEFI preservado integralmente: nenhum dos 9 módulos C foi modificado;
++  nenhuma mudança de UI, boot, configuração, hardware, logging ou screenshot.
++- VERSION/BUILD incrementados conforme solicitado: v2.30 / Round84.
++- Cobertura, testes executados e limitações reais constam em
++  AuditReports/ROUND84-VALIDATION.txt e AuditReports/AUDIT-REPORT.txt.
++
+ VERSÃO 2.29 — PROFESSIONAL EVOLUTION ROUND 83 — 2026-10-10
+ ------------------------------------------------------------
+ Base exclusiva: FULL-SOURCE v2.28/Round82, ZIP SHA-256 c3ee4f939f86f88ca5fe373a390f7710fd50fe4a0bb511616bca4b01b9d7a6eb.
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND84.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.29-DNMTechLabs-Professional-Evolution-Round83-2026-10-10-FULL-SOURCE/SECURITY-NOTES.txt /mnt/data/bls_r84_work/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/SECURITY-NOTES.txt
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.29-DNMTechLabs-Professional-Evolution-Round83-2026-10-10-FULL-SOURCE/SECURITY-NOTES.txt	2026-10-09 01:22:52.000000000 +0000
++++ /mnt/data/bls_r84_work/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/SECURITY-NOTES.txt	2026-10-10 04:39:31.398382838 +0000
+@@ -94,6 +94,10 @@
+ self-signed. Matching Subject/Issuer DNs alone is not accepted: the verifier requires
+ the published certificate to verify against itself, closing the self-issued/same-DN
+ but externally signed certificate case.
++Starting with v2.30/Round84, the compatibility verifier also requires Basic Constraints
++and Key Usage to be marked critical, matching the certificate profile emitted by the
++canonical signer (critical CA:FALSE and critical digitalSignature). Certificates that
++carry those policy extensions as non-critical are rejected as profile drift.
+ Tampered EFI bytes or a different certificate fail closed. Native Jsign verification
+ continues to be preferred when the selected Jsign version provides it. No verifier
+ JAR, private signing material, or third-party Python package is vendored.

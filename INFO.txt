@@ -1,0 +1,3077 @@
+BootLoaderSelector — INFORMAÇÕES COMPLETAS DO PROJETO
+=====================================================
+
+Versão atual: 2.32
+Base imediata: BootLoaderSelector v2.31 / Round86 (2026-10-10)
+SHA-256 do ZIP-base recebido nesta rodada: b7d91a29817891dd51e523da66d4c565932197210511e5c723191f615fc10892
+Data desta rodada: 2026-11-03
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+
+VERSÃO 2.32 — CORREÇÕES PARA PUBLICAÇÃO — 2026-11-03
+--------------------------------------------------
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+Base: ZIP v2.31/Round86, SHA-256
+b7d91a29817891dd51e523da66d4c565932197210511e5c723191f615fc10892.
+
+- DevicePathLib: validação de formatos, cópia/limpeza de USB-WWID e propagação
+  de falhas de alocação no conversor efetivamente vinculado ao aplicativo.
+- Verificador: checagem criptográfica da autoassinatura com a própria chave
+  pública, mantendo a política leaf/codeSigning.
+- Testes: capacidades de compilador/sanitizer detectadas, regressões de
+  publicação compatíveis com Bash do macOS e CI com gates obrigatórios.
+- Build: rollback em cancelamento e abertura do Finder somente por opção.
+- Distribuição pública de fontes com BSD-3-Clause para o código próprio,
+  avisos upstream preservados e toolchain binária externa, verificada por hashes.
+- Resultados e limitações da validação desta versão: VALIDATION.md.
+
+VERSÃO 2.31 — PROFESSIONAL EVOLUTION ROUND 85 — 2026-10-10
+------------------------------------------------------------
+Base exclusiva: FULL-SOURCE v2.30/Round84, ZIP SHA-256 0f212946537593e28e1ca905d6bfc1b9d9e8d8f3384a88e673333bacece8ae19.
+
+- Build/concorrência: os diagnósticos de Build-Debug-Full-Log.command agora são
+  emitidos pelo cleanup do builder Release enquanto .BlsBuild.lock ainda está
+  sob posse da mesma execução. O baseline permitia que um segundo Release
+  truncasse o log entre o retorno do subprocesso e o append de diagnósticos.
+- Regressão concorrente reproduz RED no v2.30 (log misturado/truncado) e GREEN
+  no v2.31; tentativa concorrente é recusada antes de tocar no log ativo.
+- Runtime UEFI preservado integralmente: nenhum dos 9 módulos C foi modificado;
+  nenhuma mudança de UI, boot, configuração, hardware, logging UEFI ou screenshot.
+- VERSION/BUILD incrementados conforme solicitado: v2.31 / Round85.
+- Cobertura, testes executados e limitações reais constam em
+  AuditReports/AUDIT-REPORT.txt (seção ROUND85 e matriz consolidada).
+
+VERSÃO 2.30 — PROFESSIONAL EVOLUTION ROUND 84 — 2026-10-10
+------------------------------------------------------------
+Base exclusiva: FULL-SOURCE v2.29/Round83, ZIP SHA-256 d905651b1674a414dae1deeeabfdf7d0dfc72dcc76c607321cfea2ed536d53e1.
+
+- Authenticode/X.509: o verificador de compatibilidade agora exige que Basic
+  Constraints e Key Usage sejam extensões críticas, exatamente como o signer
+  canônico as emite. O baseline v2.29 aceitava indevidamente certificados com
+  essas duas extensões não críticas apesar do restante da política ser válido.
+- Regressões específicas cobrem Basic Constraints não crítica e Key Usage não
+  crítica, preservando os controles anteriores para CA:FALSE, digitalSignature,
+  EKU codeSigning, validade, RSA/SHA-256 e self-sign criptográfico.
+- Runtime UEFI preservado integralmente: nenhum dos 9 módulos C foi modificado;
+  nenhuma mudança de UI, boot, configuração, hardware, logging ou screenshot.
+- VERSION/BUILD incrementados conforme solicitado: v2.30 / Round84.
+- Cobertura, testes executados e limitações reais constam em
+  AuditReports/AUDIT-REPORT.txt (seção ROUND84 e matriz consolidada).
+
+VERSÃO 2.29 — PROFESSIONAL EVOLUTION ROUND 83 — 2026-10-10
+------------------------------------------------------------
+Base exclusiva: FULL-SOURCE v2.28/Round82, ZIP SHA-256 c3ee4f939f86f88ca5fe373a390f7710fd50fe4a0bb511616bca4b01b9d7a6eb.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+
+Auditoria reproduziu uma lacuna na política do verificador Authenticode: certificados
+autoassinados com codeSigning eram aceitos mesmo com Basic Constraints CA:TRUE,
+sem Basic Constraints, sem Key Usage ou sem digitalSignature. O verificador passa
+a exigir o mesmo contrato emitido pelo signer: CA:FALSE, digitalSignature e EKU
+codeSigning; regressões negativas cobrem cada desvio. O FULL-SOURCE v2.28 também
+continha um .pyc gerado fora do manifesto, reproduzindo falha imediata no preflight
+de cobertura do builder. O resíduo foi removido e o quality gate passa a rejeitar
+bytecode/cache Python em qualquer ponto da árvore. Runtime UEFI preservado: os nove
+módulos .c permanecem byte a byte idênticos à v2.28. Resultados e limitações reais
+estão em AuditReports/AUDIT-REPORT.txt (seção ROUND83); Release EFI real não é declarado sem
+backend PE/COFF/NASM/OVMF disponíveis no ambiente.
+
+VERSÃO 2.28 — PROFESSIONAL EVOLUTION ROUND 82 — 2026-10-10
+------------------------------------------------------------
+Base exclusiva: FULL-SOURCE v2.27/Round81, ZIP SHA-256 d864963b11a968ae0f97823775caa762e2c829e03794ab6ae523fae14bb13e59.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+
+Correção pontual no CI macOS: o workflow instalava Jsign estável via Homebrew
+e em seguida executava diretamente `jsign verify`, rota indisponível no Jsign
+7.x. As duas verificações dos EFI publicados agora usam o helper PE/COFF já
+existente, que detecta a capacidade nativa e aplica a verificação compatível
+sem alterar assinatura, runtime ou artefatos. O quality gate ganhou uma
+regressão fonte que impede reintroduzir o bypass direto. Os nove módulos C
+permanecem byte a byte idênticos à v2.27. Resultados e limitações efetivamente
+executados estão em AuditReports/AUDIT-REPORT.txt (seção ROUND82). Release EFI real,
+assinatura e boot não são declarados sem as ferramentas/ambiente necessários.
+
+VERSÃO 2.27 — PROFESSIONAL EVOLUTION ROUND 81 — 2026-10-10
+------------------------------------------------------------
+Base exclusiva: FULL-SOURCE v2.26/Round80, ZIP SHA-256 0e70722a8d6e80f1ae546c35834627112ec58b4175ab76b03c1412ba5ac8a0b1.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+
+Auditoria integral do source recebido, sem alteração funcional de runtime:
+nenhum novo defeito reproduzível foi comprovado nos nove módulos C após
+revisão manual, análise estática e baterias host repetidas. O incremento
+v2.27/Round81 atende ao versionamento solicitado; código funcional,
+interface, comportamento, dependências vendorizadas e pipeline preservados.
+Validações, cobertura e limitações estão em AuditReports/AUDIT-REPORT.txt (seção ROUND81).
+A compilação/assinatura EFI real permanece condicionada a um host com NASM
+executável e assinador PE/COFF disponível; não se declara homologação sem isso.
+
+VERSÃO 2.26 — PROFESSIONAL EVOLUTION ROUND 80 — 2026-10-08
+------------------------------------------------------------
+Base exclusiva: FULL-SOURCE v2.25/Round79, ZIP SHA-256 34e6fbfcb4a903c86285e3b414da035aaae2538aeb977c806243146b33f6b892.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+
+Logger.c: o primeiro flush de uma nova sessão não exclui previamente o log
+antigo. Se a substituição falhar, os bytes originais até 128 KiB são
+restaurados usando o snapshot limitado existente na lógica de rollover.
+Nenhuma mudança de formato, caminho do log, limite de 128 KiB, boot ou UI.
+Se o log anterior exceder esse limite, a operação falha sem perda dos dados
+anteriores e o buffer novo fica disponível para retry/diagnóstico.
+Testes de I/O, sanitizers, análise estática e limitações em
+AuditReports/AUDIT-REPORT.txt (seção ROUND80). EFI assinado não construído neste host.
+
+VERSÃO 2.25 — PROFESSIONAL EVOLUTION ROUND 79 — 2026-10-08
+------------------------------------------------------------
+Base exclusiva: FULL-SOURCE v2.24/Round78 (SHA-256 4b978f65641392ef40b652a1a9f40f2e80f083e536e2b310db895e1f4ab02e39).
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+
+Correção pontual em Ui.c: QueryMode() deve consultar, não trocar o modo ativo.
+Uma implementação defeituosa que altera o modo durante a consulta agora
+não induz cache de dimensões incompatível com a console real. Nos caminhos
+anômalos, EFI_DEVICE_ERROR é preservado e a geometria é recapturada de
+forma limitada, sem novos ciclos periódicos. Cobertura RED→GREEN no teste
+host da UI; demais funcionalidades e dependências preservadas.
+Ver AuditReports/AUDIT-REPORT.txt (seção ROUND79) para testes e limitações.
+Não houve assinatura EFI real, boot em OVMF/hardware ou validação física.
+
+VERSÃO 2.24 — PROFESSIONAL EVOLUTION ROUND 78 — 2026-10-08
+------------------------------------------------------------
+Base exclusiva: FULL-SOURCE v2.23/Round77, SHA-256 960c7c676833dd14322a2d8ab59f79bc60b04474059dc00c43b0d988979f9d5a.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+
+Correções pontuais em Ui.c: geometria real após SetMode() parcial com
+código de erro; eliminação de firmware I/O para strings formatadas vazias.
+Proteções contra ponteiro ConOut->Mode invalidado por callbacks não conformes
+QueryMode() durante restauração do cursor, consulta inicial e varredura de
+modos, e EnableCursor() na inicialização. Dois asserts e dois crashes com
+AddressSanitizer reproduzidos no source anterior; testes adicionais de
+regressão dos quatro caminhos passam no novo código. O boot, GPIO/GOP,
+configuração, screenshot, assinatura e dependências não foram alterados.
+Relatório: AuditReports/AUDIT-REPORT.txt (seção ROUND78). EFI assinado e boot real
+não validados neste host; não se declara rodada cronometrada de 30 minutos.
+
+VERSÃO 2.23 — PROFESSIONAL EVOLUTION ROUND 77 — 2026-10-08
+------------------------------------------------------------
+Base exclusiva: FULL-SOURCE v2.22/Round76, SHA-256 c56e6771b37dc15321fbf2c33e81443f3598a6cba828265e5ef84eb45b002b7e.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+
+BlsSaveScreenshot() verificava o tamanho do buffer SavedPath apenas na
+cópia final: a captura podia terminar com sucesso e devolver um caminho
+truncado. A rotina agora rejeita um buffer insuficiente antes de criar o
+BMP, retornando EFI_BUFFER_TOO_SMALL sem alterar o formato, GOP ou UI.
+O teste test_screenshot_bounds.c reproduziu RED no v2.22 (assert falhou)
+e GREEN após a correção em Screenshot.c, com criação de arquivo == zero.
+
+Matriz de validação, limites, testes de host e falta de assinador PE/COFF:
+AuditReports/AUDIT-REPORT.txt (seção ROUND77). Não se declara Release EFI homologado,
+boot real ou rounds cronometrados de 30 minutos nesta execução.
+
+VERSÃO 2.22 — PROFESSIONAL EVOLUTION ROUND 76 — 2026-10-08
+------------------------------------------------------------
+Base exclusiva: FULL-SOURCE v2.21/Round75 recebido nesta conversa.
+SHA-256 do ZIP-base: 7a9f101b7e50993f23ab1dc34d41f62f96f6bb73bfb4c814b8fd64d0e9b7894c
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+
+Correção reproduzida em Ui.c / BlsUiInitReadableMode: firmware que
+retorna EFI_SUCCESS sem trocar efetivamente o modo não pode induzir cache
+de geometria do modo solicitado; o erro passa a ser EFI_DEVICE_ERROR e a
+geometria real é preservada quando comprovadamente disponível. Callback
+SetMode que torna ConOut->Mode NULL também não pode causar dereferência
+inválida ao tentar atualizar a visibilidade do cursor no fim da função.
+
+Reproduções e regressões: RED do v2.21 em test_ui_mode_bound.c (falha na
+asserção de BlsUiLastModeStatus), GREEN no v2.22, incluindo o caso 60×15
+com tentativa frustrada de troca para 100×30 e ponteiro Mode anulado.
+
+Testes de host e pipelines de integridade conforme AuditReports/
+AuditReports/AUDIT-REPORT.txt (seção ROUND76). Release EFI assinado, boot real e métricas físicas
+continuam não homologados neste host Linux sem signer/macOS/OVMF.
+
+VERSÃO 2.21 — PROFESSIONAL EVOLUTION ROUND 75 — 2026-10-08
+------------------------------------------------------------
+Base exclusiva: FULL-SOURCE v2.20/Round74 recebido nesta conversa.
+SHA-256 do ZIP-base: ad63df5e808b81f78e2e9c35b5064db1130d45fec0b8a199cebaedbd10f11e4d
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+
+Correção reproduzida em Ui.c: quando SetMode() falha durante a
+restauração do modo de texto original, a rotina agora não aplica posição
+de cursor do modo antigo ao modo que permaneceu ativo. Um retorno de
+EFI_SUCCESS sem alteração efetiva de Mode também é tratado como falha;
+ponteiro Mode invalidado por firmware defeituosa é verificado.
+Modo inválido/indisponível continua seguindo o fallback anterior; a
+restauração entre modos com coordenadas válidas foi preservada.
+
+Regressões: caso RED no v2.20 (gSetCursorCount == 0 falhava, exit 134),
+GREEN no v2.21; caso adicional de firmware com SetMode falso-positivo;
+demais testes host anteriores preservados.
+
+O source foi testado localmente com compiladores/sanitizers e regressões
+de publicação/assinatura, mas isto NÃO é um Release EFI homologado.
+A geração/assinatura real depende de toolchain PE/COFF e backend de
+assinatura disponíveis em ambiente apropriado, mais teste OVMF/hardware.
+
+VERSÃO 2.20 — PROFESSIONAL EVOLUTION ROUND 74 — 2026-10-08
+------------------------------------------------------------
+Base exclusiva: FULL-SOURCE v2.19/Round73 recebido neste chat.
+SHA-256 do ZIP-base: 4c05f89e90d2df9b7bcc42b44b48f744c376618a95e7bf4c8be8af9822012473
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+
+Correção comprovada em Ui.c: o retorno de remembered autoboot com a
+console já no estado inicial não deve chamar o firmware para restaurar
+valores iguais; também é evitada a consulta/movimentação do cursor quando
+apenas a cor mudou. A restauração continua executada quando necessária.
+Regressões RED→GREEN no teste Host/test_ui_mode_bound.c, inclusive modo
+sem UI, atributo isolado e cursor previamente oculto. Demais funções,
+visualização, configuração, boot e componentes vendorizados preservados.
+
+Limite técnico: source testado com compiladores/sanitizers de host;
+não houve imagem Release PE/COFF assinada, boot real ou mensuração em
+hardware UEFI. O signer pinado indisponível (rede/DNS bloqueados) impede
+Release válido; o build permanece fail-closed, sem EFI não assinada.
+
+VERSÃO 2.19 — PROFESSIONAL EVOLUTION ROUND 73 — 2026-10-08
+------------------------------------------------------------
+Base exclusiva: FULL-SOURCE v2.18/Round72 recebido neste chat.
+SHA-256 do ZIP-base: 70af2371e1f145bfad3a3e2b82074975f7a235102f0778c2a29e9b46e070b769
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+
+Correção comprovada em Menu.c: renderização do contador de autoboot passa
+apenas quando Remaining muda; firmware não recebe redesenhos redundantes
+após Wake/WaitForKey espúrio enquanto o tick periódico está pendente.
+Regressão RED→GREEN em AuditTests/Host/test_menu_countdown_starvation.c;
+sem alterar política de hotkeys, seleção, boot, cancelamento ou geometria.
+
+Testes: 17 testes host com Clang ASan/UBSan ×3, GCC ASan/UBSan ×2,
+IntegerSan e ThreadSanitizer; fuzz/limites BaseTools Clang e GCC;
+analisadores de Clang e GCC nos nove .c; verificações de publicação
+segura e assinatura (preparação/política). Release binário EFI assinado,
+boot UEFI/QEMU/OVMF e medições em firmware físico não foram concluídos
+neste Linux pela indisponibilidade de ferramentas e de DNS para Jsign.
+O código-fonte compilou em checagens de sintaxe de host; isso NÃO substitui
+compilar e iniciar o binário PE/COFF de Release.
+
+VERSÃO 2.18 — PROFESSIONAL EVOLUTION ROUND 72 — 2026-10-08
+------------------------------------------------------------
+Base exclusiva: FULL-SOURCE v2.17/Round71 recebido nesta conversa.
+SHA-256 do ZIP-base: 294b3d041f0adbd8b6e8d307a542fb86c9cb3ed938a3d3b2a1cfe1e08f54889c
+
+Correções comprovadas:
+- console UEFI: preservar modo atual legível, inclusive 120×40, sem trocar
+  desnecessariamente para 100×30 e provocar salto/flicker na abertura;
+- builder: não apagar Release válido diante de falha de preflight/build/sign;
+  gerar o Release em staging, verificar assinatura e proveniência antes da
+  publicação, e restaurar o Release anterior se a publicação falhar;
+- lock de build exclusivo para bloquear chamadas Release concorrentes antes
+  de alterar o log compartilhado;
+- workflow macOS: assinar e verificar também SmokeChild.efi (aplicação UEFI
+  usada no smoke test), incluindo certificado público e metadados de assinatura.
+
+Regressões executáveis RED→GREEN: UI do console 120×40, retenção de Release
+anterior, lock concorrente, publicação completa e rollback com falha injetada.
+Testes de host: ASan/LeakSanitizer/UBSan com Clang e GCC, IntegerSan com
+Clang, ThreadSanitizer com GCC, testes de limites/fuzz do BaseTools e
+analisadores estáticos de GCC e Clang, sem falha nos testes executados.
+
+Limite da validação: este host Linux não dispõe de NASM nativo/PE-COFF
+signer verificável e não consegue baixar o Jsign 7.5 pinado (sem DNS).
+A geração/assinatura EFI real e o boot QEMU/OVMF não foram executados;
+o pipeline continua falhando fechado e não entrega EFI sem assinatura.
+Não há alegação de Release binário homologado neste ambiente.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+
+VERSÃO 2.17 — PROFESSIONAL EVOLUTION ROUND 71 — 2026-10-05
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v2.16/Round70 recebido nesta
+conversa (SHA-256 b0fc6f5c794592f614ec64fd72320e529eb72315388cf033bb07f8f8939751f9).
+
+Fine-tune do parser XML/plist e nova auditoria integral do release:
+- comentários XML e processing instructions são markup ignorável e não produzem
+  character data. O v2.16 os substituía por espaços dentro de valores scalar, de modo
+  que `<string>Open<!--ignored-->Core</string>` era lido como um valor diferente;
+- após validar a estrutura, o parser agora remove comentários/PIs em uma passada linear
+  in-place, preservando exatamente `OpenCore` sem alocações adicionais nem shifts O(n²);
+- a validação de comentários foi centralizada: XML com `--` dentro do corpo de comentário
+  passa a ser rejeitado fail-closed, em vez de aceitar markup malformado;
+- regressões foram escritas antes das correções e confirmaram RED no comportamento v2.16
+  para os dois casos; depois das mudanças, ambos ficam GREEN;
+- tags aninhadas dentro de `<string>` foram testadas como probe e já eram rejeitadas pelo
+  source original; nenhuma alteração foi feita nesse fluxo;
+- runtime UEFI, scan/boot, logger, screenshot/GOP, lifecycle, ownership, UI/layout e
+  pipeline de release foram reavaliados; sem outro defeito reproduzível, foram preservados.
+
+Versão/build incrementados para 2.17/Round71.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 2.16 — PROFESSIONAL EVOLUTION ROUND 70 — 2026-10-04
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v2.15/Round69 recebido nesta
+conversa (SHA-256 00d65d337330f87bbb59bc93442e0dce0fd554e75c1f9210be9bff8a6706bbef).
+
+Fine-tune de conformidade UEFI, segurança de Release e independência da UI:
+- a validação USB WWID da Round69 foi reavaliada contra a fonte normativa. O fato de
+  um helper EDK2 conseguir materializar um nó de 10 bytes não torna o nó conforme:
+  a UEFI Specification define WWID pelo serial e manda dispositivos sem serial usar
+  MSG_USB_DP. `BlsUsbDevicePathNodeIsConforming()` agora exige 1..64 CHAR16;
+- a regressão foi invertida antes do código e falhou no v2.15 exatamente no WWID sem
+  serial; depois do ajuste mínimo, 10 bytes é rejeitado, 1..64 CHAR16 permanecem
+  aceitos e comprimentos ímpares/truncados/>64 continuam rejeitados;
+- a política X.509 tinha uma lacuna distinta: Subject e Issuer iguais demonstram
+  self-issued, não self-signed. Foi reproduzido um certificado codeSigning com ambos
+  DNs iguais mas assinado por outra chave; o verificador v2.15 o aceitava;
+- o verificador agora exige auto-verificação criptográfica do certificado além de
+  validade, EKU exato e demais checks já existentes; controle positivo continua PASS;
+- configuração malformada continua mantendo ConfigVolumeHandle=NULL para impedir
+  escrita automática no BLS.plist original. Separadamente, SelectorVolume resolve o
+  DeviceHandle físico da imagem e é usado para F10 e priorização do volume;
+- `BlsRunMenu()`/options recebem ScreenshotVolumeHandle independente, eliminando a
+  dependência acidental entre permissão de gravar configuração e salvar screenshot;
+- geometria, cores e timing do menu foram revisados e preservados: não apareceu falha
+  reproduzível que justificasse alteração visual adicional.
+
+Versão/build incrementados para 2.16/Round70.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 2.15 — PROFESSIONAL EVOLUTION ROUND 69 — 2026-10-04
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v2.14/Round68 recebido nesta
+conversa (SHA-256 a6f3904025918e128a654a4f5c9fcae60470b51318bfbc7ebd68b2666c856305).
+
+Fine-tune de runtime, compatibilidade UEFI e apresentação do scan:
+- reproduzida uma divergência entre a validação USB WWID do BootLoaderSelector e o
+  formato que o EDK2 vendorizado considera válido: `DevPathFromTextUsbWwid()` cria
+  `sizeof(USB_WWID_DEVICE_PATH) + SerialLen * sizeof(CHAR16)` e aceita SerialLen=0;
+- o runtime anterior rejeitava `Length == sizeof(USB_WWID_DEVICE_PATH)`, classificando
+  esse device path válido como não USB;
+- a correção é mínima e localizada: o limite inferior mudou de `<= sizeof(...)` para
+  `< sizeof(...)`; a validação continua exigindo múltiplos exatos de CHAR16 e no máximo
+  64 caracteres de serial, conforme o contrato do nó USB WWID;
+- o teste de política foi alterado antes do código e confirmou RED no source v2.14;
+  após a correção, o mesmo caso passa e a classificação externa `BlsVolumeIsUsb()`
+  também retorna USB para o nó base sem serial;
+- isso corrige o texto de transporte e o tratamento visual das entradas USB que usam
+  WWID sem serial, sem mudar geometria, cores ou comportamento das demais entradas;
+- static analyzers, sanitizers, fuzz/bounds e invariantes de Release foram reexecutados;
+  não houve evidência para mudanças adicionais em logger, screenshot, persistência,
+  eventos, watchdog, protocols ou layout, portanto essas áreas foram preservadas.
+
+Versão/build incrementados para 2.15/Round69.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 2.14 — PROFESSIONAL EVOLUTION ROUND 68 — 2026-10-04
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v2.13/Round67 recebido nesta
+conversa (SHA-256 7b5f95ef0ab97bf6092077c100ee860672a2d37b844f081ece802b3e9508d85f).
+
+Fine-tune de segurança e confiabilidade do pipeline de Release:
+- reproduzidos dois falsos positivos independentes no verificador Authenticode usado
+  pela rota de compatibilidade Jsign 7.x;
+- um certificado sem EKU codeSigning podia ser aceito quando a string literal
+  "Code Signing" aparecia apenas no Subject/CN, porque a política procurava texto em
+  toda a saída de `openssl x509 -text` em vez de decodificar a extensão EKU;
+- um certificado cujo notBefore ainda estava no futuro também podia ser aceito,
+  porque `openssl x509 -checkend 0` protege o limite notAfter, não o início da validade;
+- AuditTools/Verify-PeCoff-Authenticode.py agora decodifica a estrutura X.509 DER com
+  o parser ASN.1 project-owned já usado pelo verificador, valida notBefore <= agora <=
+  notAfter e exige o OID exato codeSigning 1.3.6.1.5.5.7.3.3 dentro da extensão EKU;
+- preservadas as demais garantias: certificado publicado exato, signer self-issued,
+  RSA-3072/SHA-256, signedAttrs, digest Authenticode independente e CMS/RSA válido;
+- adicionada regressão canônica com controle positivo, spoof de Subject sem EKU e
+  certificado codeSigning ainda não válido; a regressão faz parte do quality gate;
+- runtime UEFI, scan/boot policy e geometria/layout não receberam mudança funcional:
+  ASan/UBSan/IntegerSan/TSan, BaseTools deep tests e analyzers estritos permaneceram
+  limpos na auditoria desta rodada, evitando alterações especulativas.
+
+Versão/build incrementados para 2.14/Round68.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 2.13 — PROFESSIONAL EVOLUTION ROUND 67 — 2026-09-20
+------------------------------------------------------------
+Esta correção parte exclusivamente do FULL-SOURCE v2.12/Round66 entregue nesta
+conversa (SHA-256 12e21ee4d7d8f84c90c7fcfe86792b5b7b40857151f9785f0b448c9975716ce4).
+
+Correção do pós-build de assinatura no macOS:
+- o novo log real do Mac confirma que BaseTools e BootLoaderSelector concluem a
+  compilação até [GENFW] BootLoaderSelector e "- Done -" em cerca de 8 segundos;
+- a única falha ocorre depois, ao tentar compilar em runtime o verificador Java de
+  compatibilidade Jsign 7.x: "unable to compile the Jsign compatibility verifier";
+- causa raiz: compilar source Java durante a Release contra o JAR all-in-one Jsign
+  7.5 minimizado/sombreado não é uma interface de build estável entre JDKs/macOS;
+- removida integralmente a dependência de javac/source-file mode do caminho Release;
+- Jsign 7.x agora usa seu comando público estável `extract --format DER`; um verificador
+  project-owned em Python stdlib + OpenSSL valida a assinatura extraída sem JAR extra;
+- a validação exige certificado publicado exato, validade, EKU codeSigning, RSA-3072,
+  SHA-256, signedAttrs contentType/messageDigest, digest Authenticode PE/COFF recomputado
+  independentemente e assinatura CMS/RSA válida;
+- EFI alterado após assinatura e certificado diferente são rejeitados fail-closed;
+- mensagens de falha de extract/verificação agora preservam o diagnóstico real no
+  Terminal, evitando o erro genérico que dificultou as rodadas anteriores.
+
+O runtime UEFI não recebeu mudança funcional nesta correção.
+Versão/build incrementados obrigatoriamente para 2.13/Round67.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 2.12 — PROFESSIONAL EVOLUTION ROUND 66 — 2026-09-20
+------------------------------------------------------------
+Esta correção parte exclusivamente do FULL-SOURCE v2.11/Round65 entregue nesta
+conversa (SHA-256 a036f415e6fe57f7420dc446ed3d962faba51a1d2719144ec6411d645715938d).
+
+Correção da verificação Jsign 7.5 no macOS:
+- o log real do Mac confirma que BaseTools e BootLoaderSelector compilam até
+  GENFW/- Done -; a falha acontece somente depois, na verificação PE/COFF;
+- Jsign 7.5 possui sign/extract/remove/tag, mas não o comando CLI `verify` usado pela
+  Round65, causando falso negativo mesmo quando a assinatura era criada;
+- o helper agora sonda a capability do backend: Jsign 8+ mantém verificação nativa;
+  Jsign 7.x usa AuditTools/JsignLegacyVerifier.java contra o mesmo JAR pinado;
+- a verificação compatível não é uma presença de assinatura: exige certificado
+  publicado exato, codeSigning EKU, RSA-3072, SHA-256, digest Authenticode do arquivo
+  e integridade criptográfica CMS/RSA;
+- EFI modificado após assinatura ou certificado trocado são rejeitados;
+- javac é usado quando disponível; caso contrário Java 11+ source-file mode é usado;
+  ausência das duas rotas mantém o pipeline fail-closed;
+- nenhum JAR adicional é incluído no FULL-SOURCE e nenhuma chave privada é publicada.
+
+O runtime UEFI não recebeu mudança funcional nesta correção.
+Versão/build incrementados obrigatoriamente para 2.12/Round66.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 2.11 — PROFESSIONAL EVOLUTION ROUND 65 — 2026-09-20
+------------------------------------------------------------
+Esta correção parte exclusivamente do FULL-SOURCE v2.10/Round64 entregue nesta
+conversa (SHA-256 627148c34fa1a0601a2b6fc4fd67fa1a62913b686c3eab6ac3baea07e3e7b4ea).
+
+Correção do preflight de assinatura no macOS:
+- quando sbsign/jsign não estão instalados e BLS_JSIGN_JAR não foi definido, o helper
+  tenta automaticamente o Jsign 7.5 oficial em cache externo ao projeto;
+- URL oficial: https://github.com/ebourg/jsign/releases/download/7.5/jsign-7.5.jar;
+- SHA-256 obrigatório: 602a51c3545a6dc4fb99bd2ea7152b26d1345916d0c93ddfbd5936cb735af91c;
+- o arquivo só é publicado no cache depois de download HTTPS e verificação do digest;
+- no macOS o cache padrão é ~/Library/Caches/DNMTechLabs/BootLoaderSelector;
+- download/cache adulterado, Java indisponível ou versão inesperada mantêm o pipeline
+  fail-closed; nenhuma Release unsigned é produzida;
+- BLS_JSIGN_AUTO_DOWNLOAD=0 desativa explicitamente o bootstrap automático;
+- BLS_JSIGN_CACHE_DIR permite escolher outro cache externo sem alterar o source;
+- a regressão cobre explicitamente o cache padrão do macOS e rejeição de digest ruim;
+- uma tentativa canônica 2.11 com signer funcional passou o preflight que falhava no
+  Terminal e avançou até a seleção da toolchain; neste host Linux parou apenas por
+  ausência de NASM nativo, removendo Release/ parcial.
+
+O runtime UEFI não recebeu mudança funcional nesta correção.
+Versão/build incrementados obrigatoriamente para 2.11/Round65.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 2.10 — PROFESSIONAL EVOLUTION ROUND 64 — 2026-09-20
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v2.09/Round63 entregue nesta
+conversa (SHA-256 138379602096d5a2b1c5614ac4cdec87585038b490113cc794f3c3fc077fd9fa) e preserva integralmente as correções acumuladas.
+
+Achado reproduzido e correção de integridade do logger:
+- o rollover do log persistente truncava o arquivo antigo antes de gravar a nova
+  janela de diagnóstico; uma falha recuperável de Write/Flush após a truncagem podia
+  retornar erro e, ainda assim, destruir bytes que já estavam duráveis;
+- a condição foi reproduzida com falha transitória injetada na primeira escrita após
+  rollover e, separadamente, no Flush que sucede SetInfo(FileSize=0);
+- o logger agora captura um snapshot estritamente limitado a 128 KiB somente no
+  caminho raro de rollover, antes da primeira mutação destrutiva, e restaura esse
+  snapshot se truncagem, reposicionamento, escrita ou flush posteriores falharem;
+- se a própria restauração falhar, FileInitialized é invalidado para impedir que um
+  estado de arquivo incerto seja tratado como durável na tentativa seguinte;
+- o caminho comum de logging/flush permanece sem a nova alocação/cópia.
+
+Auditoria de runtime e especificações:
+- UEFI 2.11 e SMBIOS DSP0134 3.9.0 foram reconferidos nos pontos usados pelo projeto;
+  o runtime não contém parser ACPI/AML próprio;
+- lifecycle de imagem, watchdog, eventos/timers, handles/protocolos, memory map,
+  scan/menu, persistência, screenshot/GOP, SMBIOS e limites aritméticos foram revistos;
+- nenhum segundo defeito reproduzível foi localizado, evitando mudanças especulativas.
+
+Validação pós-correção:
+- 17/17 x3 Clang e 17/17 x3 GCC em ASan+UBSan/leak detection;
+- 17/17 x2 Clang IntegerSan e 17/17 x2 GCC ThreadSanitizer;
+- BaseTools deep bounds/fuzz PASS em Clang e GCC;
+- warnings estritos + Clang Static Analyzer + GCC -fanalyzer: 9/9 PASS;
+- regressões PE/COFF e publicação/falha de Release: PASS;
+- 8/8 scripts .command em bash -n e com bit executável;
+- comparação host -O2: 8 módulos sem alteração de text/data/bss; Logger.c +580 bytes
+  de texto, +0 data/+0 bss; total das 9 unidades +580 bytes (~0,74%), sem custo novo
+  no caminho comum de logging e com snapshot temporário somente em rollover.
+
+Release/ambiente:
+- tentativa canônica v2.10 passou versão, manifest, Jsign e hashes/catálogo da toolchain;
+- fallback Linux encerrou fail-closed (exit 1) somente pela ausência de NASM nativo;
+- Release/ parcial foi removido e nenhum EFI anterior foi reutilizado;
+- apt-get update também expirou sem obter índices; QEMU/OVMF não estão disponíveis.
+
+Versão/build incrementados obrigatoriamente para 2.10/Round64.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 2.09 — PROFESSIONAL EVOLUTION ROUND 63 — 2026-09-20
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v2.08/Round62 entregue nesta
+conversa (SHA-256 617b7b97c321e9388a34d00a71e9534a569aa3782726146aa317c5ba8ef7450a) e preserva integralmente as correções acumuladas.
+
+Achado reproduzido e correção de consistência transacional na assinatura:
+- o helper v2.08 publicava EFI assinado, certificado e metadados em três renames
+  independentes; uma falha tardia no segundo/terceiro destino podia retornar erro
+  depois de já substituir o EFI, deixando um conjunto de artefatos de versões mistas;
+- a condição foi reproduzida por falha determinística injetada no rename final do
+  certificado: antes da correção o EFI preexistente era perdido apesar do status de erro;
+- a publicação agora faz staging dos três arquivos, preserva destinos preexistentes em
+  backups no mesmo filesystem, publica como uma transação e mantém rollback ativo até a
+  verificação criptográfica final; falha ou HUP/INT/TERM restaura o estado anterior;
+- regressões cobrem destinos preexistentes e originalmente ausentes, exigindo ausência
+  de saídas parciais após erro.
+
+Auditoria de runtime e especificações:
+- UEFI 2.11 e SMBIOS DSP0134 3.9.0 foram reconferidos nos pontos usados pelo projeto;
+  o runtime não contém parser ACPI/AML próprio;
+- lifecycle LoadImage/StartImage/UnloadImage, handles/protocolos, memory map, SMBIOS,
+  persistência, logger, screenshot/GOP, scan/menu e watchdog foram revistos;
+- nenhum novo defeito reproduzível foi localizado nos nove módulos C; por isso não houve
+  alteração especulativa em startup, UI, hot paths, consumo de memória/CPU/I/O ou desenho;
+- os 9 arquivos .c de produção permanecem byte-idênticos à v2.08.
+
+Release/ambiente nesta rodada:
+- tentativa canônica v2.09 passou versão, manifest, Jsign e hashes/catálogo da toolchain;
+- fallback Linux encerrou fail-closed (exit 1) apenas pela ausência de NASM nativo;
+- Release/ parcial foi removido e nenhum EFI de rodada anterior foi reutilizado;
+- QEMU/OVMF não estão disponíveis neste host.
+
+Versão/build incrementados obrigatoriamente para 2.09/Round63.
+Validação pós-correção desta rodada:
+- 17/17 x3 Clang e 17/17 x3 GCC em ASan+UBSan/leaks;
+- 17/17 x2 IntegerSan e 17/17 x2 ThreadSanitizer;
+- BaseTools deep bounds/fuzz PASS em Clang/GCC;
+- warnings estritos + Clang Static Analyzer + GCC -fanalyzer: 9/9 PASS;
+- regressões PE/COFF e publicação/falha: PASS;
+- comparação -O2: text/data/bss idênticos à v2.08 em 9/9 unidades.
+
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 2.08 — PROFESSIONAL EVOLUTION ROUND 62 — 2026-09-20
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v2.07/Round61 recebido nesta
+conversa (SHA-256 6859e7239f9136cfc65bbd309142a09a0420fbe0efcd63aece836ae07167095f) e preserva integralmente as correções acumuladas.
+
+Achado reproduzido e correção de proteção de dados no pipeline de assinatura:
+- o helper v2.07 impedia somente INPUT_EFI == OUTPUT_EFI; PUBLIC_CERT_PEM ou
+  METADATA_TXT ainda podiam apontar para o mesmo caminho do EFI de entrada;
+- a condição foi reproduzida com PE32+ EFI x86-64 real: usando o próprio input como
+  destino do certificado, a assinatura retornava sucesso e o EFI era substituído por
+  PEM, caracterizando corrupção silenciosa de um input que deveria ser imutável;
+- o helper agora canonicaliza os diretórios/pontos de publicação e exige quatro
+  destinos distintos antes de gerar chave, certificado ou saída assinada;
+- a regressão RED→GREEN confirma rejeição fail-closed, hash do input inalterado e
+  ausência de EFI/metadados parciais no caso adverso.
+
+Auditoria/validação:
+- baseline v2.07 validado integralmente pelo manifest antes das alterações;
+- ASan/UBSan em Clang/GCC, IntegerSan, ThreadSanitizer, deep bounds/fuzz e testes de
+  assinatura/publicação permanecem como gates; analyzers de produção cobrem 9/9
+  unidades com warnings estritos, Clang Static Analyzer e GCC -fanalyzer;
+- nenhuma falha adicional reproduzível foi localizada no runtime UEFI; por isso não
+  houve alteração especulativa em startup, scan, menu, desenho, timers/eventos,
+  persistência, logging, screenshot ou chainload;
+- os 9 arquivos .c de produção permanecem byte-idênticos à v2.07; somente versão,
+  pipeline/teste de assinatura e documentação de Release mudam nesta rodada.
+
+Validação final pós-correção:
+- 17/17 x3 Clang e 17/17 x3 GCC com ASan+UBSan/leaks;
+- 17/17 x2 Clang com IntegerSan e 17/17 x2 GCC com ThreadSanitizer;
+- BaseTools deep bounds/fuzz em Clang/GCC; regressões de assinatura/publicação PASS;
+- 9/9 unidades em warnings estritos, Clang Static Analyzer e GCC -fanalyzer;
+- objetos -O2 mantêm text/data/bss idênticos à v2.07 em todas as 9 unidades.
+
+Release/ambiente:
+- assinatura aplicável continua sendo Authenticode/UEFI PE/COFF RSA-3072/SHA-256;
+- o helper valida a assinatura após publicação e nunca publica a chave privada;
+- tentativa canônica v2.08: versão/manifest/Jsign/catálogo e hashes da toolchain PASS;
+  ao detectar NASM Mach-O em Linux, o builder selecionou ferramentas nativas e falhou
+  explicitamente por ausência de NASM nativo, removendo Release/ parcial (exit 1);
+- QEMU/OVMF também não estão disponíveis e downloads externos/apt permanecem bloqueados;
+  nenhum EFI antigo foi reutilizado ou apresentado como build v2.08.
+
+Versão sincronizada para 2.08 em runtime ASCII/texto, INF, DSC, INFO e CHANGELOG.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 2.07 — PROFESSIONAL EVOLUTION ROUND 61 — 2026-09-20
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v2.06/Round60 recebido nesta
+conversa (SHA-256 c9e8052d74964ce9cf47550d67cd4db71d889b53aa471d441f35e3afe5ef333b) e preserva integralmente as correções acumuladas.
+
+Achado reproduzido e correção de Release:
+- o pipeline normalizava o binário UEFI com GenFw e publicava BootLoaderSelector.efi
+  e BOOTX64.efi byte-idênticos, porém sem assinatura PE/COFF verificável;
+- AuditTools/Sign-PeCoff-AdHoc.command agora cria por build um certificado efêmero
+  RSA-3072/SHA-256, mantém a chave privada somente em armazenamento temporário com
+  permissões restritas e publica apenas BootLoaderSelector-AdHoc.pem;
+- o pipeline é fail-closed: ausência/falha do assinador, verificador, certificado,
+  metadados ou verificação das duas cópias finais encerra a Release com erro;
+- cancelamento por HUP/INT/TERM limpa material privado e encerra com status de sinal;
+- falha tardia de assinatura/proveniência remove integralmente Release/ incompleto; a
+  proveniência é staged e só é publicada depois de escrita e validação bem-sucedidas;
+- backends suportados: sbsign+sbverify e Jsign (inclusive via BLS_JSIGN_JAR externo);
+- a proveniência registra backend, versão, algoritmo, fingerprint SHA-256 do
+  certificado, verificação PASS e confirma que nenhuma chave privada foi publicada.
+
+Regressão e auditoria:
+- Test-AdHoc-Signing.command demonstrou RED antes do helper e GREEN após a correção,
+  usando um EFI PE32+ x86-64 real mínimo em vez de mock de formato;
+- ASan/UBSan em Clang/GCC, IntegerSan em Clang e deep bounds/fuzz de BaseTools passam;
+- 9/9 unidades C passam compilação estrita, Clang Static Analyzer e GCC -fanalyzer;
+- nenhum segundo defeito reproduzível de runtime foi encontrado, portanto startup,
+  scan, UI, timers/eventos, lifecycle de imagens, persistência e I/O não receberam
+  alterações especulativas nesta rodada.
+
+Especificações e assinatura:
+- UEFI 2.11 e SMBIOS DSP0134 3.9.0 reconferidos nos pontos usados pelo projeto;
+- não existe parser ACPI/AML no runtime;
+- o payload é UEFI PE/COFF, portanto a assinatura aplicável é Authenticode/UEFI e
+  não `codesign` Mach-O;
+- a credencial ad-hoc comprova assinatura e integridade contra o certificado gerado;
+  Secure Boot requer que esse certificado seja explicitamente confiado/enrolado pelo
+  firmware ou substituído por uma cadeia de produção já confiada.
+
+Versão sincronizada para 2.07 em runtime ASCII/texto, INF, DSC, INFO e CHANGELOG.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 2.06 — PROFESSIONAL EVOLUTION ROUND 60 — 2026-09-15
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v2.05/Round59 recebido nesta
+conversa (SHA-256 80253b8f2a6f4e88c49aa9424c952f0d50ddd9b74a0ca5cdcecd087cf9b65c10) e preserva integralmente as correções acumuladas.
+
+Achado funcional e correção de lifecycle UEFI:
+- reproduzido um caminho em que um executável selecionado que fosse, na realidade,
+  um UEFI Driver podia retornar EFI_SUCCESS de StartImage() e permanecer residente;
+- UEFI 2.11 diferencia esse caso de UEFI Application/OS Loader: aplicações/loaders
+  que retornam são descarregados pelo firmware, enquanto driver com EFI_SUCCESS
+  permanece residente e pode manter protocolos, callbacks e memória ativos;
+- após StartImage() retornar EFI_SUCCESS, o seletor agora sonda UnloadImage():
+  EFI_INVALID_PARAMETER confirma o caso normal já descarregado; EFI_SUCCESS remove
+  um driver inesperadamente residente; qualquer outro erro marca lifecycle como
+  comprometido e retorna fail-closed para impedir continuidade em estado desconhecido;
+- regressão host demonstrou RED na v2.05 (zero chamadas a UnloadImage no retorno
+  EFI_SUCCESS) e GREEN após a correção, cobrindo aplicação já descarregada, driver
+  descarregável e driver que rejeita unload.
+
+Validação desta rodada:
+- 17/17 testes host x3 em Clang e GCC com ASan+UBSan/leak detection;
+- 17/17 x2 com Clang ASan+IntegerSan;
+- 17/17 com ASan+UBSan+object-size+bounds;
+- 17/17 x2 sob GCC ThreadSanitizer, sem race reportada;
+- BaseTools deep bounds/fuzz: PASS em Clang e GCC;
+- 9/9 unidades C de produção em -O2 com warnings estritos/-Werror em Clang/GCC;
+- Clang Static Analyzer e GCC -fanalyzer: 9/9 sem diagnóstico;
+- referências oficiais reconferidas: UEFI 2.11, SMBIOS DSP0134 3.9.0 e ACPI 6.6;
+  o runtime continua sem parser ACPI/AML.
+
+Desempenho e superfície de mudança:
+- BootScan.o -O2 passou de 6610 para 6634 bytes de text (+24 bytes), data permaneceu
+  em 40 bytes; todo o delta fica no caminho posterior ao retorno de StartImage();
+- startup, remembered autoboot, scan, menu, desenho e demais fast paths não recebem
+  I/O, alocação, timer, polling ou recomputação adicional.
+
+Release e assinatura:
+- o payload é aplicação UEFI x86-64 PE/COFF, não bundle Mach-O/AppKit; `codesign -`
+  ad-hoc do macOS não é assinatura aplicável ao .efi; Secure Boot exige assinatura
+  PE/COFF/Authenticode com credencial confiada pelo firmware;
+- este host não possui NASM nativo, QEMU/OVMF ou ferramenta PE-signing. A tentativa
+  de instalar NASM também atingiu timeout de rede; o builder permanece fail-closed
+  e não reaproveita .efi de rodada anterior.
+
+Versão sincronizada para 2.06 em runtime ASCII/texto, INF, DSC, INFO e CHANGELOG.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 2.05 — PROFESSIONAL EVOLUTION ROUND 59 — 2026-09-15
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v2.04/Round58 recebido nesta
+conversa (SHA-256 5e11160b17b22cd72bf9b9158de18b67986dbfed281882421795049b5b3f1d4d) e preserva integralmente as correções acumuladas.
+
+Hardening de aritmética e sanitizers:
+- a passagem Clang AddressSanitizer+IntegerSanitizer revelou wraparound unsigned
+  intencional no SHA-256 interno. Embora a aritmética modulo 2^32 seja correta para
+  SHA-256, ela impedia usar o integer sanitizer completo como gate sem ruído;
+- as rotações e somas SHA-256 agora expressam o módulo 2^32 explicitamente por
+  promoção UINT64 e truncamento UINT32. Vetores SHA conhecidos permanecem idênticos;
+- comparação -O2 comprovou BootScan.o com o mesmo text/data (6610/40 bytes) e
+  disassembly de máquina idêntico antes/depois, sem regressão de desempenho/tamanho;
+- o próprio harness possuía dois wraparounds intencionais adicionais: checksum
+  SMBIOS e xorshift32 do fuzz de configuração. Ambos foram tornados explicitamente
+  modulares para que diagnósticos do harness não escondam defeitos do produto;
+- Run-Audit-Tests.command ganhou modo validado BLS_AUDIT_SANITIZER_MODE=integer,
+  preservando ASan+UBSan como default; o Release Quality Gate executa agora uma
+  passagem ASan+IntegerSan adicional com Clang sem desligar qualquer check existente.
+
+Validação desta rodada:
+- 17/17 testes host x3 em Clang e GCC com ASan+UBSan/leak detection;
+- 17/17 com Clang ASan+IntegerSan, sem supressões de overflow/conversion;
+- 17/17 com ASan+UBSan+object-size+bounds;
+- 17/17 x2 sob GCC ThreadSanitizer, sem race reportada;
+- BaseTools compilado nativamente; 285 testes upstream: OK; artefatos gerados limpos;
+- 9/9 unidades C de produção em -O2 com warnings estritos/-Werror em Clang/GCC;
+- Clang Static Analyzer e GCC -fanalyzer: 9/9 sem diagnóstico;
+- referências oficiais reconferidas: UEFI 2.11, SMBIOS DSP0134 3.9.0 e ACPI 6.6;
+  o runtime não contém parser ACPI/AML, portanto não há bytecode AML a modificar.
+
+Release e assinatura:
+- o payload é aplicação UEFI x86-64 PE/COFF, não bundle Mach-O/AppKit; `codesign -`
+  ad-hoc do macOS não é uma assinatura aplicável ao .efi;
+- Secure Boot requer assinatura PE/COFF/Authenticode com chave/certificado confiado
+  pelo firmware; nenhuma chave privada foi adicionada ao source;
+- este host segue sem NASM nativo, QEMU/OVMF e PE-signing. O builder permanece
+  fail-closed e não reaproveita .efi de rodada anterior.
+
+Versão sincronizada para 2.05 em runtime ASCII/texto, INF, DSC, INFO e CHANGELOG.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 2.04 — PROFESSIONAL EVOLUTION ROUND 58 — 2026-09-15
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v2.03/Round57 recebido nesta
+conversa (SHA-256 5d8ec59b1f92ca8ebcd5fa9bc790f4e2175137ddd961273ec719500a6dff021c) e preserva integralmente as correções acumuladas.
+
+Auditoria/hardening aprofundados desta rodada:
+- nenhuma nova falha de produto reproduzível foi encontrada após revisão completa
+  das 9 unidades C de produção e dos caminhos de boot, UI, persistência e I/O;
+- reproduzida falha de higiene/repetibilidade no pipeline: `make -C BaseTools`
+  deixou 45 diretórios __pycache__ e 280 arquivos .pyc na árvore fonte; o builder
+  limpava outputs C, mas não caches Python, podendo poluir o FULL-SOURCE e fazer
+  uma build subsequente falhar a cobertura do manifest;
+- Build-BootLoaderSelector-Release.command agora purga __pycache__/.pyc/.pyo antes
+  do manifest e no teardown; o Quality Gate rejeita qualquer resíduo desse tipo;
+- parser de configuração submetido a 500.000 execuções libFuzzer com
+  AddressSanitizer+UndefinedBehaviorSanitizer, entradas de até 4 KiB e corpus
+  estrutural XML/plist, sem crash, out-of-bounds, UB ou leak;
+- 17/17 testes host revalidados com sanitizers ortogonais de bounds/object-size,
+  implicit-conversion e ThreadSanitizer, além da matriz ASan+UBSan/leaks;
+- BaseTools compilado com o toolchain nativo disponível e seus 285 testes próprios
+  concluídos com sucesso; bounds/fuzz específico de firmware volumes também passa;
+- 9/9 unidades de produção continuam limpas em Clang/GCC -O2 com warnings estritos
+  tratados como erro, Clang Static Analyzer e GCC -fanalyzer;
+- revisão de eventos/timers, watchdog, image lifecycle, handles/protocolos, device
+  paths, logger, GOP/screenshot, SMBIOS, memory map e staging BLS.tmp não revelou
+  alteração tecnicamente justificável; nenhum refactor especulativo foi aplicado.
+
+Desempenho e comportamento:
+- a suíte host auditada mediu aproximadamente 6,1 s de wall time e ~57,9 MiB de RSS
+  máximo nesta máquina; não foi identificado hot path adicional que justificasse
+  mudança de produto;
+- o fast path de remembered autoboot e a inicialização lazy da UI permanecem sem
+  novo I/O, polling, alocação, timer, scan ou redraw introduzido nesta rodada;
+- como o código funcional foi preservado, não há mudança intencional de UI/UX,
+  política de boot, persistência ou compatibilidade.
+
+Release e assinatura:
+- o payload permanece uma aplicação UEFI x86-64 PE/COFF, não bundle Mach-O/AppKit;
+  assinatura ad-hoc do macOS (`codesign -`) não é aplicável ao executável .efi;
+- Secure Boot usa assinatura PE/COFF/Authenticode com chave/certificado aceito pela
+  trust chain do firmware; nenhuma credencial privada de produção é embutida;
+- este host continua sem NASM nativo, QEMU/OVMF e ferramentas PE-signing. O builder
+  canônico permanece fail-closed, remove outputs antigos antes do preflight e não
+  permite que um .efi stale seja apresentado como Release atual.
+
+Versão sincronizada para 2.04 em runtime ASCII/texto, INF, DSC, INFO e CHANGELOG.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 2.03 — PROFESSIONAL EVOLUTION ROUND 57 — 2026-09-15
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v2.02/Round56 recebido nesta
+conversa (SHA-256 b8a03f19ad539b6c21b23add053f6add3cb71e61d37b09e560308fd7f6d31e56) e preserva todas as correções acumuladas.
+
+Correção de integridade do remembered autoboot:
+- reproduzida falha fail-open na seleção lembrada: quando a identidade persistida
+  não produzia nenhum preferred match contabilizado globalmente, um único match
+  visível ainda podia ser aceito para autoboot;
+- BlsFindRememberedEntry() agora exige scan integralmente bem-sucedido e exatamente
+  um preferred match global antes de aceitar a identidade completa;
+- scan parcial, zero matches, múltiplos matches e identidade completa divergente
+  caem de forma segura para seleção manual, sem alterar o boot manual;
+- adicionada regressão que falha sobre a implementação v2.02 original e passa
+  sobre a correção v2.03.
+
+Hardening do harness de auditoria:
+- corrigida subalocação do mock EFI_FILE_INFO em test_logger_lifecycle.c, detectada
+  por object-size/bounds sanitizer; era UB do teste host, não do firmware;
+- suíte host ampliada de 16 para 17 casos e executada também sob ThreadSanitizer.
+
+Validação e desempenho:
+- 17/17 testes host passam em Clang/GCC com ASan+UBSan e leak detection;
+- 17/17 passam 2x sob GCC ThreadSanitizer, sem race reportada;
+- bounds/object-size e conversões implícitas: PASS; BaseTools bounds/fuzz: PASS;
+- 9/9 unidades de produção: warnings estritos -O2/-Werror em GCC/Clang, PASS;
+- Clang Static Analyzer e GCC -fanalyzer: 9/9, sem diagnóstico;
+- o caminho corrigido adiciona apenas validações O(1), sem alocação, I/O, timer,
+  scan ou redraw adicional; comparação de Main.o -O2: +16 bytes de text e nenhuma
+  mudança em data/bss;
+- revisão manual repetida de lifecycle, eventos/timers, watchdog, protocolos,
+  handles, persistência transacional, scans, SMBIOS, UI de console, logger e GOP
+  não identificou outra alteração de produto tecnicamente justificável.
+
+Release e assinatura:
+- o projeto é aplicação UEFI x86-64 PE/COFF, não bundle Mach-O/AppKit; assinatura
+  ad-hoc do macOS (codesign -) não é uma assinatura válida/aplicável ao .efi;
+- Secure Boot exige assinatura PE/COFF/Authenticode com chave/certificado aceito
+  pela trust chain do firmware; nenhuma chave privada de produção é embutida;
+- neste host Linux o NASM empacotado é Mach-O/macOS e não existe NASM nativo;
+  rede/apt também não conseguem obter a dependência. O builder canônico permanece
+  fail-closed e não reutiliza nem fabrica .efi antigo;
+- por isso o link EDK2 final, execução OVMF e validação criptográfica do .efi ficam
+  tecnicamente bloqueados neste ambiente, sem mascarar essa limitação.
+
+Versão sincronizada para 2.03 em runtime ASCII/texto, INF, DSC, INFO e CHANGELOG.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 2.02 — PROFESSIONAL EVOLUTION ROUND 56 — 2026-09-12
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v2.01/Round55 recebido nesta
+conversa (SHA-256 f161a911a1a3d7d79d95a46324037e3b5fbdf8ad3aae9af7be2997f715e4599a) e preserva todas as correções acumuladas.
+
+Correção de compilação Release:
+- o build real no macOS avançou por BaseTools e SmokeChild até HardwareInfo.c,
+  onde o GCC target abortou com `-Werror=maybe-uninitialized` para Smbios3 no
+  fallback SMBIOS 2.x;
+- a lógica funcional já garantia que o ponteiro pertencia a um entry point 3.x
+  validado, porém o fluxo com `goto TrySmbiosTable` não era comprovável pelo
+  analisador de dados desse GCC;
+- o código agora inicializa Smbios3 e captura MajorVersion/MinorVersion em escalares
+  inicializados assim que o entry point 3.x é validado. O fallback compara somente
+  esses escalares e não depende mais da vida/análise do ponteiro após o retry;
+- comportamento SMBIOS, política de fallback e validação fail-closed permanecem
+  inalterados. Nenhum warning foi desabilitado.
+
+Regressão de build:
+- Release Quality Gate compila HardwareInfo.c com GCC otimizado usando
+  `-O2 -Wmaybe-uninitialized -Werror`;
+- a compilação local equivalente passa em GCC 14.2 e Clang, assim como as 9
+  unidades C com a matriz estrita existente; 16/16 testes host, fuzz/bounds e
+  ambos os analyzers também passam sobre o source corrigido. O executável GCC
+  target empacotado é
+  Mach-O e não pode ser executado neste host Linux; a confirmação física do build
+  completo desse toolchain deve ocorrer no macOS, onde o erro original foi obtido.
+
+Versão sincronizada para 2.02 em runtime ASCII/texto, INF, DSC, INFO e CHANGELOG.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 2.01 — PROFESSIONAL EVOLUTION ROUND 55 — 2026-09-12
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v2.00/Round54 recebido nesta
+conversa (SHA-256 33503dc4580816e0a58d768fbae09ff82ddf082eeaeaa7301fafda130a19a559) e preserva todas as correções acumuladas.
+
+Correção de robustez/memória desta rodada:
+- reproduzida sob AddressSanitizer uma leitura fora do buffer em
+  BlsDrawHardwareField() quando um campo de hardware de tamanho BLS_MAX_TEXT
+  chegava sem terminador NUL e o console oferecia largura superior ao campo;
+- o renderer usava a largura visual como limite de leitura da origem e, após os
+  128 CHAR16 contratuais, consultava Value[128], excedendo o objeto;
+- a leitura agora é limitada explicitamente a BLS_MAX_TEXT por
+  BlsStrLen16Bounded(), copia somente o intervalo comprovadamente válido e marca
+  truncamento sem sondar memória além do BLS_HARDWARE_INFO;
+- strings válidas já terminadas mantêm exatamente o mesmo texto/layout/ellipsis.
+
+Regressão e custo:
+- test_menu_countdown_starvation inclui buffer sentinela de 128 CHAR16 sem NUL e
+  largura 200; o caso falhava com stack-buffer-overflow no v2.00 e passa após a
+  correção em Clang/GCC ASan+UBSan;
+- Release Quality Gate exige o bound BLS_MAX_TEXT no renderer para impedir retorno
+  do padrão de leitura orientado apenas pela largura do console;
+- proxy GCC -Os de Menu.o: 15.724 -> 15.820 bytes (+96 bytes), sem nova alocação,
+  cache, I/O, timer, polling ou trabalho adicional fora do desenho do card.
+
+Auditoria global desta rodada reconfere lifecycle UEFI, boot images/watchdog,
+eventos/timers, protocol access, device paths, EFI_FILE_PROTOCOL, configuração
+transacional, logger, screenshot/GOP, memory map, SMBIOS/CPUID/MP Services, console
+e pipeline Release. UEFI 2.11 e SMBIOS DSP0134 3.9.0 permanecem as referências
+aplicáveis; não há parser ACPI/AML no runtime.
+
+O payload continua UEFI PE/COFF, não Mach-O/AppKit. `codesign -` ad-hoc não é
+assinatura válida para esse formato; Secure Boot usa PE/COFF/Authenticode com
+credencial confiável no firmware. Nenhuma assinatura incompatível é simulada.
+
+O builder canônico validou versão 2.01, manifest e hashes do toolchain e encerrou
+fail-closed antes do EDK2 porque o host Linux não possui NASM nativo; o NASM
+empacotado é Mach-O. Nenhum .efi antigo foi reutilizado ou produzido.
+
+Versão sincronizada para 2.01 em runtime ASCII/texto, INF, DSC, INFO e CHANGELOG.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 2.00 — PROFESSIONAL EVOLUTION ROUND 54 — 2026-09-12
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.99/Round53 recebido nesta
+conversa (SHA-256 4eaf9eca03e6013bededb3024d20e29f3cce95be6e8c1e4b2dc0eff86c23507d) e preserva todas as correções acumuladas.
+
+Fine-tuning de startup/UI desta rodada:
+- UefiMain agora captura imediatamente o estado original SIMPLE_TEXT_OUTPUT com
+  BlsUiCaptureOriginalState(), operação sem QueryMode(), SetMode() ou redraw;
+- BlsUiInitReadableMode() foi movido para o primeiro caminho que realmente exibe
+  menu ou diagnóstico, preservando integralmente a política de modo da UI visível;
+- o remembered-autoboot que segue direto para o loader não percorre mais até 1.024
+  modos publicados por firmware defeituoso e não pode provocar SetMode() precoce;
+- o clear pré-chainload é executado somente se o selector/menu foi efetivamente
+  exibido; o autoboot invisível não injeta mais uma tela vazia antes do loader;
+- após retorno de child image com erro, a UI legível é inicializada antes do
+  diagnóstico; restore de modo/atributo/cursor continua baseado no snapshot de
+  entrada e o comportamento interativo permanece inalterado.
+
+Regressão e custo:
+- test_ui_mode_bound comprova que BlsUiCaptureOriginalState() salva modo, atributo
+  e cursor sem nenhuma chamada de QueryMode/SetMode nem alteração visual;
+- Release Quality Gate verifica que a captura ocorre antes do hotkey/autoboot, que
+  o primeiro BlsUiInitReadableMode() fica depois desse fast path e que o clear de
+  chainload continua condicionado à UI já inicializada;
+- em remembered-autoboot sem menu, custo de probing de console antes do StartImage
+  cai de até 1.024 QueryMode() + possível SetMode()/clear para zero operações de
+  probing/switch/clear do selector.
+
+Auditoria global desta rodada:
+- baseline e pós-correção dos 16 testes host sob Clang/GCC ASan+UBSan+leaks;
+- BaseTools firmware-volume bounds/fuzz nos dois compiladores;
+- warnings máximos razoáveis com -Werror nas 9 unidades C de produção;
+- Clang Static Analyzer e GCC -fanalyzer;
+- revisão manual de startup/shutdown, boot images/watchdog, eventos/timers, protocol
+  access, handle enumeration, device paths, EFI_FILE_PROTOCOL, configuração
+  transacional, logger, screenshot/GOP, memory map, SMBIOS e CPUID/MP Services.
+
+Especificações aplicáveis reconferidas: UEFI 2.11, SMBIOS DSP0134 3.9.0 e ACPI
+6.6 (não existe parser ACPI/AML no projeto). O payload permanece UEFI PE/COFF, não
+Mach-O/AppKit; assinatura ad-hoc macOS `codesign -` não é aplicável a este formato.
+Secure Boot exige assinatura PE/COFF/Authenticode com credencial confiável/enrolada
+no firmware, credencial que não integra o source.
+
+Versão sincronizada para 2.00 em runtime ASCII/texto, INF, DSC, INFO e CHANGELOG.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 1.99 — PROFESSIONAL EVOLUTION ROUND 53 — 2026-09-12
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.98/Round52 recebido nesta
+conversa (SHA-256 7f90c3f4c3b2cf03dd995e62a2cd98a8194658ef09cd7b2ea30a2dbe2b749aa9) e preserva todas as correções acumuladas.
+
+Correção funcional SMBIOS desta rodada:
+- DSP0134 3.9.0 determina que, quando os entry points SMBIOS 32-bit e 64-bit
+  coexistem, ambos devem reportar a mesma versão major.minor e a tabela 32-bit
+  deve ser um subset consistente da tabela 64-bit;
+- o caminho de recuperação anterior aceitava um entry point SMBIOS 3.x válido
+  cuja tabela estivesse corrompida e podia então consumir um entry point legado
+  válido porém com versão major.minor diferente; isso quebrava a garantia de
+  subset/schema da especificação;
+- BlsReadSmbios agora registra que o EPS 3.x foi validado e, ao entrar no fallback,
+  exige correspondência major.minor antes de tocar a tabela 32-bit;
+- se houver divergência, o parse falha de forma transacional e restaura exatamente
+  o BLS_HARDWARE_INFO recebido pelo chamador;
+- entry point 3.x inválido continua permitindo descoberta legado independente,
+  pois nesse caso não existe um EPS moderno válido a ser conciliado.
+
+Regressão e desempenho:
+- test_firmware_table_bounds cobre fallback válido 3.9/3.9 e rejeita 3.9/2.8
+  preservando o estado sentinela do chamador;
+- a correção adiciona somente uma condição no caminho excepcional de fallback e
+  nenhuma alocação, I/O, timer, polling ou redraw; o caminho normal SMBIOS 3.x
+  continua sem tentativa da tabela 32-bit;
+- proxy GCC -Os: HardwareInfo.o 11.031 -> 11.149 bytes de text (+118 bytes), custo
+  aceito em troca do hardening de conformidade; nenhuma estrutura persistente cresce.
+
+Auditoria global desta rodada:
+- baseline e pós-correção dos 16 testes host sob Clang/GCC ASan+UBSan+leaks;
+- BaseTools firmware-volume bounds/fuzz nos dois compiladores;
+- warnings máximos razoáveis com -Werror nas 9 unidades C de produção;
+- Clang Static Analyzer e GCC -fanalyzer;
+- builder canônico: metadados 1.99, manifest e toolchain validados; preflight
+  interrompido antes do EDK2 por ausência de NASM nativo no host Linux, sem
+  reutilização/produção de .efi;
+- revisão manual de startup/shutdown, imagens/watchdog, protocolos, eventos, timers,
+  console/UI, device paths, EFI_FILE_PROTOCOL, configuração transacional, logger,
+  screenshot/GOP, memory map, SMBIOS, CPUID/MP Services e pipeline Release.
+
+Especificações aplicáveis reconferidas: UEFI 2.11, SMBIOS DSP0134 3.9.0 e ACPI
+6.6 (não existe parser ACPI/AML no projeto). O payload continua UEFI PE/COFF, não
+Mach-O/AppKit; requisitos de NSWindow/live resize e assinatura ad-hoc `codesign -`
+não têm superfície válida neste artefato. Secure Boot exigiria assinatura PE/COFF
+com chave/certificado confiável, credencial que não faz parte do source.
+
+Versão sincronizada para 1.99 em runtime ASCII/texto, INF, DSC, INFO e CHANGELOG.
+Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 1.98 — PROFESSIONAL EVOLUTION ROUND 52 — 2026-09-12
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.97/Round51 recebido nesta
+conversa (SHA-256 85e3c40f4bd7099d7826c0c7f3a21dc2bb927014d471ab4b696d77dc8d216940) e preserva todas as correções acumuladas.
+
+Correção funcional e hardening UEFI desta rodada:
+- corrigida incompatibilidade de representação de texto na configuração: o parser
+  aceitava escalares Unicode suplementares em UTF-8 e os convertia em pares
+  surrogate CHAR16; UEFI define CHAR16 como UCS-2 e não suporta surrogates;
+- BlsAppendCodePoint agora rejeita qualquer code point acima de U+FFFF antes de
+  armazená-lo em CHAR16, inclusive quando ele chega por entidade XML numérica;
+- BlsUnicodeToUtf8XmlEscape agora rejeita qualquer code unit surrogate em vez de
+  normalizar um par UTF-16 para UTF-8 e persistir texto não representável em UEFI;
+- adicionadas regressões para UTF-8 suplementar direto, entidade XML &#x1F600; e
+  pares surrogate no caminho de serialização; entradas válidas UCS-2 permanecem
+  inalteradas;
+- a simplificação remove o caminho de geração/consumo de surrogate pair; em proxy
+  GCC 14.2/-Os, Config.o caiu de 35.536 para 35.328 bytes (text+data+bss: 13.945
+  para 13.737 bytes), sem mudança de formato para configurações válidas.
+
+Validação desta rodada:
+- 16 testes host x3 por teste em Clang com ASan+UBSan/leak detection: PASS;
+- 16 testes host x3 por teste em GCC com ASan+UBSan/leak detection: PASS;
+- BaseTools firmware-volume bounds/fuzz em Clang e GCC: PASS;
+- compilação estrita das 9 unidades C de produção em Clang e GCC: PASS;
+- Clang Static Analyzer e GCC -fanalyzer nas 9 unidades: 0 diagnósticos;
+- parser revalidado com implicit-integer-truncation/sign-change sanitizers: PASS;
+- o quality gate integrado avançou até análise estática e excedeu o limite do
+  executor; seus testes/analyzers constituintes foram executados separadamente e
+  passaram, sem diagnóstico pendente;
+- o builder canônico validou metadados 1.98, manifest e catálogo/hash do toolchain
+  e encerrou fail-closed no preflight por ausência de NASM nativo no host Linux;
+  nenhuma compilação EDK2 iniciou e nenhum .efi antigo foi reutilizado;
+- versão sincronizada para 1.98 em runtime ASCII/texto, INF, DSC, INFO e CHANGELOG.
+
+Especificações e superfícies:
+- UEFI 2.11 foi reconferido especificamente para CHAR16/UCS-2 e ausência de
+  suporte a surrogate characters, além das superfícies já auditadas de lifecycle,
+  protocolos, Simple File System, device paths e console/GOP;
+- SMBIOS DSP0134 3.9.0 e as superfícies Type 4/17 permanecem inalteradas;
+- ACPI 6.6 permanece sem parser ACPI/AML neste projeto;
+- o payload continua sendo aplicação UEFI PE/COFF, não bundle Mach-O/AppKit;
+  assinatura ad-hoc `codesign -`, live resize e componentes de janela desktop não
+  são superfícies tecnicamente aplicáveis ao artefato.
+
+A validação detalhada e a limitação real do build canônico ficam consolidadas em
+AuditReports/AUDIT-REPORT.txt e BuildLogs/BootLoaderSelector-Build.log.
+
+VERSÃO 1.97 — PROFESSIONAL EVOLUTION ROUND 51 — 2026-09-12
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.96/Round50 entregue na rodada
+anterior (SHA-256 1cbc9f1caeebfcf0f4f42896d94ae50108a7009fc87f5f1165692d5b69bfe366) e preserva integralmente runtime, UI/UX,
+política de boot, configuração e arquitetura já corretos.
+
+Auditoria e correções desta rodada:
+- reexecutadas as validações dinâmicas e estáticas do runtime UEFI, parsers,
+  lifecycle de imagens/eventos/arquivos, SMBIOS/CPUID, console/GOP, logger,
+  screenshot, configuração, build, manifest e packaging;
+- nenhuma nova falha funcional de produção reproduzível foi encontrada que
+  justificasse alteração especulativa do runtime; as unidades C de produção
+  permanecem inalteradas em relação à v1.96, exceto o versionamento em Utils.h;
+- encontrada uma inconsistência objetiva de release/compliance: os 18 sources C
+  de testes host e o UEFI SmokeChild não continham o crédito proprietário
+  obrigatório, embora o runtime e scripts principais já o contivessem;
+- adicionado o crédito exato `©DNMTechLabs / dnmtechlabs@gmail.com` aos testes host e ao SmokeChild,
+  sem alterar sua lógica ou comportamento;
+- o índice proprietário THIRD-PARTY-NOTICES.txt passou a declarar o mesmo crédito;
+  arquivos upstream EDK II/BaseTools/toolchain e respectivos avisos/licenças foram
+  preservados sem modificação artificial;
+- ampliado o Release Quality Gate para validar créditos nos testes host,
+  SmokeChild, relatório de auditoria e documentos de segurança/third-party,
+  impedindo regressão de metadados em futuras rodadas;
+- versão sincronizada para 1.97 em runtime ASCII/texto, INF, DSC, INFO e CHANGELOG.
+
+Validação desta rodada:
+- 16 testes host x3 por teste em Clang com ASan+UBSan/leak detection: PASS;
+- 16 testes host x3 por teste em GCC com ASan+UBSan/leak detection: PASS;
+- BaseTools firmware-volume bounds/fuzz em Clang e GCC: PASS;
+- compilação estrita das 9 unidades C de produção em Clang e GCC: PASS;
+- Clang Static Analyzer e GCC -fanalyzer nas 9 unidades: 0 diagnósticos;
+- passada adicional Clang com sanitizers de truncation/sign conversion: PASS;
+- a única sinalização com unsigned-integer-overflow ocorreu nas somas/rotações
+  modulares UINT32 do SHA-256, comportamento intencional definido pelo algoritmo;
+- checagens adicionais de null-dereference/VLA/alloca/redundant declarations e
+  afins passaram nas 9 unidades de produção sem diagnóstico;
+- o builder canônico validou versão 1.97, manifest e hashes do toolchain, selecionou
+  ferramentas nativas no host Linux e falhou de forma segura antes da compilação
+  porque NASM nativo não está disponível; nenhum .efi antigo foi reaproveitado.
+
+Especificações e superfícies:
+- UEFI 2.11 e SMBIOS DSP0134 3.9.0 foram reconferidos nas superfícies usadas;
+- ACPI 6.6 foi reconferido como revisão oficial vigente; o projeto continua sem
+  parser ACPI/AML, portanto não foi introduzida implementação fictícia;
+- o payload é UEFI PE/COFF, não Mach-O/AppKit. Não existem NSWindow, frameworks,
+  dylibs, helpers ou plug-ins de aplicativo; live resize de janela desktop e
+  `codesign -` ad-hoc não correspondem ao formato do artefato EFI.
+
+A validação detalhada e a limitação real do build canônico ficam consolidadas em
+AuditReports/AUDIT-REPORT.txt e BuildLogs/BootLoaderSelector-Build.log.
+
+VERSÃO 1.96 — PROFESSIONAL EVOLUTION ROUND 50 — 2026-09-12
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.95/Round49 entregue na rodada
+anterior (SHA-256 7cf3fe95b09299fb83a18a1bc83b9c8e25bce190bf0cdeabd7a3323beac3217f) e preserva integralmente as correções acumuladas,
+funcionalidades, UI/UX, política de boot, configuração e arquitetura já corretas.
+
+Correções e hardening implementados:
+- corrigida a criação da hierarquia de diretórios usada pela persistência de
+  configuração. Conforme EFI_FILE_PROTOCOL.Open() em UEFI 2.11, cada componente
+  do caminho é resolvido em sequência e EFI_FILE_MODE_CREATE cria o componente
+  final no diretório pai existente; portanto abrir diretamente \EFI\BOOT com
+  CREATE não é uma criação recursiva confiável quando \EFI ainda não existe;
+- BlsSaveConfigInternal agora cria/abre explicitamente \EFI e somente depois
+  \EFI\BOOT antes de gravar BLS.tmp/BLS.plist. Isso permite salvar opções em
+  uma ESP válida mesmo quando o selector foi carregado de um caminho não padrão
+  e a árvore \EFI ainda não havia sido criada;
+- adicionada regressão host que modela a exigência de parent directory e falharia
+  com o fluxo anterior, garantindo a ordem \EFI -> \EFI\BOOT;
+- mantidos staging, Flush, rollback/recovery e a política fail-closed já existente;
+  nenhum caminho destrutivo ou formato do plist foi alterado;
+- a auditoria manual também reconfirmou que Logger e Screenshot já criavam a
+  hierarquia de diretórios componente a componente, portanto não foram alterados;
+- nenhuma mudança de comportamento visual, boot policy ou arquitetura foi feita.
+
+Validação desta rodada:
+- 16 testes host x3 por teste em Clang com ASan+UBSan/leak detection: PASS;
+- 16 testes host x3 por teste em GCC com ASan+UBSan/leak detection: PASS;
+- BaseTools firmware-volume bounds/fuzz em Clang e GCC: PASS;
+- compilação estrita das 9 unidades C de produção com warnings como erros: PASS;
+- Clang Static Analyzer nas 9 unidades: 0 diagnósticos;
+- GCC -fanalyzer nas 9 unidades: 0 diagnósticos;
+- tentativa de instalar NASM/sbsigntool neste host excedeu o timeout externo;
+  a limitação de build/assinatura permanece documentada sem declarar assinatura
+  fictícia como válida.
+
+Especificações e superfícies inaplicáveis:
+- UEFI 2.11 foi reconferido especialmente para EFI_FILE_PROTOCOL.Open() e lifecycle;
+- SMBIOS permanece na superfície implementada já validada nas rodadas anteriores;
+- não há parser ACPI/AML neste projeto; somente tipos de memória ACPI do memory map;
+- o payload é UEFI PE/COFF, não Mach-O/AppKit. Não existem NSWindow, frameworks,
+  dylibs, helpers ou plug-ins de aplicativo; portanto live resize de janela desktop
+  e assinatura ad-hoc `codesign -` não são formatos/superfícies aplicáveis ao EFI.
+
+Versão sincronizada para 1.96 em runtime ASCII/texto, INF, DSC, INFO e CHANGELOG.
+A validação detalhada e a limitação real de Release ficam em
+AuditReports/AUDIT-REPORT.txt e BuildLogs/BootLoaderSelector-Build.log.
+
+VERSÃO 1.95 — PROFESSIONAL EVOLUTION ROUND 49 — 2026-09-12
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.94/Round48 entregue na rodada
+anterior (SHA-256 5457483180115740860730ee490f38c2626751a17c28eb41b59f7dd65a530b27)
+e preserva todas as correções acumuladas, funcionalidades, UI/UX, política de boot,
+atalhos, configuração e arquitetura que já estavam corretos.
+
+Auditoria, estabilidade e release:
+- reexecutada auditoria global do runtime UEFI, lifecycle de imagens/eventos/arquivos,
+  parsing, SMBIOS/CPUID, console, screenshot, logger, build, CI e packaging;
+- stress adicional do parser de configuração com 200.000 entradas aleatórias mutadas
+  sob ASan/UBSan não reproduziu crash, overflow, UAF, leak ou corrupção de estado;
+- nenhuma nova falha funcional de produção justificou modificação no runtime C
+  desta rodada; não foram introduzidas mudanças de UI/UX nem de comportamento;
+- fine-tuning de Release: removido do DSC o `-fno-tree-dse` aplicado globalmente.
+  MdePkg/Library/BaseLib/BaseLib.inf já contém o mesmo workaround de forma localizada
+  para o ICE do GCC 10.2 em BitField.c, portanto a aplicação e as demais bibliotecas
+  podem manter dead-store elimination habilitada normalmente sob Release `-Os`;
+- medição proxy com GCC 14.2/-Os sobre as 9 unidades de produção reduziu o agregado
+  de objetos de 153.744 para 153.704 bytes (Config -8, HardwareInfo -24, Menu -8),
+  sem qualquer alteração de source C, API, estado ou lógica funcional;
+- o quality gate agora rejeita uma futura reintrodução de `-fno-tree-dse` no DSC e
+  confirma simultaneamente que o workaround localizado de BaseLib continua presente;
+- criado CHANGELOG.txt explícito. O histórico anterior permanece integralmente neste
+  INFO.txt, e o changelog dedicado passa a registrar as alterações de cada nova rodada;
+- builder Release e quality gate agora validam também a versão do CHANGELOG.txt,
+  impedindo build com changelog ausente/defasado em relação ao runtime/INF/DSC/INFO;
+- versão sincronizada para 1.95 em runtime ASCII/texto, INF, DSC, INFO e CHANGELOG.
+
+Especificações e assinatura:
+- UEFI 2.11 e SMBIOS DSP0134 3.9.0 foram reconferidos nas superfícies implementadas;
+  o projeto continua sem parser ACPI/AML, portanto não houve alteração artificial;
+- o artefato continua sendo aplicação UEFI PE/COFF. Assinatura ad-hoc Mach-O não é
+  aplicável a .efi; a validação de assinatura segue a política UEFI/Secure Boot já
+  documentada em SECURITY-NOTES.txt e AuditReports/AUDIT-REPORT.txt.
+
+Validação detalhada desta rodada fica consolidada em AuditReports/AUDIT-REPORT.txt
+e no único BuildLogs/BootLoaderSelector-Build.log.
+
+VERSÃO 1.94 — PROFESSIONAL EVOLUTION ROUND 48 — 2026-09-12
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.93/Round47 entregue na rodada
+anterior (SHA-256 9bde4d8ce5a19561057bd9e6284b2c771bdaa8a3dc6f65211834fedf87424678)
+e preserva todas as correções acumuladas, funcionalidades, UI/UX, política de boot,
+atalhos, configuração e arquitetura não relacionados às correções abaixo.
+
+Correções e hardening implementados:
+- corrigido o fallback de topologia de CPU via CPUID.1FH. A folha 1FH descreve uma
+  hierarquia ordenada e pode enumerar domínios acima de Core (Module, Tile, Die ou
+  DieGrp). O código anterior usava somente EBX do domínio Core como contagem lógica
+  de package, subcontando o fallback em CPUs que expõem níveis superiores;
+- para CPUID.1FH, o fallback agora usa EBX do último subleaf válido, que representa
+  a maior hierarquia enumerada imediatamente abaixo do package implícito. A contagem
+  SMT continua derivada do domínio Logical Processor e a consistência/divisibilidade
+  permanece validada antes de publicar qualquer resultado;
+- CPUID.0BH mantém exatamente a semântica anterior baseada no domínio Core. MP
+  Services continua autoritativo quando disponibilizado pelo firmware, portanto a
+  correção afeta somente o caminho diagnóstico de fallback;
+- adicionadas regressões para 1FH com domínio Die, 0BH legado e hierarquia 1FH
+  inconsistente, incluindo garantia de fail-closed sem modificar outputs do caller;
+- o quality gate passou a aplicar também -Wcast-align, -Wundef, -Wpointer-arith,
+  -Wwrite-strings, -Wswitch-enum e -Wimplicit-fallthrough, mantendo warnings como
+  erros e reforçando o mesmo nível de compilação estrita usado na auditoria manual;
+- créditos proprietários normalizados para a forma obrigatória: ©DNMTechLabs / dnmtechlabs@gmail.com;
+- versão sincronizada para 1.94 em runtime ASCII/texto, INF, DSC e INFO.
+
+Especificações e release:
+- UEFI reconferido contra UEFI 2.11; SMBIOS contra DSP0134 3.9.0; topologia CPUID
+  confrontada com o Intel 64 and IA-32 Architectures SDM vigente, que define 1FH
+  como hierarquia ordenada com package/socket implícito acima do último subleaf;
+- o projeto continua sendo uma aplicação UEFI PE/COFF, não um bundle Mach-O.
+  Assinatura ad-hoc de macOS/codesign não é formato válido para um executável EFI;
+  Secure Boot utiliza assinatura PE/COFF/Authenticode e confiança em certificado
+  aceito pela plataforma. Nenhuma credencial de assinatura é incorporada ao source;
+- não existem frameworks, dylibs, helpers ou plug-ins internos do aplicativo para
+  assinatura separada. As dylibs existentes pertencem ao toolchain de build e não
+  são componentes do artefato UEFI.
+
+Validação desta rodada fica registrada em AuditReports/AUDIT-REPORT.txt e no único
+BuildLogs/BootLoaderSelector-Build.log.
+
+VERSÃO 1.93 — PROFESSIONAL EVOLUTION ROUND 47 — 2026-09-12
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.92/Round46 entregue na rodada
+anterior (SHA-256 481504a5ad05cc667f5facba1a87f8b48032c74f2b33a4371c3d05d1392a5c3e)
+e preserva integralmente todas as correções acumuladas, funcionalidades, UI/UX,
+política de boot, atalhos e arquitetura não relacionados à correção abaixo.
+
+Correção e hardening implementados:
+- corrigido o fallback SMBIOS quando firmware publica simultaneamente os entry
+  points SMBIOS 3.x (64-bit) e SMBIOS 2.x (32-bit). Antes, um entry point SMBIOS
+  3.x válido cuja tabela referenciada estivesse inacessível ou estruturalmente
+  corrompida invalidava a leitura inteira e impedia o uso de uma tabela SMBIOS
+  2.x separadamente válida;
+- o parser agora mantém preferência pelo SMBIOS 3.x no caminho normal, mas em uma
+  falha real da tabela 3.x reinicializa transacionalmente todos os acumuladores,
+  bitmap de handles e BLS_HARDWARE_INFO antes de tentar o entry point 2.x. Nenhum
+  dado parcial da tabela rejeitada pode vazar para o resultado;
+- o fallback usa o mesmo snapshot estável do UEFI memory map e não introduz nova
+  alocação, polling, timer, wakeup ou trabalho no caminho de sucesso. O custo extra
+  existe apenas no caminho excepcional em que a tabela 3.x é inválida/inacessível;
+- adicionada regressão de integração com ambos os entry points presentes: SMBIOS
+  3.9 com EPS válido/tabela malformada + SMBIOS 2.8 válido em endereço realmente
+  representável em 32 bits. O teste confirma recuperação do dado 2.x, rollback do
+  estado anterior e ausência de alocações extras durante o fallback;
+- removido um dead-store detectado pelo Clang Static Analyzer durante a própria
+  implementação, mantendo a alteração final sem diagnósticos estáticos conhecidos;
+- versão sincronizada para 1.93 em runtime ASCII/texto, INF, DSC e INFO.
+
+Revisão global e especificações:
+- UEFI/SMBIOS foram reconferidos contra UEFI 2.11 e DMTF SMBIOS DSP0134 3.9.0.
+  A coexistência dos entry points 32/64-bit e a relação de subset consistente
+  entre as tabelas justificam o fallback seguro implementado;
+- Type 4/Type 17, contagens estendidas, Thread Enabled, Extended Size/Speed,
+  checksums, comprimentos de EPS, handles reservados, limites, alinhamento e
+  validação de ranges permaneceram corretos e foram preservados;
+- não há parser ACPI/AML neste projeto; nenhuma alteração artificial foi criada
+  para uma superfície que o source não implementa;
+- o projeto é aplicação UEFI Simple Text Output, não uma aplicação de janelas de
+  desktop. Portanto não existe API de live resize/maximização/minimização; o cache
+  de geometria, seleção bounded de text mode, redraw e invalidação após retorno de
+  child EFI foram revalidados e preservados sem polling adicional.
+
+Validação desta rodada fica registrada em AuditReports/AUDIT-REPORT.txt e no único
+BuildLogs/BootLoaderSelector-Build.log.
+
+VERSÃO 1.92 — PROFESSIONAL EVOLUTION ROUND 46 — 2026-09-12
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.91/Round45 recebido nesta
+conversa (SHA-256 70064d7e1521c6678678d54acfc2b38b2ee06c4d7d6329809bc57ba7d2e819a3)
+e preserva integralmente todas as correções acumuladas e o comportamento não
+relacionado aos defeitos corrigidos.
+
+Correções e hardening implementados:
+- GetMemoryMap agora rejeita imediatamente EFI_BUFFER_TOO_SMALL sem progresso
+  quando o firmware informa como necessário um tamanho já coberto pelo buffer
+  alocado. Isso elimina realloc/free e chamadas repetidas inúteis em firmware
+  inconsistente, preservando o slack de quatro descriptors recomendado para a
+  segunda chamada e todos os caps/validações já existentes;
+- o lifecycle de StartImage foi endurecido para todo retorno de erro. Antes de
+  tocar em ExitData, o código verifica ownership do image handle via UnloadImage:
+  handle ainda válido identifica falha direta e é descarregado; handle já inválido
+  identifica retorno real do child e mantém o ownership de ExitData definido pela
+  UEFI. Isso também protege contra firmware não conformante que retorne um status
+  direto inesperado e escreva OUT pointers não pertencentes ao caller;
+- preservado o contrato UEFI 2.11: EFI_INVALID_PARAMETER/EFI_SECURITY_VIOLATION
+  continuam cobertos como falhas diretas normativas; aplicações/drivers que
+  realmente retornam um EFI_STATUS de erro continuam tratados como child exit;
+- corrigida a proveniência do build Release: o script ainda gravava literalmente
+  "v1.85" no arquivo de provenance. A versão agora é obtida da mesma verificação
+  cruzada de runtime/INF/DSC/INFO e usada dinamicamente, impedindo provenance
+  obsoleta em releases futuros; o quality gate também bloqueia a reintrodução de
+  uma versão numérica hardcoded nesse header;
+- adicionadas regressões específicas para GetMemoryMap sem progresso, StartImage
+  com erro direto não normativo e OUT hostil, child exit EFI_ABORTED com handle já
+  removido e limpeza/ownership correspondente;
+- versão sincronizada para 1.92 em runtime ASCII/texto, INF, DSC e INFO; headers
+  proprietários foram normalizados para o branding solicitado:
+  ©️2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+Revisão de estabilidade, desempenho e UI:
+- revalidados limites, ownership, rollback, paths de erro, alocações, I/O, timers,
+  watchdog, cancelamento/encerramento e execução repetida nos módulos de produção;
+- não foram introduzidos threads, polling, timers, caches persistentes, wakeups ou
+  trabalho extra na main thread. A única nova sonda de UnloadImage ocorre após
+  StartImage retornar erro e fecha uma ambiguidade real de ownership;
+- este projeto é uma aplicação UEFI Simple Text Output e não possui janela de
+  desktop nem API de live-resize. O fluxo existente de detecção/cache de geometria,
+  redraw incremental e invalidação após retorno do child foi preservado; não foi
+  criado polling artificial para simular eventos que a interface UEFI não fornece;
+- nenhuma tecla/atalho, menu, layout, texto funcional, ordem/política de boot,
+  BootOrder/NVRAM, path suportado ou schema de configuração foi alterado.
+
+Validação desta rodada fica registrada no relatório consolidado
+AuditReports/AUDIT-REPORT.txt e no único BuildLogs/BootLoaderSelector-Build.log.
+
+VERSÃO 1.91 — PROFESSIONAL EVOLUTION ROUND 45 — 2026-09-12
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.90/Round44 recebido nesta
+conversa (SHA-256 08c73583ad1abf00a82eeb417c1cfb663aaa668623a7441b0a43ec1cc9e397c5)
+e preserva todas as correções acumuladas. A regra de teclado permanece absoluta:
+nenhuma tecla, atalho ou semântica de entrada existente foi alterada.
+
+Melhorias implementadas e justificadas:
+- substituída a enumeração baseada em LocateHandleBuffer() por um helper compartilhado
+  baseado em LocateHandle() em duas fases e com limite validado ANTES da alocação.
+  Isso impede que metadados de firmware defeituosos/adversariais obriguem o seletor
+  a reservar uma lista arbitrariamente grande antes de aplicar os caps existentes;
+- BootScan aplica o cap de 1024 filesystems antes da alocação; HardwareInfo aplica o
+  cap de 4096 handles nas enumerações PCI/GOP; Screenshot aplica o cap de 64 GOPs.
+  Os limites funcionais existentes foram preservados, apenas passaram a ser
+  enforceados no ponto correto do lifecycle de memória;
+- o helper valida overflow, tamanho zero, byte count desalinhado para EFI_HANDLE,
+  crescimento concorrente do banco de protocolos e firmware preso em
+  EFI_BUFFER_TOO_SMALL sem progresso. Retries são estritamente limitados e buffers
+  obsoletos são liberados em todos os caminhos;
+- a scratch list de handles usa AllocatePool em vez de AllocateZeroPool porque
+  LocateHandle() sobrescreve integralmente os elementos retornados, eliminando
+  zero-fill e tráfego de memória redundante sem alterar os dados consumidos;
+- o serializer de BLS.plist agora impõe também na ESCRITA o contrato de caracteres
+  XML 1.0 já aplicado na leitura. Controles U+0001..U+001F fora TAB/LF/CR e
+  noncharacters U+FFFE/U+FFFF são rejeitados antes de abrir/escrever BLS.tmp,
+  evitando persistir um plist que o próprio parser deve considerar inválido;
+- pares surrogate CHAR16 válidos continuam convertidos para UTF-8; surrogate órfão
+  continua rejeitado. A transação de configuração, rollback e schema permanecem
+  inalterados;
+- regressões novas exercitam cap pré-alocação, crescimento legítimo entre as duas
+  chamadas LocateHandle(), requisito desalinhado, EFI_BUFFER_TOO_SMALL sem progresso,
+  falha de enumeração, XML controls/noncharacters ilegais e controles XML permitidos;
+- versão sincronizada para 1.91 em runtime textual/ASCII, INF, DSC e INFO. Branding
+  preservado: ©️2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+Validação da rodada:
+- Main.c, Menu.c e Menu.h permanecem byte a byte iguais ao v1.90 recebido;
+- suíte host completa executada repetidamente em Clang e GCC com ASan/UBSan/leaks;
+- BaseTools deep bounds/fuzz executado em Clang e GCC;
+- 9/9 translation units de produção passam strict compile em Clang/GCC, Clang
+  Static Analyzer e GCC -fanalyzer sem diagnóstico;
+- build Release canônico, manifest, resíduos e integridade do ZIP são registrados
+  no relatório consolidado e no único BuildLogs/BootLoaderSelector-Build.log.
+
+Escopo deliberadamente preservado:
+- nenhuma tecla/atalho, tela, layout, texto funcional, ordem/política de boot,
+  BootOrder/NVRAM, paths suportados ou schema de BLS.plist foi alterado;
+- nenhum thread, polling, timer, wakeup, cache persistente ou dependência nova.
+
+VERSÃO 1.90 — PROFESSIONAL EVOLUTION ROUND 44 — 2026-09-12
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.89/Round43 recebido nesta
+conversa (SHA-256 0febe084ffd866c52f5000463b22a1dffd379e00b7d7cdc3cd9c5b5c10260a52)
+e preserva todas as correções acumuladas. A regra de teclado permanece absoluta:
+nenhuma tecla, atalho ou semântica de entrada existente foi alterada.
+
+Melhorias implementadas e justificadas:
+- corrigido o tratamento de strings SMBIOS para a especificação atual: em SMBIOS
+  3.5+ os textos são UTF-8 sem BOM, portanto Manufacturer/Product deixam de ser
+  copiados byte a byte para CHAR16 e passam por decodificação UTF-8 estrita;
+- preservada compatibilidade com firmware SMBIOS anterior a 3.5: o caminho legado
+  continua byte-preserving, evitando reinterpretar code pages OEM antigas;
+- a ponte UTF-8 -> UEFI é explicitamente UCS-2-safe. Unicode fora do BMP não gera
+  pares surrogate (não suportados por UEFI); é substituído por U+FFFD. A faixa
+  0xF000-0xFCFF, que UEFI manda rejeitar na codificação UCS-2/HII, também é
+  normalizada para U+FFFD antes de chegar às strings CHAR16 de exibição;
+- o decoder rejeita sequências UTF-8 overlong, continuation byte isolado, sequência
+  truncada, escalares surrogate, valores acima de U+10FFFF e BOM inicial;
+- a validação percorre toda a string SMBIOS mesmo quando o buffer de destino já
+  encheu. Assim um sufixo malformado não é aceito apenas porque a parte visível foi
+  truncada; a saída é invalidada de forma fail-closed;
+- BlsGetSmbiosString agora entrega também o comprimento bounded da string encontrada,
+  eliminando dependência de uma segunda varredura ilimitada para a conversão;
+- integração Type 1/Type 2 usa os comprimentos validados e, se Manufacturer for
+  UTF-8 inválido mas Product for válido, mantém somente o campo válido em vez de
+  propagar bytes corrompidos;
+- regressões novas cobrem UTF-8 BMP real (Müller), caractere suplementar, faixa UEFI
+  reservada, BOM, overlong, continuation isolado, truncamento, surrogate, >U+10FFFF,
+  validação após truncamento e compatibilidade SMBIOS 3.4, além de integração na
+  tabela SMBIOS completa;
+- versão sincronizada para 1.90 em runtime textual/ASCII, INF, DSC e INFO. Branding
+  preservado: ©️2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+Validação da rodada:
+- Main.c, Menu.c e Menu.h permanecem byte a byte iguais ao v1.89 recebido;
+- suíte host completa passa repetidamente com Clang e GCC + ASan/UBSan/leaks;
+- BaseTools deep bounds/fuzz passa em Clang e GCC;
+- 9/9 translation units de produção passam strict compile em Clang/GCC, Clang
+  Static Analyzer e GCC -fanalyzer sem diagnóstico;
+- build Release canônico e auditoria final de manifest/resíduos são registrados no
+  relatório consolidado da rodada e no único BuildLogs/BootLoaderSelector-Build.log.
+
+Escopo deliberadamente preservado:
+- nenhuma tecla/atalho, menu, fluxo de boot, BootOrder/NVRAM, path de loader, schema
+  de configuração, screenshot, política StartImage ou automação persistente mudou;
+- nenhum thread, polling, timer, wakeup, cache persistente ou dependência nova.
+
+VERSÃO 1.89 — PROFESSIONAL EVOLUTION ROUND 43 — 2026-09-12
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.88/Round42 recebido nesta
+conversa (SHA-256 3472adfc12a80fc13314789c858064996998733edb73efa64fddda08c8d56425)
+e preserva as correções acumuladas. A regra de teclado da Round42 permanece
+obrigatória: nenhum atalho ou semântica de tecla existente foi alterado.
+
+Melhorias implementadas e justificadas:
+- o validador estrutural de BLS.plist deixou de dimensionar uma pilha de tags no
+  heap proporcionalmente ao tamanho total do XML. Como o schema suportado é
+  fechado e escalar, a validação agora usa uma pilha fixa de 32 níveis, eliminando
+  uma alocação potencialmente grande para arquivos adversariais de até 64 KiB e
+  tornando o consumo de memória do parser determinístico;
+- o parser interno passou a transportar EFI_STATUS em vez de reduzir qualquer
+  falha a BOOLEAN. Falta de memória ao copiar/validar o dict agora retorna
+  EFI_OUT_OF_RESOURCES, enquanto XML/schema inválido continua EFI_LOAD_ERROR.
+  Isso impede que pressão de memória seja confundida com corrupção do plist e
+  evita fallback indevido para BLS.tmp;
+- o único arquivo BootLoaderSelector.log recebeu limite persistente de 128 KiB.
+  Em sessões Debug prolongadas com muitos refresh/retornos, quando o próximo
+  append excederia o limite o mesmo arquivo é truncado com EFI_FILE_INFO/SetInfo
+  e passa a reter os diagnósticos mais recentes. Não foi criada rotação, arquivo
+  adicional, timer, polling ou I/O periódico;
+- o logger preserva o buffer em memória e propaga falhas de truncamento/posição;
+  nenhum erro é mascarado e o rollback já existente de append continua ativo;
+- testes adversariais novos cobrem profundidade XML excessiva, classificação de
+  OOM, limite do log e preservação do contrato de teclado. Home/End/Page Up/Page
+  Down são explicitamente verificados como não-comandos do seletor, evitando a
+  regressão introduzida e removida nas Rounds 41/42;
+- corrigida na auditoria final a versão textual de runtime, que ainda apontava
+  1.88 enquanto a versão ASCII já estava em 1.89; os gates Release/quality agora
+  validam BLS_VERSION_TEXT junto com ASCII, INF, DSC e INFO e falham em qualquer
+  divergência futura;
+- versão sincronizada para 1.89 em runtime textual/ASCII, INF, DSC e INFO. Branding
+  preservado: ©️2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+Validação da rodada:
+- Main.c, Menu.c e Menu.h permanecem byte a byte iguais ao v1.88, portanto a
+  lógica de teclas do produto não foi modificada;
+- 16/16 harnesses passam com ASan+UBSan/leak detection em Clang e GCC, incluindo
+  repetição de testes após as novas regressões;
+- BaseTools deep bounds/fuzz passa em Clang e GCC;
+- todos os 9 translation units de produção passam strict compile em Clang/GCC,
+  Clang Static Analyzer e GCC -fanalyzer sem diagnóstico;
+- o quality gate monolítico atingiu o limite externo durante a fase de análise
+  estática; os checks restantes foram continuados separadamente na mesma rodada;
+- o build Release canônico validou metadata 1.89, cobertura/hash do manifest e
+  hashes do toolchain empacotado. O host Linux não possui NASM nativo e o NASM
+  empacotado é Mach-O; o builder falhou fechado antes do EDK2, sem gerar ou
+  reaproveitar EFI antigo. A limitação externa está no único build log.
+
+Escopo deliberadamente preservado:
+- nenhuma tela, layout, texto funcional, política de boot, ordem de entradas,
+  BootOrder/NVRAM, path suportado, screenshot ou hardware info foi alterado;
+- nenhuma tecla/atalho existente foi adicionada, removida, remapeada ou teve sua
+  semântica modificada;
+- nenhuma dependência, thread, cache persistente, polling, timer ou wakeup novo.
+
+VERSÃO 1.88 — PROFESSIONAL EVOLUTION ROUND 42 — 2026-09-12
+------------------------------------------------------------
+Correção dirigida solicitada após a Round41: preservar integralmente as teclas
+e atalhos existentes. O source v1.87 foi usado como única base desta rodada.
+
+Alterações realizadas:
+- removidos os novos atalhos Home, End, Page Up e Page Down introduzidos na v1.87;
+- restaurada integralmente a lógica de entrada do menu ao estado validado da v1.86,
+  incluindo o comportamento original de Up/Down, Left/Right, Enter, Esc, F1, F5,
+  F10 e Space. Main.c, Menu.c e Menu.h foram restaurados byte a byte para a lógica
+  anterior à alteração de teclado;
+- removida a infraestrutura de restauração de seleção associada ao novo comportamento
+  de F5 (BlsRunMenuEx/BlsFindBootEntryByIdentity), evitando qualquer mudança semântica
+  do atalho F5 já existente;
+- mantida a otimização interna do scan de filesystems da Round41: metadados de volume
+  só são coletados quando um path OpenCore/Clover suportado é realmente encontrado.
+  Essa otimização não altera teclas, UI, ordem de entradas ou política de boot;
+- mantidos os gates fail-closed de consistência de versão adicionados na Round41;
+- versão sincronizada para 1.88 em runtime, INF, DSC e INFO;
+- testes específicos dos atalhos novos/restauração de foco foram removidos junto com
+  a funcionalidade correspondente, preservando os testes acumulados existentes.
+
+Validação desta correção:
+- hashes de Main.c, Menu.c e Menu.h comparados com a v1.86 e confirmados idênticos;
+- busca estática confirmou ausência de BlsRunMenuEx, BlsFindBootEntryByIdentity e dos
+  novos ScanCodes Home/End/Page Up/Page Down no código do produto;
+- sanitizers, strict compile e analyzers foram executados novamente nesta rodada;
+- o build Release canônico continua fail-closed caso o ambiente não forneça NASM
+  nativo compatível; nenhuma saída EFI antiga é reutilizada.
+
+Branding preservado: ©️2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 1.87 — PROFESSIONAL EVOLUTION ROUND 41 — 2026-09-12
+------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.86/Round40 recebido nesta
+conversa (SHA-256 da6fb307fdd6f2760809212646fbe528dc75b4c0cca74411b30cdda78249ebb8)
+e preserva integralmente todas as correções acumuladas. A restrição adicional
+desta rodada foi explícita: as telas existentes não podem ser alteradas. Nenhum
+layout, texto funcional, posição, cor, desenho, modal, opção existente ou fluxo
+visual foi redesenhado; somente o identificador de versão acompanha o release.
+
+Melhorias implementadas e justificadas:
+- o scan de volumes EFI deixou de coletar label, Device Path textual/compacto e
+  classificação USB para filesystems que não contêm nenhum dos loaders conhecidos.
+  Primeiro são feitos apenas os probes dos paths suportados; metadata mais cara é
+  coletada somente quando existe candidato real. Isso reduz chamadas de firmware,
+  alocações/conversões e trabalho de SHA-256 em máquinas com muitos filesystems,
+  mantendo a política de descoberta e a ordem das entradas;
+- F5 agora preserva o foco da seleção atual após o rescan quando a entrada pode
+  ser reencontrada por identidade forte e não ambígua (path + identidade do volume;
+  fallback estrito para o mesmo handle apenas durante a sessão). Label isolado não
+  é aceito como identidade para impedir seleção silenciosa do loader errado;
+- um refresh solicitado pelo usuário permanece em modo interativo e não reabre a
+  janela de autoboot da seleção lembrada. O comportamento anterior podia tratar F5
+  como início de uma nova sessão e iniciar automaticamente uma entrada logo após o
+  usuário pedir explicitamente para permanecer no seletor;
+- Home/End/Page Up/Page Down passam a operar sobre a seleção existente usando os
+  ScanCodes UEFI já definidos pelo protocolo de teclado. Não há mudança visual,
+  timer, polling ou nova tela; Up/Down e todos os atalhos anteriores permanecem
+  idênticos;
+- corrigida uma inconsistência de metadata herdada do v1.86: Utils.h mostrava 1.86,
+  porém BootLoaderSelector.inf e BootLoaderSelector.dsc ainda declaravam 1.85.
+  O release 1.87 fica sincronizado em runtime, INF, DSC e INFO;
+- o builder Release e o quality gate agora falham de forma explícita quando essas
+  quatro fontes de versão divergem, impedindo publicação futura com versionamento
+  inconsistente. Nenhum warning/diagnóstico foi desativado.
+
+Validação e regressões da rodada:
+- regressões novas cobrem restauração de foco por identidade forte/ambígua, handoff
+  do índice no F5, seleção inicial explícita e limites dos novos ScanCodes;
+- 16/16 harnesses passam 3 repetições por teste com ASan+UBSan no primeiro passe;
+- 9/9 translation units de produção passam Clang e GCC com warnings-as-errors,
+  Clang Static Analyzer e GCC -fanalyzer sem diagnóstico;
+- validações adicionais, BaseTools deep, quality gate, build Release canônico e
+  auditoria final de resíduos/manifests são executadas antes do empacotamento;
+- o host atual continua sem NASM nativo. O builder canônico validou versão,
+  manifest e toolchain e falhou fechado ao selecionar o caminho Linux nativo, sem
+  reutilizar EFI antigo. Uma tentativa de instalar NASM pelo gerenciador de pacotes
+  atingiu o timeout externo e não concluiu; a limitação fica registrada nesta rodada
+  e o resultado do builder permanece no único BootLoaderSelector-Build.log.
+
+Escopo deliberadamente preservado:
+- nenhuma tela existente foi modificada;
+- nenhuma alteração em BootOrder/NVRAM, paths suportados, schema de BLS.plist,
+  screenshot, hardware info, política de boot ou lifecycle StartImage;
+- nenhum novo serviço, thread, cache persistente, polling, timer, wakeup ou I/O
+  periódico;
+- nenhuma funcionalidade existente foi removida.
+
+VERSÃO 1.86 — PROFESSIONAL EVOLUTION ROUND 40 — 2026-09-12
+-------------------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.85/Round39 recebido nesta
+conversa (SHA-256 5fc1be3a00dbf82804d60bfee6bad44de1be6a7cfb5517a47019bd59a92871ef)
+e preserva integralmente todas as correções acumuladas. Foram implementadas
+somente melhorias com ganho objetivo de diagnóstico, produtividade, UX e custo
+de execução, sem mudar a política de descoberta/seleção de boot, o formato da
+configuração, o lifecycle de StartImage(), o layout principal, o hardware info,
+o screenshot, o modelo transacional de escrita ou a arquitetura UEFI existente.
+
+Melhorias profissionais implementadas nesta rodada:
+- F1 agora abre uma tela de ajuda contextual tanto no seletor principal quanto
+  em Options. O padrão segue a ergonomia consolidada de boot managers UEFI como
+  Clover, que reserva F1 para Help. A tela documenta teclas reais do produto,
+  caminhos de configuração/log e o significado visual das entradas USB;
+- Space sobre uma entrada de boot abre um painel de diagnóstico somente leitura
+  com posição, loader, tipo, volume, caminho EFI completo, identidade persistida
+  do volume e transporte USB/não-USB. Isso expõe os dados que o seletor realmente
+  usará sem alterar seleção, configuração, BootOrder ou NVRAM;
+- os dois painéis são modais, sem polling/timer novo. O primeiro keypress real
+  cancela o countdown como já ocorria para qualquer interação; a espera modal
+  usa WaitForEvent/ReadKeyStroke e mantém o limite contra WaitForKey espúrio,
+  evitando busy-loop em firmware não conforme;
+- o footer foi ampliado apenas quando a geometria comporta as novas dicas; em
+  consoles menores permanece compacto, sem reposicionar os demais componentes;
+- o log Debug passou a registrar o EFI_STATUS exato do scan, quantidade visível,
+  total descoberto, matches preferenciais, truncamento e uma linha bounded por
+  entrada com loader, volume, path e transporte. Erros de Menu e de persistência
+  da seleção lembrada também passam a incluir o status hexadecimal exato;
+- toda conversão Unicode->ASCII para diagnóstico é bounded e só é executada com
+  Debug ativo; o caminho normal sem log não recebe I/O ou formatação adicional;
+- o SHA-256 usado para identidade compacta de Device Path deixou de alocar e
+  copiar um buffer padded proporcional ao input. Agora processa blocos de 64 B
+  diretamente e usa apenas tail fixo de 128 B. No limite atual de Device Path de
+  64 KiB isso elimina uma alocação temporária de ~64 KiB e uma cópia integral,
+  reduzindo pressão de heap/fragmentação durante scans sem alterar o digest;
+- foram adicionados vetores SHA-256 nas fronteiras críticas de padding 55/56 e
+  64/65 bytes, além do vetor "abc", para impedir regressão na otimização;
+- o harness de Menu cobre F1 Help e Space Details com criação/cancelamento dos
+  eventos de countdown e retorno ao seletor, comprovando ausência de leak de
+  evento e preservação da ação final;
+- adicionado AuditTests/Run-Release-Quality-Gate.command como gate local único:
+  roda ASan+UBSan repetido em Clang/GCC, BaseTools deep, strict compile, Clang
+  Static Analyzer, GCC -fanalyzer, verificação de resíduos e, por padrão, chama
+  o builder Release canônico. BLS_QUALITY_REPEAT e BLS_QUALITY_BUILD permitem
+  controlar repetição e pular apenas a etapa final de build quando necessário;
+- versão incrementada para 1.86 e branding preservado: ©️2026 DNMTechLabs /
+  dnmtechlabs@gmail.com.
+
+Decisões de escopo para evitar feature bloat:
+- presets/import/export/backup adicionais foram avaliados e não adicionados nesta
+  rodada. BLS.plist já possui escrita transacional BLS.tmp -> BLS.plist e o estado
+  persistido é pequeno/específico; criar novos formatos e novos caminhos de escrita
+  pre-boot aumentaria superfície de falha sem ganho proporcional comprovado;
+- não foi criado filtro de entradas que pudesse ocultar OpenCore/Clover nem
+  automação que alterasse BootOrder/NVRAM. Diagnóstico adicional foi preferido a
+  modificar a política de boot já estável;
+- nenhuma dependência, thread, cache persistente, timer periódico, polling ou
+  serviço em background foi introduzido.
+
+Validação acumulada desta rodada:
+- 16/16 harnesses passam 3 repetições por teste em Clang e GCC com ASan+UBSan e
+  leak detection; o teste de SHA inclui as novas fronteiras de padding e o teste
+  de Menu inclui os dois novos modais;
+- BaseTools deep bounds/fuzz passa em Clang e GCC;
+- 9/9 translation units de produção passam strict compile em Clang e GCC com
+  warnings-as-errors, -Wshadow, -Wconversion, -Wsign-conversion e -Wformat=2;
+- 9/9 unidades passam Clang Static Analyzer e GCC -fanalyzer sem diagnóstico;
+- o wrapper único de quality gate atingiu o limite externo de execução durante a
+  etapa de análise estática depois dos sanitizers/BaseTools; a validação foi
+  continuada em novas execuções na mesma rodada e concluiu sem suprimir checks;
+- o build Release canônico validou cobertura/hash do manifest e o catálogo do
+  toolchain, detectou corretamente que os binários empacotados são Mach-O e parou
+  de forma fail-closed porque este host Linux não possui NASM nativo. Nenhum EFI
+  antigo/stale foi publicado; a limitação está no único log canônico de build.
+
+VERSÃO 1.85 — RELEASE AUDIT ROUND 39 — 2026-09-12
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.84/Round38 recebido nesta
+conversa (SHA-256 85d1aec6a3ae3421cfb2dd2a6dc2293604cdaf2814d642e7bd98695ebb341197)
+e preserva integralmente todas as correções acumuladas. Não houve alteração de
+UI, layout, política de seleção, configuração, descoberta de hardware, logger,
+screenshot, BaseTools, MdePkg, branding ou arquitetura fora da correção de
+lifecycle de boot comprovada abaixo e dos testes correspondentes.
+
+Correção funcional confirmada nesta rodada:
+- corrigido o tratamento do watchdog obrigatório do Boot Manager antes e depois
+  de StartImage(). O v1.84 chamava SetWatchdogTimer(), porém descartava todos os
+  status de retorno e podia iniciar um EFI filho mesmo quando a programação do
+  watchdog falhava com EFI_DEVICE_ERROR/EFI_INVALID_PARAMETER;
+- a regressão foi reproduzida contra o v1.84 intacto: ao forçar a chamada de
+  armamento do watchdog a retornar EFI_DEVICE_ERROR, o baseline seguia para
+  StartImage() e falhava a nova asserção que exige abortar o launch e descarregar
+  a imagem carregada;
+- BlsSetChildBootWatchdog() agora devolve EFI_STATUS. Falha real ao armar o timer
+  impede StartImage(), descarrega a imagem e propaga o erro; EFI_UNSUPPORTED é
+  tratado conforme a semântica UEFI de plataforma sem watchdog e preserva a
+  compatibilidade de boot;
+- após qualquer retorno de StartImage(), a chamada de desarme continua sempre
+  sendo feita. Se um watchdog efetivamente armado não puder ser desabilitado, o
+  erro deixa de ser ocultado e o lifecycle é marcado como comprometido;
+- falhas de UnloadImage() nos caminhos em que o chamador ainda é responsável
+  pela imagem também marcam o lifecycle como comprometido. Main.c retorna ao
+  Boot Manager pai em vez de manter o seletor interativo sob um possível timer
+  residual ou estado de imagem órfão;
+- BlsStartBootEntryEx() ganhou apenas um OUT BOOLEAN opcional para transportar
+  esse estado de integridade; BlsStartBootEntry() e os comportamentos normais
+  permanecem compatíveis;
+- o harness boot_image_lifecycle ganhou regressões para watchdog ausente,
+  armamento com EFI_DEVICE_ERROR, plataforma EFI_UNSUPPORTED, falha de desarme e
+  falha de cleanup. O diagnóstico Clang também identificou uma inicialização
+  redundante sem uso no novo caminho, removida em vez de suprimir o warning;
+- abertura/live resize de janela desktop não se aplica a este executável UEFI
+  pre-boot. O equivalente real — geometria/mode da console, redraw, restauração
+  de estado e retorno de EFI filho — foi novamente revisado sem alteração visual,
+  frame intermediário, polling, timer extra ou redraw redundante;
+- a correção não adiciona threads, caches, polling, wakeups ou I/O periódico e
+  só executa no lifecycle já existente de lançamento/retorno de imagem EFI.
+
+Confronto UEFI e validação desta rodada:
+- referência normativa: UEFI Specification 2.11, Boot Manager §3.1.1 e contrato
+  de SetWatchdogTimer(). O Boot Manager deve tentar programar 5 minutos antes de
+  StartImage() e desabilitar o timer quando a opção retorna;
+- 16 harnesses passam 5 repetições por teste em Clang e GCC com ASan+UBSan e
+  leak detection (80/80 em cada compilador); 16/16 passam também GCC TSan;
+- 9/9 translation units de produção passam Clang/GCC -O2 com warnings-as-errors,
+  Clang Static Analyzer e GCC -fanalyzer, sem diagnóstico;
+- BaseTools deep bounds/fuzz passa em Clang/GCC; BaseTools completo compila em
+  cópia isolada e a suíte upstream passa 285/285. Um timeout externo ocorreu na
+  primeira invocação do build completo de BaseTools e a execução foi continuada
+  na mesma árvore isolada até concluir com sucesso, sem copiar artefatos gerados;
+- o build Release EDK2/OVMF permanece condicionado a NASM nativo neste host
+  Linux; o NASM empacotado é Mach-O. O gate canônico valida manifest/toolchain e
+  registra a limitação sem desabilitar diagnóstico nem publicar EFI antigo;
+- branding preservado: ©️2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 1.84 — RELEASE AUDIT ROUND 38 — 2026-09-11
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.83/Round37 recebido nesta
+conversa (SHA-256 406426737ad929b840c2d388f18e1cd9d0fbbb7c5e7f4417c09e03d1fbb3163f)
+e preserva integralmente todas as correções acumuladas. Não houve alteração de
+política de boot, configuração, logger, screenshot, BaseTools, MdePkg, layout,
+branding ou arquitetura fora da correção comprovada abaixo.
+
+Correção funcional confirmada nesta rodada:
+- corrigida a associação da GPU ativa em Hardware Info numa topologia UEFI em
+  que ConsoleOutHandle expõe GOP diretamente, mas não expõe Device Path. O
+  código v1.83 descartava a identidade dessa GOP quando faltava o Device Path e,
+  em máquina com múltiplas GOPs, podia deixar de correlacionar a framebuffer
+  ativa com a controladora PCI correta e cair na primeira GPU enumerada;
+- BlsFindConsoleGopDevicePath() agora preserva a interface GOP obtida diretamente
+  de ConsoleOutHandle e, ao enumerar handles GOP, identifica o handle exato pela
+  identidade da própria interface antes de aplicar as heurísticas de device-path;
+- nenhuma primeira GOP global é escolhida por conveniência: a mudança apenas usa
+  uma identidade de protocolo já fornecida pela console ativa e mantém intactos
+  os caminhos existentes para console com Device Path, GOP única e heurística de
+  prefixo usada como compatibilidade;
+- a regressão foi reproduzida contra o v1.83 intacto: ConsoleOut expõe a GOP
+  ativa sem Device Path, há duas GOPs e a GOP errada é enumerada primeiro. O
+  baseline falha na asserção do novo harness; o source v1.84 seleciona o Device
+  Path da GOP ativa independentemente da ordem dos handles;
+- abertura/live resize de janela desktop não se aplica a este executável UEFI
+  pre-boot. O equivalente — modo/geometria da console, redraw e retorno de EFI
+  filho — foi novamente auditado sem mudança visual, polling ou redraw extra;
+- a correção não adiciona timers, threads, wakeups, caches persistentes, polling
+  ou I/O periódico e só atua durante a descoberta já existente de hardware.
+
+Validação da rodada:
+- 16 harnesses passam 5 repetições por teste em Clang e GCC com ASan+UBSan e
+  leak detection (80/80 em cada compilador); 16/16 passam também GCC TSan;
+- 9/9 translation units de produção passam Clang/GCC -O2 com warnings-as-errors,
+  Clang Static Analyzer e GCC -fanalyzer, sem diagnóstico;
+- BaseTools deep bounds/fuzz passa em Clang/GCC; BaseTools completo compila em
+  cópia isolada e a suíte upstream passa 285/285;
+- UEFI 2.11 foi usada como referência normativa para System Table/ConsoleOut,
+  GOP, Device Path, protocolos, arquivos, eventos, image lifecycle e contratos
+  já endurecidos nas rodadas anteriores. Nenhum conflito adicional reproduzível
+  foi encontrado nos caminhos revisados;
+- o build Release EDK2/OVMF continua dependente de NASM nativo neste host Linux;
+  o NASM empacotado é Mach-O. O gate final valida manifest/toolchain antes de
+  parar nessa dependência externa, sem ocultar o erro nem publicar EFI antigo;
+- branding preservado: ©️2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 1.83 — RELEASE AUDIT ROUND 37 — 2026-09-11
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.82/Round36 recebido nesta
+conversa (SHA-256 1d91df010209070fb941f0a59e5bfb81dda5a450070fbab8be03386e6b147f2a)
+e preserva integralmente todas as correções acumuladas. Não houve alteração de
+política de boot, configuração, descoberta de hardware, logger, layout, branding,
+BaseTools, MdePkg ou arquitetura fora da correção comprovada abaixo.
+
+Correções funcionais confirmadas nesta rodada:
+- corrigida a seleção da framebuffer usada por F10/screenshot em máquinas com
+  múltiplas GOPs. Quando ConsoleOutHandle não expunha GOP diretamente, o código
+  usava LocateProtocol(), que não identifica qual das várias framebuffers é a
+  console ativa e podia capturar a tela de outra GPU;
+- a resolução agora segue a topologia UEFI: primeiro GOP diretamente em
+  ConsoleOutHandle; depois o Device Path da console com LocateDevicePath() para
+  localizar a instância GOP mais próxima; somente se isso não for possível há
+  fallback global, e apenas quando existe exatamente uma GOP inequívoca;
+- topologia multi-GPU ambígua agora falha de forma segura, sem escolher a primeira
+  GOP por ordem da handle database; a enumeração fallback é limitada a 64 handles;
+- o estado GOP é validado antes de qualquer alocação/Blt: Mode->MaxMode deve ser
+  não zero e Mode->Mode deve pertencer ao intervalo UEFI [0, MaxMode), além das
+  validações já existentes de Info, SizeOfInfo, dimensões e tamanho do BMP;
+- a regressão foi reproduzida contra o v1.82 intacto: com ConsoleOut sem GOP
+  direta, uma primeira GOP global diferente da console e a GOP correta mapeável
+  pelo device path, o baseline não chama LocateDevicePath() e toma a instância
+  global errada. O mesmo harness passa no v1.83;
+- abertura/live resize de janela desktop não se aplica a este executável UEFI
+  pre-boot. O equivalente real — modo/geometria da console, redraw e retorno de
+  EFI filho — foi novamente auditado; nenhuma mudança visual/layout foi feita;
+- não foram adicionados polling, timers, wakeups, threads, caches persistentes
+  ou trabalho periódico. A resolução GOP ocorre apenas sob comando explícito F10.
+
+Validação da rodada:
+- 9/9 translation units de produção passam Clang/GCC -O2 com warnings-as-errors,
+  Clang Static Analyzer e GCC -fanalyzer, sem diagnóstico;
+- 16 harnesses passam 5 repetições por teste em Clang e GCC com ASan+UBSan e
+  leak detection (80/80 em cada compilador); 16/16 passam também GCC TSan;
+- BaseTools deep bounds/fuzz passa em Clang/GCC; BaseTools completo compila em
+  cópia isolada e a suíte upstream passa 285/285;
+- UEFI 2.11 foi usada como referência normativa para ConsoleOutHandle, GOP,
+  LocateDevicePath, modo GOP, protocolos, arquivos, eventos e image lifecycle. O
+  MdePkg vendorizado declara revisão UEFI 2.70, porém os ABIs usados pelo app são
+  compatíveis e nenhum conflito de ABI/contrato utilizado foi encontrado;
+- o build Release EDK2/OVMF permanece limitado neste host Linux pela ausência de
+  NASM nativo; o NASM empacotado é Mach-O. O gate final valida manifest/toolchain
+  antes de parar nessa dependência externa, sem esconder diagnóstico ou publicar
+  EFI antigo como Release v1.83;
+- branding preservado: ©️2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 1.82 — RELEASE AUDIT ROUND 36 — 2026-09-11
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.81/Round35 recebido nesta
+conversa (SHA-256 7bb1c395c5a733bca34377e2d2b78fc7b6d3a8924e7a70a7e9c7b1e91e0fd6ca)
+e preserva integralmente todas as correções acumuladas. Não houve alteração de
+política de boot, configuração, descoberta de hardware, logger, screenshot,
+BaseTools, MdePkg, layout, branding ou arquitetura fora das correções comprovadas
+abaixo.
+
+Correções funcionais confirmadas nesta rodada:
+- corrigida a restauração do cursor quando um EFI filho altera os modos de texto:
+  UEFI 2.11 exige que SetCursorPosition() receba coluna/linha dentro da geometria
+  do modo corrente retornada por QueryMode(). Se o modo original deixasse de
+  existir após StartImage(), o código já evitava SetMode() inválido, porém ainda
+  reaplicava cegamente as coordenadas capturadas no modo antigo. A restauração
+  agora valida o modo corrente e sua geometria antes de SetCursorPosition();
+- preservado o comportamento de consoles parciais sem QueryMode(): a posição só
+  é restaurada sem consulta de geometria quando o mesmo modo válido da entrada
+  continua ativo. Em mudança de modo sem geometria comprovável, a chamada é
+  omitida para não alimentar firmware inconsistente com coordenadas não validadas;
+- corrigida a restauração de atributos de texto malformados. UEFI 2.11 §12.4.7
+  define bits 0..3 como foreground, 4..6 como background e reserva os demais.
+  Um Mode->Attribute com bit reservado era salvo e reenviado a SetAttribute();
+  agora apenas valores 0x00..0x7F são persistidos/restaurados;
+- test_ui_mode_bound ganhou regressões para modo original 100x30 que desaparece
+  e deixa modo atual 80x25: cursor 99,29 não é reenviado, enquanto 12,10 continua
+  sendo restaurado por ser válido. Também cobre Attribute=0x80 e comprova que o
+  valor reservado não é reaplicado ao firmware;
+- ambos os defeitos foram reproduzidos contra o source v1.81 original antes da
+  correção: o primeiro chamava SetCursorPosition(99,29) no modo 80x25; o segundo
+  preservava e restaurava Attribute=0x80. O source v1.82 fecha ambos os caminhos;
+- abertura/live resize de janela desktop não se aplica a este executável UEFI
+  pre-boot. O equivalente real — mudanças de modo/geometria durante retorno de
+  EFI filho, redraw e teardown — foi novamente auditado sem alteração de layout;
+- não foram adicionados timers, polling, wakeups, threads, caches persistentes ou
+  I/O periódico. A única consulta adicional ocorre no teardown para validar a
+  geometria antes de restaurar o cursor.
+
+Validação da rodada:
+- 9/9 translation units de produção passam warnings-as-errors em Clang/GCC -O2,
+  GCC -fanalyzer e Clang Static Analyzer, sem diagnóstico;
+- 16 harnesses passam 5 repetições por teste em Clang e GCC com ASan+UBSan,
+  leak detection e halt-on-error; BaseTools deep bounds/fuzz passa nos dois;
+- BaseTools completo compila em cópia isolada e a suíte upstream passa 285/285;
+- validações finais de sintaxe, manifest, resíduos e Release gate estão registradas
+  em AuditReports/AUDIT-REPORT.txt e BuildLogs/BootLoaderSelector-Build.log;
+- o build Release EDK2/OVMF continua limitado neste host Linux pela ausência de
+  NASM nativo; o NASM empacotado é Mach-O. A limitação é documentada, sem ocultar
+  diagnóstico nem apresentar binário antigo como build v1.82;
+- branding preservado: ©️2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 1.81 — RELEASE AUDIT ROUND 35 — 2026-09-11
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.80/Round34 recebido nesta
+conversa (SHA-256 47cf0b75ba5d336e8a1ff1fc0c8910213200d8455dc580a21a13ec909ccc24c3)
+e preserva integralmente todas as correções acumuladas. Não houve alteração de
+política de boot, configuração, descoberta de hardware, logger, screenshot,
+BaseTools, MdePkg, layout, branding ou arquitetura fora das correções comprovadas
+abaixo.
+
+Correções funcionais confirmadas nesta rodada:
+- fechado um segundo caminho de Mode inválido no console UEFI: após o retorno de
+  StartImage(), Main invalida deliberadamente o cache de geometria porque o EFI
+  filho pode ter mudado o console. BlsUiCacheCurrentSize() ainda aceitava todo
+  Mode não negativo e podia chamar QueryMode(Mode) mesmo quando Mode >= MaxMode.
+  O cache agora só consulta o modo corrente quando Mode pertence ao intervalo
+  declarado [0, MaxMode), e registra o fallback 80x25 uma única vez quando o
+  firmware publica estado inconsistente, evitando firmware I/O inválido repetido;
+- fechada uma segunda janela na restauração do console: um modo original que era
+  válido na entrada pode deixar de ser suportado depois que um EFI filho retorna
+  e altera MaxMode. BlsUiRestoreOriginalState() agora revalida o modo salvo contra
+  o MaxMode corrente imediatamente antes de SetMode(), evitando SetMode() fora do
+  intervalo anunciado pelo firmware sem mudar o comportamento de firmware válido;
+- AuditTests/Host/test_ui_mode_bound.c ganhou regressões explícitas para os dois
+  casos: cache invalidado com Mode=7/MaxMode=2 não efetua QueryMode(7) e usa
+  fallback estável; restauração de modo 1 deixa de chamar SetMode(1) se MaxMode
+  cair para 1 antes do teardown;
+- abertura/live resize de janela desktop não se aplica a este executável UEFI
+  pre-boot. O equivalente real — mudança de modo/geometria do Simple Text Output
+  após retorno de EFI filho, redraw e restauração — foi revalidado e é exatamente
+  a área endurecida pelas correções acima;
+- não foram adicionados timers, polling, wakeups, threads, caches persistentes,
+  alocações ou I/O periódico. O caminho normal e a UI permanecem inalterados.
+
+Validação da rodada:
+- source de produção revisto novamente para ownership de pool/protocol/file/event,
+  LoadImage/StartImage/UnloadImage, watchdog, memória/SMBIOS/MP/GOP/device paths,
+  config transacional, screenshot, logger e loops/bounds;
+- harnesses sanitizados e análises estáticas foram executados antes e depois das
+  correções; a validação final é registrada no relatório consolidado desta rodada;
+- BaseTools deep bounds/fuzz continua passando em Clang/GCC; o build nativo de
+  BaseTools em cópia isolada e a suíte upstream 285/285 também passam. Nenhuma
+  correção foi feita em BaseTools/MdePkg nesta rodada;
+- o build Release oficial permanece sujeito à disponibilidade de um NASM nativo
+  no host Linux; a tentativa final e qualquer limitação externa ficam preservadas
+  no único BuildLogs/BootLoaderSelector-Build.log;
+- branding preservado: ©️2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 1.80 — RELEASE AUDIT ROUND 34 — 2026-09-11
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.79/Round33 recebido nesta
+conversa (SHA-256 d3e51f5f5b347d261929a6cef74e1af1772c7f39351903aef2b9d1d80043093e)
+e preserva integralmente todas as correções acumuladas. Não houve alteração de
+política de boot, configuração, logger, screenshot, hardware discovery,
+BaseTools, MdePkg, layout, branding ou arquitetura fora das correções comprovadas
+abaixo.
+
+Correções funcionais confirmadas nesta rodada:
+- robustez UEFI Simple Text Output: a inicialização da UI não consulta mais
+  QueryMode() usando o Mode corrente quando o firmware publica um índice fora
+  do intervalo [0, MaxMode). O limite agora é validado antes de qualquer
+  round-trip para o firmware, evitando alimentar implementações de console já
+  inconsistentes com um índice inválido;
+- restauração segura do console: um Mode corrente fora de [0, MaxMode) não é
+  mais salvo como modo restaurável. Assim, após selecionar um modo válido para
+  a UI, o encerramento não tenta reproduzir o índice inválido via SetMode();
+- regressões host cobrem os dois caminhos acima, incluindo firmware que anuncia
+  Mode=7/MaxMode=2 e fallback válido para modo 0, sem chamadas QueryMode/SetMode
+  fora do intervalo anunciado;
+- corrigido o smoke OVMF da CI, que ainda procurava a string hardcoded da versão
+  1.71. A verificação agora deriva a versão diretamente de BLS_VERSION_ASCII,
+  eliminando falso negativo no boot smoke e drift futuro entre teste e binário;
+- abertura/live resize de janela desktop não se aplica a esta aplicação UEFI
+  pre-boot. O equivalente relevante — seleção/restauração de modo do console,
+  geometria, redraw, cursor e atributos — foi reauditado; nenhuma alteração
+  visual ou de layout foi introduzida;
+- não foram adicionados polling, timers, wakeups, caches, threads, alocações
+  persistentes ou I/O periódico. As mudanças removem chamadas firmware inválidas
+  em estados malformados e não alteram o caminho normal de firmware conforme.
+
+Validação da rodada:
+- stress final dos 16 harnesses: 80/80 execuções em Clang e 80/80 em GCC
+  com ASan+UBSan, leak detection e warnings estritos, além das passagens
+  baseline/intermediárias realizadas antes e depois das correções;
+- 9/9 translation units de produção passam compilação -O2 com warnings como
+  erro em Clang/GCC, Clang Static Analyzer e GCC -fanalyzer;
+- BaseTools passa testes profundos em Clang/GCC, build nativo isolado e suíte
+  upstream 285/285; 319/319 Python AST, 7/7 shell e 2/2 YAML passam validação;
+- o pipeline Release oficial verificou integralmente manifest e hashes pinados
+  do toolchain, e parou corretamente no preflight porque o host Linux não possui
+  NASM nativo e o NASM/GCC empacotado é Mach-O. A limitação externa está no
+  único log canônico BuildLogs/BootLoaderSelector-Build.log;
+- branding preservado: ©️2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 1.79 — RELEASE AUDIT ROUND 33 — 2026-09-11
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.78/Round32 entregue na
+conversa (SHA-256 ddb658d2af911c07f317d89b47819a53fab3b93563e861433fb1517e4c22ce78)
+e preserva integralmente todas as correções acumuladas. Não houve alteração de
+política de boot, configuração, logger, screenshot, timers, layout, UI,
+BaseTools, MdePkg ou arquitetura fora da correção comprovada abaixo.
+
+Correção funcional confirmada nesta rodada:
+- corrigido o fallback de topologia de CPU obtido por SMBIOS quando UEFI MP
+  Services não fornece a topologia. Desde SMBIOS 3.6, Processor Information
+  (Type 4) possui o campo WORD "Thread Enabled" no offset 0x30, que informa a
+  quantidade de threads habilitadas pelo BIOS e disponíveis ao sistema
+  operacional. O parser usava apenas Thread Count/Thread Count 2 (capacidade
+  total do socket), podendo relatar como processadores lógicos ativos threads
+  deliberadamente desabilitadas no firmware;
+- para SMBIOS 3.6+, o parser agora prefere Thread Enabled somente quando o campo
+  está presente no comprimento formatado, é diferente de 0 (desconhecido) e
+  0xFFFF (reservado), não excede o Thread Count total conhecido e não é menor
+  que a contagem de cores habilitados já validada. Valores ausentes,
+  desconhecidos, reservados ou contraditórios mantêm exatamente o fallback
+  anterior, preservando compatibilidade com firmware legado/malformado;
+- SMBIOS < 3.6 permanece byte a byte no comportamento anterior. A implementação
+  lê o campo por seu offset normativo porque o MdePkg empacotado é anterior à
+  adição desse membro; a leitura só ocorre após os gates de versão e
+  Hdr.Length comprovarem que os dois bytes existem na estrutura formatada;
+- a falha foi reproduzida em cópia isolada removendo somente a nova lógica de
+  produção: o fixture SMBIOS 3.6 com 8 cores totais, 6 habilitados, 16 threads
+  totais e 12 threads habilitadas voltou a produzir 16 e abortou exatamente no
+  assert que exige LogicalProcessors == 12. Com a correção, o mesmo caminho
+  completo retorna 6 cores e 12 processadores lógicos;
+- regressões cobrem SMBIOS 3.5 (campo ignorado), SMBIOS 3.6 válido, valor 0,
+  0xFFFF, valor maior que a capacidade total e integração end-to-end no parser;
+- não foi adicionada alocação persistente, cache, timer, polling, wakeup, thread,
+  I/O ou trabalho periódico. O custo adicional é apenas a leitura validada de
+  dois bytes por estrutura Type 4 em SMBIOS 3.6+ no fallback já existente;
+- abertura/live resize de janela desktop continua não aplicável a esta aplicação
+  UEFI pre-boot. Foram reauditados QueryMode/SetMode, geometria/redraw, cursor,
+  atributos do console e retorno de child image; nenhuma falha nova foi
+  reproduzida e nenhuma alteração visual foi feita;
+- branding preservado: ©️2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+Validação da rodada:
+- harnesses host executados em Clang e GCC com ASan+UBSan, leak detection,
+  warnings estritos e repetição: 48/48 por compilador na passagem inicial já
+  com a correção reaplicada e 80/80 por compilador no stress final do source
+  v1.79 (256 execuções sanitizadas nesta retomada), sem sanitizer/leak;
+- 9/9 translation units de produção passam compilação -O2 com warnings como
+  erro, Clang Static Analyzer e GCC -fanalyzer, sem diagnósticos;
+- BaseTools passa testes profundos em Clang/GCC, build nativo isolado e suíte
+  upstream 285/285;
+- 319 arquivos Python passam parse AST, 7 scripts shell passam bash -n e 2 YAML
+  passam parse;
+- nenhum TODO/FIXME/HACK/XXX foi introduzido no código de produção;
+- o pipeline EDK2 RELEASE oficial foi executado no diretório final v1.79 sem
+  bypass. Cobertura/integridade do manifest e catálogo/hashes pinados do
+  toolchain passaram; o host Linux não possui NASM nativo e os executáveis NASM
+  e GCC empacotados são Mach-O, portanto o preflight encerrou corretamente antes
+  do build EDK2. Essa limitação externa está registrada verbatim no único log
+  canônico BuildLogs/BootLoaderSelector-Build.log.
+
+VERSÃO 1.78 — RELEASE AUDIT ROUND 32 — 2026-09-10
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.77/Round31 recebido nesta
+conversa (SHA-256 d993fd6407826354981de4d3d950bd3f160f62bad621a5f88a0c412a2cc0add1)
+e preserva integralmente todas as correções acumuladas. Fluxo de boot, política
+de seleção, configuração, logger, screenshot, timers, layout, UI, BaseTools,
+MdePkg e arquitetura não relacionados às falhas confirmadas foram mantidos sem
+alteração funcional.
+
+Correções e validações confirmadas nesta rodada:
+- corrigida a validação do SMBIOS 3.x Entry Point para respeitar a regra de
+  compatibilidade futura: o comprimento declarado deve ser no mínimo 0x18, não
+  exatamente 0x18. Antes, um entry point SMBIOS 3.x futuro e válido com bytes
+  adicionais cobertos pelo checksum era rejeitado apesar de cumprir a regra de
+  conformidade;
+- antes de ler/checksumar qualquer extensão SMBIOS 3.x, o parser agora prova em
+  duas etapas que o prefixo fixo está mapeado e depois que TODO o comprimento
+  declarado está dentro do snapshot do UEFI memory map. Assim, aceitar extensões
+  não introduz leitura fora de região firmware comprovadamente acessível;
+- corrigida a mesma classe de incompatibilidade no entry point SMBIOS de 32 bits
+  para implementações SMBIOS 3.7+: comprimento >= 0x1F é aceito quando todos os
+  bytes declarados estão mapeados e o checksum completo é válido. As regras
+  históricas permanecem intactas: SMBIOS 2.1 continua aceitando o comprimento
+  publicado 0x1E, SMBIOS 2.2–3.6 continua exigindo 0x1F;
+- as duas falhas foram reproduzidas em cópias isoladas do helper pré-correção:
+  fixtures válidos 3.9 com um byte de extensão abortaram nos asserts que exigiam
+  aceitação, confirmando que o defeito existia antes da correção;
+- novas regressões comprovam: extensão válida aceita; byte estendido participa
+  do checksum; AvailableLength insuficiente é rejeitado; SMBIOS 3.6 não passa
+  pela regra 3.7+; e extensão SMBIOS 3.x fora da região comprovada pelo memory
+  map falha de forma transacional sem alterar BLS_HARDWARE_INFO;
+- o baseline executou 48/48 harnesses em Clang e 48/48 em GCC com
+  ASan+UBSan. As passagens intermediárias adicionaram 96 execuções sanitizadas;
+  o stress pós-correção executou 80/80 por compilador e, já no source v1.78,
+  houve mais 48/48 por compilador e o smoke final acrescentou 16/16 em cada:
+  480 execuções sanitizadas completas na rodada, sem ASan/UBSan/leak;
+- os 9 translation units de produção passaram compilação estrita -O2 com
+  warnings como erro, Clang Static Analyzer e GCC -fanalyzer, zero diagnósticos;
+- BaseTools passou testes profundos em Clang/GCC, build nativo isolado e suíte
+  upstream 285/285;
+- 319 arquivos Python passaram parse AST, 7 scripts shell passaram bash -n e
+  2 YAML passaram parse. Nenhum TODO/FIXME/HACK/XXX foi introduzido no código de
+  produção;
+- os dois arquivos liblto_plugin*.so encontrados na varredura de artefatos são
+  conteúdo pré-existente e necessário do toolchain GCC empacotado, confirmado
+  contra o ZIP-base; não foram removidos ou alterados;
+- abertura/live resize de janela desktop continua não aplicável a esta aplicação
+  UEFI pre-boot. QueryMode/SetMode, geometria, redraw, cursor/atributo e retorno
+  de child EFI foram reauditados; nenhuma falha nova foi reproduzida e nenhuma
+  alteração de UI foi feita;
+- não foi adicionada alocação persistente, timer, polling, wakeup, cache, thread,
+  I/O ou trabalho na main loop. A mudança só amplia a validação segura de entry
+  points já suportados e preserva os limites/caps existentes;
+- uma tentativa limitada de disponibilizar NASM nativo via apt no host de
+  auditoria atingiu o timeout externo; verificação posterior confirmou que NASM
+  continuou indisponível. No pipeline oficial, cobertura/hash do manifest e o
+  catálogo/hashes do toolchain passaram; a execução parou somente no preflight
+  que exige NASM nativo no Linux, sem bypass, conforme o único log canônico;
+- branding da rodada: ©️2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 1.77 — RELEASE AUDIT ROUND 31 — 2026-09-10
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.76/Round30 recebido nesta
+conversa e preserva integralmente todas as correções acumuladas. Fluxo de boot,
+política de seleção, configuração, logger, screenshot, timers, layout, UI,
+BaseTools, MdePkg e arquitetura não relacionados à falha confirmada foram
+mantidos sem alteração funcional.
+
+Correções e validações confirmadas nesta rodada:
+- o walker SMBIOS agora rejeita qualquer SMBIOS_STRUCTURE.Handle no intervalo
+  reservado 0xFF00..0xFFFF. Todo entry point aceito pelo parser é SMBIOS 2.1+
+  e, nessas versões, handles de estruturas válidos terminam em 0xFEFF; antes,
+  o bitmap de unicidade aceitava também o intervalo reservado e uma tabela
+  firmware não conforme podia ser consumida como se seus identificadores
+  fossem válidos;
+- a rejeição ocorre antes de tocar o bitmap de handles. Assim, não há mutação
+  desnecessária de estado transitório e o caminho já existente de fail-closed
+  restaura BLS_HARDWARE_INFO byte a byte quando a tabela é inválida;
+- a correção não adiciona alocação, cache, timer, polling ou I/O: reutiliza o
+  bitmap transitório de 8 KiB introduzido no Round30 e reduz o trabalho para
+  tabelas inválidas ao recusá-las imediatamente;
+- a falha foi reproduzida em cópia isolada restaurando exatamente o helper
+  pré-correção: o novo teste abortou ao demonstrar que 0xFF00 era aceito;
+- a regressão direta comprova 0xFEFF válido, duplicata de 0xFEFF rejeitada e
+  0xFF00/0xFFFE/0xFFFF rejeitados. Uma segunda regressão injeta 0xFF00 em uma
+  tabela SMBIOS 3.x válida e exige rollback transacional integral do caller;
+- o baseline v1.76 passou 48/48 harnesses em Clang e 48/48 em GCC com
+  ASan+UBSan. Após a correção foram mais 64 execuções sanitizadas; no source
+  versionado v1.77 o stress final executou 80/80 em Clang e 80/80 em GCC,
+  seguido de smoke final 16/16 em cada compilador (192 execuções no source
+  versionado; 352 execuções sanitizadas concluídas na rodada inteira);
+- os 9 translation units de produção passaram compilação estrita -O2 com
+  warnings como erro, Clang Static Analyzer e GCC -fanalyzer, com zero
+  diagnósticos;
+- BaseTools passou nos testes profundos de bounds/fuzz em Clang e GCC. O build
+  nativo e a suíte upstream foram executados em cópia isolada: 285/285 testes;
+- 319 arquivos Python passaram parse AST, 7 scripts shell passaram bash -n e
+  2 YAML passaram parse; não foram gerados pycache/objetos dentro do source;
+- não há TODO/FIXME/HACK/XXX no código de produção e nenhuma correção foi
+  escondida por remoção/desativação de warning, sanitizer, analyzer ou gate;
+- a auditoria global de empacotamento encontrou 9 arquivos .plist de saída do
+  Clang Static Analyzer herdados do ZIP-base no diretório raiz (um por TU).
+  Eles não eram referenciados pelo projeto, continham apenas diagnósticos vazios
+  e contradiziam a política já documentada de não entregar analyzer output; os
+  9 artefatos gerados foram removidos e nenhum .plist permanece no FULL-SOURCE;
+- abertura/live resize de janela desktop continua não aplicável: trata-se de
+  aplicação UEFI pre-boot em Simple Text Output/GOP. Os equivalentes relevantes
+  (QueryMode/SetMode, geometria, cursor/atributo, redraw, retorno de child EFI e
+  restauração) foram novamente auditados e permaneceram inalterados porque
+  nenhuma falha nova foi reproduzida;
+- o pipeline Release preserva integralmente manifest, catálogo/hash do
+  toolchain, warnings e preflights. O toolchain empacotado é Mach-O x86_64 e,
+  neste host Linux, o fallback exige NASM nativo. Uma tentativa de instalação
+  via apt atingiu o timeout do ambiente e NASM permaneceu indisponível; o gate
+  final parou no preflight de NASM, sem bypass;
+- branding confirmado: © 2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 1.76 — RELEASE AUDIT ROUND 30 — 2026-09-10
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.75/Round29 recebido nesta
+conversa e preserva integralmente todas as correções acumuladas. Fluxo de boot,
+política de seleção, configuração, logger, screenshot, timers, layout, UI e
+arquitetura não relacionados às falhas confirmadas foram mantidos sem alteração.
+
+Correções confirmadas nesta rodada:
+- o walker SMBIOS passou a rejeitar handles de estruturas duplicados em toda a
+  tabela. O requisito de unicidade do handle é global; antes, duas estruturas
+  estruturalmente válidas com o mesmo Handle eram aceitas e podiam fazer dados
+  como memória/CPU serem contabilizados mais de uma vez;
+- a validação usa um bitmap transitório fixo de 8 KiB (65.536 handles / 8), com
+  lookup O(1) por estrutura. Isso evita uma busca O(n²), não cria cache
+  persistente e mantém o limite de trabalho já existente do parser;
+- o bitmap é alocado antes do snapshot único do UEFI memory map. Assim, não há
+  alocação durante o walk SMBIOS e o próprio hardening não altera/invalida o
+  mapa usado para provar que entry point/tabela estão em memória CPU-readable;
+- qualquer duplicata invalida a tabela inteira e aciona o rollback transacional
+  já existente de BLS_HARDWARE_INFO, impedindo estado parcial/double-counting;
+- os fixtures SMBIOS 3.x dos testes agora possuem handles válidos e distintos.
+  Foi adicionada regressão explícita que injeta uma duplicata e exige restauração
+  byte a byte do estado anterior;
+- foram adicionadas regressões para falha na alocação do bitmap e na alocação do
+  snapshot do memory map. Em ambos os casos o caller state permanece intacto e
+  somente recursos efetivamente adquiridos são liberados;
+- os 16 harnesses host foram exercitados no source final com ASan+UBSan 7 vezes
+  por teste/compilador (224 execuções sobre o código final: Clang + GCC), sem
+  leak, UAF, OOB ou UB. Somando o baseline e as passagens intermediárias desta
+  rodada, foram 352 execuções sanitizadas;
+- os 9 translation units de produção passaram compilação estrita -O2 com
+  warnings como erro e análise estática em Clang Static Analyzer e GCC
+  -fanalyzer, com zero diagnósticos;
+- BaseTools passou nos testes profundos de bounds/fuzz em Clang e GCC; build
+  nativo e suíte upstream foram executados em cópia isolada, com 285/285 testes;
+  319 arquivos Python, 7 scripts shell e 2 YAML passaram validação de sintaxe;
+- o pedido genérico de abertura/live resize de janela desktop permanece não
+  aplicável: este projeto é uma aplicação UEFI pre-boot em Console/GOP. Os
+  equivalentes de modo de console, geometria, redraw/restauração e retorno de
+  child EFI foram reavaliados e preservados, pois nenhuma regressão nova foi
+  reproduzida nesses caminhos;
+- não foram introduzidos polling, worker, tarefa assíncrona, timer, wakeup ou
+  cache crescente. O único custo novo é o bitmap temporário de 8 KiB necessário
+  à validação SMBIOS, liberado em todos os caminhos após aquisição;
+- o pipeline Release mantém integralmente manifest, hashes, warnings e
+  preflights. Neste host Linux, GCC/G++/binutils nativos existem, mas NASM Linux
+  nativo continua ausente; uma tentativa de instalação via apt não produziu um
+  executável disponível. O NASM empacotado é Mach-O e não executa neste host.
+  O gate final é registrado no log canônico sem bypass de diagnóstico;
+- branding confirmado: © 2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 1.75 — RELEASE AUDIT ROUND 29 — 2026-09-10
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.74/Round28 recebido nesta
+conversa e preserva integralmente todas as correções acumuladas. Fluxo de boot,
+política de seleção, configuração, layout, UI e arquitetura não relacionados às
+falhas confirmadas foram mantidos sem alteração.
+
+Correções confirmadas nesta rodada:
+- BlsWaitForSelectorHotkey() não entrega mais diretamente seu handle persistente
+  como OUT de CreateEvent(). Pela interface UEFI, o OUT Event só é definido e
+  passa ao chamador quando CreateEvent() retorna sucesso. O retorno agora entra
+  em um temporário e só é promovido a recurso owned após EFI_SUCCESS + handle
+  não-NULL; firmware defeituoso que escreva um valor não-NULL e retorne erro não
+  consegue mais induzir CloseEvent() sobre um handle não adquirido;
+- o mesmo contrato de ownership foi aplicado aos dois CreateEvent() do countdown
+  de BlsRunMenu(). Se o primeiro CreateEvent falhar após adulterar o OUT, nada é
+  fechado; se o segundo falhar da mesma forma, somente o primeiro evento obtido
+  com sucesso é fechado. O fallback sem countdown e o comportamento normal do
+  menu permanecem inalterados;
+- BlsUiInitReadableMode() passa a ocultar o cursor imediatamente depois de salvar
+  o estado original, antes do probing potencialmente lento de QueryMode(). Isso
+  evita cursor visível/flicker durante até 1024 consultas de modo e também cobre
+  consoles parciais sem QueryMode(); se SetMode tornar o cursor visível de novo,
+  a checagem pós-switch já existente continua ocultando-o;
+- regressões host-side simulam CreateEvent() não conforme escrevendo um handle
+  poison antes de retornar EFI_DEVICE_ERROR, tanto no hotkey timer quanto nos
+  dois timers do menu, e comprovam que nenhum handle não-owned chega ao cleanup;
+  os testes de UI também exigem cursor oculto antes do primeiro probing e no
+  fallback em que QueryMode não existe;
+- a hipótese de cache obsoleto de atributo/cursor após StartImage() foi revisada
+  e descartada: esses estados são lidos diretamente de ConOut->Mode. Nenhuma
+  alteração especulativa foi aplicada nesse caminho; apenas a geometria possui
+  cache e sua invalidação pós-child já existente foi preservada;
+- 16 harnesses ASan+UBSan foram repetidos 3 vezes em Clang e 3 vezes em GCC
+  (96 execuções) após as correções/versionamento e receberam smoke final de 1
+  execução por teste/compilador (mais 32; total 128), sem leak/UAF/OOB/UB. O
+  parser de configuração mantém ainda 200.000 entradas pseudoaleatórias por
+  execução;
+- os 9 translation units de produção passaram compilação estrita com warnings
+  como erro e análise estática em Clang Static Analyzer e GCC -fanalyzer, com
+  zero diagnósticos;
+- BaseTools passou nos testes profundos de bounds/fuzz em Clang e GCC; build
+  nativo e suíte upstream foram executados em cópia isolada, com 285/285 testes;
+  319 arquivos Python, 7 scripts shell e 2 YAML passaram validação de sintaxe;
+- o pedido de abertura/live resize de janela desktop permanece não aplicável a
+  esta arquitetura UEFI pre-boot. Os equivalentes de modo de console, geometria,
+  redraw e restauração de estado foram reavaliados, com a correção visual acima;
+- nenhum polling, timer, wakeup, tarefa em background, cache crescente ou
+  alocação adicional foi introduzido. O hardening de ownership usa somente
+  variáveis locais temporárias e o ajuste visual antecipa uma operação já
+  necessária, sem alterar layout ou política de seleção;
+- o pipeline Release preserva integralmente seus diagnósticos/preflight. Neste
+  host Linux, a instalação de NASM nativo foi tentada via apt e atingiu o limite
+  externo de execução/rede; o NASM empacotado continua sendo Mach-O e não pode
+  executar no host. Assim, o link EDK2 RELEASE completo permanece bloqueado por
+  dependência externa, registrado no log canônico, sem bypass do preflight;
+- branding confirmado: © 2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 1.74 — RELEASE AUDIT ROUND 28 — 2026-09-10
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.73/Round27 recebido nesta
+conversa e preserva integralmente todas as correções acumuladas. Fluxo de boot,
+política de seleção, configuração, UI e arquitetura não relacionados às falhas
+confirmadas foram mantidos sem alteração.
+
+Correções confirmadas nesta rodada:
+- SMBIOS 2.x passa a validar o Maximum Structure Size do entry point antes de
+  aceitar a tabela: o valor deve comportar ao menos o header SMBIOS mais o
+  double-NUL obrigatório e não pode exceder o TableLength declarado;
+- cada estrutura SMBIOS 2.x é agora conferida contra Maximum Structure Size
+  usando o span total realmente percorrido (área formatada + strings +
+  double-NUL). Uma estrutura que exceda o máximo anunciado invalida a tabela e
+  aciona o rollback transacional já existente, impedindo estado parcial ou
+  confiança em metadado incoerente do firmware;
+- a restauração da UI mantém o cursor oculto durante SetMode/atributo/posição e
+  só volta a exibi-lo depois de restaurar as coordenadas originais. Isso elimina
+  o frame transitório em que firmwares que tornam o cursor visível após SetMode
+  podiam mostrá-lo nas coordenadas resetadas antes do SetCursorPosition;
+- regressões host-side cobrem entry points SMBIOS 2.x com Maximum Structure Size
+  zero/acima do TableLength, o limite exato por estrutura e a ordem observável
+  posição -> visibilidade na restauração do cursor;
+- 16 harnesses ASan+UBSan foram repetidos 3 vezes em Clang e 3 vezes em GCC
+  (96 execuções), seguidos por smoke final de 1 execução por teste em cada
+  compilador após o versionamento (mais 32 execuções), sem leak/UAF/OOB/UB;
+  análise estrita e estática dos 9 translation units do aplicativo permaneceu
+  limpa nos dois compiladores;
+- BaseTools passou nos testes profundos de bounds/fuzz em Clang e GCC; build
+  nativo e suíte upstream foram validados em cópia isolada, com 285/285 testes;
+  319 arquivos Python, 7 scripts shell e 2 YAML também passaram validação de
+  sintaxe/parse;
+- o pedido de abertura/live resize de janela desktop continua não aplicável a
+  esta arquitetura UEFI pre-boot. Os caminhos equivalentes de modo de console,
+  geometria, redraw e restauração de estado foram revalidados, e somente o
+  flicker comprovado do cursor foi corrigido;
+- nenhum polling, timer, cache, alocação, ownership ou fluxo assíncrono adicional
+  foi introduzido; caminhos já estabilizados em rodadas anteriores foram
+  preservados quando não havia defeito novo reproduzível;
+- o pipeline Release verificou manifest e hashes do toolchain, mas neste host
+  Linux parou corretamente no preflight porque o NASM empacotado é Mach-O e não
+  existe NASM Linux nativo disponível; a limitação está preservada no log
+  canônico e nenhum diagnóstico/preflight foi desativado para contorná-la;
+- branding confirmado: © 2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 1.73 — RELEASE AUDIT ROUND 27 — 2026-09-10
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.72/Round26 recebido nesta
+conversa e preserva integralmente as correções acumuladas. Funcionalidades,
+fluxo de boot, UI e arquitetura não relacionados foram mantidos sem alteração.
+
+Correções confirmadas nesta rodada:
+- SMBIOS passou a ser aplicado de forma transacional: se qualquer estrutura
+  posterior estiver truncada, malformada, sem terminador válido ou exceder os
+  limites declarados/mapeados, todo o BLS_HARDWARE_INFO anterior ao walk é
+  restaurado. Dados parcialmente parseados não contaminam mais o estado final;
+- o walker agora valida também a string-set da estrutura Type 127 antes de
+  aceitar End-of-Table. Isso fecha o caso em que o header EOT era aceito antes
+  de provar a existência do double-NUL final dentro da faixa mapeada;
+- SMBIOS 3.x exige Type 127 dentro do prefixo realmente mapeado do
+  TableMaximumSize, que é tratado somente como limite máximo, nunca como tamanho
+  real da tabela;
+- SMBIOS 2.x preserva o NumberOfSmbiosStructures como contagem explícita e
+  exata. O valor 0 não é mais confundido com o modo sem contagem do SMBIOS 3.x;
+  para revisões 2.2+ também é exigido Type 127. SMBIOS 2.1 legado continua
+  aceitando término exato no TableLength sem Type 127;
+- BlsNextSmbiosStruct() agora aceita corretamente o sucessor one-past-end quando
+  o double-NUL termina exatamente no limite da tabela, eliminando um falso
+  negativo de boundary em tabelas legadas válidas;
+- regressões adicionadas para rollback fail-closed de tabela 3.x sem EOT, Type
+  127 sem double-NUL final e boundary one-past-end;
+- análise estrita/estática em Clang e GCC permaneceu limpa após as correções.
+  Testes host sanitizados foram repetidos nos dois compiladores e BaseTools foi
+  revalidado com testes de bounds/fuzz e suíte unitária;
+- abertura/live resize de janela desktop permanece não aplicável: o projeto é
+  uma aplicação UEFI pre-boot em Console/GOP. Os caminhos de geometria/cache,
+  redraw e retorno de child EFI foram revalidados sem introduzir rewrite de UI;
+- branding confirmado: © 2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 1.72 — RELEASE AUDIT ROUND 26 — 2026-09-10
+
+- Auditoria normativa renovada contra UEFI 2.11, PI 1.10 e SMBIOS 3.9.0.
+- Image Services: StartImage agora diferencia, antes de tocar em ExitData,
+  rejeições diretas EFI_SECURITY_VIOLATION/EFI_INVALID_PARAMETER de códigos
+  idênticos devolvidos pelo filho. Isso evita dereferência/liberação de OUT
+  data não transferido e garante UnloadImage do handle ainda pertencente ao
+  chamador quando a imagem não chegou a iniciar.
+- SMBIOS 3.x: valida MajorVersion, EntryPointRevision 01h, byte reservado 0,
+  checksum, endereço e limite da tabela antes de usar o entry point.
+- SMBIOS 2.x: valida revisão 00h e FormattedArea zerada, preservando a exceção
+  histórica de EntryPointLength 1Eh exclusivamente para implementações 2.1;
+  2.2+ exige 1Fh.
+- SMBIOS Type 4: Core Count 2/Core Enabled 2/Thread Count 2 são lidos somente
+  quando a versão e Hdr.Length realmente os disponibilizam; 0000h é desconhecido,
+  FFFFh é reservado, <=255 deve coincidir com o byte legado e >=256 exige FFh
+  no campo legado. O valor legado FFh sem extensão permanece 255.
+- SMBIOS Type 17: Size/ExtendedSize e Speed/Configured/Extended Speed são
+  versionados e length-gated; bit 31 reservado nos campos estendidos é rejeitado.
+  A unidade apresentada segue a revisão declarada: MHz antes de SMBIOS 3.1 e
+  MT/s desde SMBIOS 3.1, sem heurística de valor.
+- Testes de regressão ampliados para ownership de StartImage/ExitData, entry
+  points SMBIOS, contagens Type 4, size/speed Type 17 e mudança MHz -> MT/s.
+- UI/arquitetura/fluxo de seleção não relacionados foram preservados. O pedido
+  genérico de live resize de janela não se aplica: este projeto é uma aplicação
+  UEFI pre-boot em Console/GOP e não possui janela desktop redimensionável.
+- Branding confirmado: © 2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 1.71 — RELEASE AUDIT ROUND 25 — 2026-09-08
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.70/Round24 entregue ao
+usuário (SHA-256 b5e24c07a3d23d43feffcc6e32f77e74e9270ff92f5ed81efcae6e6fc590ef3b).
+Todo o código próprio firmware-facing foi novamente confrontado com UEFI 2.11
+e, para EFI_MP_SERVICES_PROTOCOL, PI 1.10. O histórico anterior permanece
+abaixo sem remoções; nenhuma mudança de UI, schema de configuração ou política
+de seleção foi feita fora do necessário para conformidade UEFI.
+
+Correções confirmadas nesta rodada:
+- a validação de GetMemoryMap introduzida na Round24 foi refinada conforme a
+  regra de compatibilidade futura da própria UEFI: EFI_MEMORY_DESCRIPTOR pode
+  crescer mantendo o prefixo conhecido. O app agora rejeita revisão anterior/0,
+  aceita revisão atual ou futura compatível e continua iterando estritamente por
+  DescriptorSize, sem ler campos além do prefixo compilado;
+- a regressão de firmware tables agora cobre tanto revisão futura com
+  DescriptorSize maior (aceita) quanto revisão inválida antiga (rejeitada),
+  preservando allocation/free determinísticos;
+- LoadImage() agora recebe BootPolicy=TRUE porque BootLoaderSelector está atuando
+  como boot manager ao carregar o DevicePath escolhido como boot selection;
+- o watchdog de 5 minutos foi movido para o owner correto do lifecycle:
+  somente depois de LoadImage() bem-sucedido ele é armado, imediatamente antes
+  de StartImage(), e é desarmado assim que StartImage() retorna. LoadImage()
+  falho não fica mais sob watchdog de child;
+- ExitData/ExitDataSize devolvidos com EFI_SUCCESS são ignorados integralmente,
+  conforme UEFI. Um firmware não conforme que escreva um OUT pointer nesse caso
+  não pode mais provocar FreePool() sobre memória que não foi transferida ao
+  caller;
+- test_boot_image_lifecycle.c verifica BootPolicy, ordem LoadImage/watchdog/
+  StartImage/disable, ausência de watchdog em falha de LoadImage e ownership de
+  ExitData no retorno EFI_SUCCESS.
+
+O relatório AuditReports/AUDIT-REPORT.txt registra a matriz normativa e todos os
+gates finais da Round25. Todo o histórico anterior permanece abaixo.
+
+VERSÃO 1.70 — RELEASE AUDIT ROUND 24 — 2026-09-08
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.69/Round23 entregue ao
+usuário (SHA-256 f98fa6f35fcf8c3eaef9743ba9f1f2f34f9a080f4ecd8190c8eea75148e818c1).
+Todo o código próprio firmware-facing foi novamente confrontado com UEFI 2.11
+e, para EFI_MP_SERVICES_PROTOCOL, PI 1.10. Funcionalidades, política de boot,
+UI, schema de configuração e arquitetura foram preservados.
+
+Correções confirmadas nesta rodada:
+- BlsFirmwareMemoryMapAcquire() valida agora DescriptorVersion retornado por
+  GetMemoryMap() e só interpreta descritores quando ele corresponde a
+  EFI_MEMORY_DESCRIPTOR_VERSION. Um layout futuro/desconhecido falha fechado,
+  com cleanup determinístico do snapshot, em vez de ser reinterpretado com a
+  estrutura compilada;
+- test_firmware_table_bounds.c ganhou regressão que simula firmware retornando
+  uma revisão desconhecida após o sizing call e confirma rejeição, uma única
+  alocação e uma única liberação;
+- o wire format USB WWID foi reconferido contra UEFI 2.11 e contra o MdePkg
+  empacotado. O SerialNumber variável começa no offset 10 e não integra
+  sizeof(USB_WWID_DEVICE_PATH), portanto a validação existente de 1..64 CHAR16
+  estava correta e foi preservada sem alteração;
+- todos os demais callsites gBS/gST/protocolos foram revarridos. Não foi
+  introduzida alteração especulativa em OpenProtocol, GOP, File Protocol,
+  timers, image lifecycle, watchdog ou MP Services sem desvio normativo
+  comprovado.
+
+O relatório AuditReports/AUDIT-REPORT.txt registra a matriz normativa e os gates
+finais da Round24. Todo o histórico anterior permanece abaixo, sem remoções.
+
+VERSÃO 1.69 — RELEASE AUDIT ROUND 23 — 2026-09-08
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.68/Round22 entregue ao
+usuário (SHA-256 112ef8173bedaf63b39c457ae28045e83e0ca62bedc86aeb341588c63828f484).
+Todo o código próprio que interage com firmware foi novamente confrontado com
+UEFI 2.11 e, para EFI_MP_SERVICES_PROTOCOL, PI 1.10. Nenhuma política de boot,
+UI, schema de configuração ou arquitetura foi alterada sem necessidade.
+
+Correções confirmadas nesta rodada:
+- o watchdog de 300 segundos permanece no período exigido para lançamento de
+  boot options, mas agora usa WatchdogCode 0x00010000. UEFI reserva 0x0000 a
+  0xFFFF ao firmware; o valor anterior 0 estava dentro da faixa reservada;
+- acessos diretos de código próprio por gBS->HandleProtocol() foram removidos.
+  O app usa OpenProtocol(EFI_OPEN_PROTOCOL_GET_PROTOCOL), com gImageHandle como
+  AgentHandle e ControllerHandle NULL, para consultas que não exigem
+  CloseProtocol por contrato UEFI;
+- caminhos indiretos DevicePathFromHandle()/FileDevicePath(handle, ...) que
+  recaíam em HandleProtocol foram eliminados do boot scanner. O volume device
+  path é obtido explicitamente e o MEDIA_FILEPATH_DP é construído separadamente
+  e concatenado com AppendDevicePath();
+- Simple File System, Loaded Image, Graphics Output, PCI I/O e Device Path
+  consumidos pelo código próprio passam pelo mesmo helper de protocolo, que
+  zera o OUT em erro e rejeita chamadas sem image handle/Boot Services;
+- gEfiDevicePathProtocolGuid foi declarado no INF por ser agora dependência
+  explícita do aplicativo;
+- foi adicionado test_protocol_access_contracts.c, elevando a suíte host-side
+  para 16 harnesses e validando atributos, AgentHandle, ControllerHandle e
+  normalização de OUT pointers do OpenProtocol.
+
+O relatório AuditReports/AUDIT-REPORT.txt contém a matriz normativa e os gates
+finais da Round23. Todo o histórico anterior permanece abaixo, sem remoções.
+
+VERSÃO 1.68 — RELEASE AUDIT ROUND 22 — 2026-09-08
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.67/Round21 entregue ao
+usuário (SHA-256 94ce00ac0d55f44e63b8dcb2c7fed654ab9c4a161b51276289fc2479f3c299a4).
+Todo o código firmware-facing foi novamente confrontado com UEFI 2.11 e, onde
+aplicável, com PI 1.10. Nenhuma arquitetura, política de boot, UI ou schema de
+configuração foi alterado; somente desvios objetivos dos contratos UEFI foram
+corrigidos.
+
+Correções confirmadas nesta rodada:
+- BlsCloseTimerEvent() não chama mais SetTimer(TimerCancel) imediatamente antes
+  de CloseEvent(): CloseEvent encerra e libera o evento por contrato UEFI, logo
+  a chamada adicional era I/O de firmware redundante em todo teardown;
+- BlsFileReadExact() faz uma única leitura de arquivo regular: sucesso exato é
+  aceito, short-read bem-sucedido é tratado como EOF e tamanho maior que o buffer
+  é rejeitado como resposta de firmware comprometida;
+- BlsFileWriteAll() faz uma única escrita e exige que EFI_SUCCESS reporte
+  exatamente o tamanho solicitado. Short/oversized write com sucesso é rejeitado
+  em vez de ser mascarado por retries;
+- foi adicionado um harness dedicado aos contratos de File Protocol, elevando a
+  suíte host-side para 15 regressões;
+- EFI_MP_SERVICES_PROTOCOL foi reconferido contra PI: o MdePkg empacotado já
+  contém EFI_PROCESSOR_INFORMATION estendido e o app não solicita topologia V2,
+  portanto não existe incompatibilidade de buffer que justifique alteração.
+
+O relatório AuditReports/AUDIT-REPORT.txt registra a matriz normativa e todos os
+gates finais da Round22.
+
+VERSÃO 1.67 — RELEASE AUDIT ROUND 21 — 2026-09-08
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.66/Round20 entregue ao
+usuário (SHA-256 d0ad61e6d5ace4a9561cb88073dea6b9fc59cf1e7b6413004325bbcc5db0569c).
+Todo o código da aplicação foi novamente confrontado com UEFI 2.11 e, para
+EFI_MP_SERVICES_PROTOCOL, com PI 1.10. Arquitetura, política de boot, UI e schema
+de configuração foram preservados; somente divergências normativas ou hardening
+diretamente justificado pelos contratos de firmware foram alterados.
+
+Correções confirmadas nesta rodada:
+- Hard Drive Device Path só produz identidade GPT quando o node possui tamanho
+  normativo, Partition Format GPT e Signature Type GUID simultaneamente;
+- nodes USB/USB-Class/USB-WWID são validados também pelo wire format específico,
+  inclusive limite de 64 CHAR16 do serial WWID;
+- LocateHandleBuffer, OpenVolume e EFI_FILE_PROTOCOL.Open não tentam liberar ou
+  fechar OUT values recebidos em chamadas que falharam e não transferiram
+  ownership;
+- EFI_FILE_PROTOCOL.Open valida localmente as únicas combinações OpenMode
+  permitidas e a validade/escopo de Attributes;
+- falha de LoadImage só executa UnloadImage no caso normativo
+  EFI_SECURITY_VIOLATION, no qual a UEFI garante que um ImageHandle foi criado;
+- ExitData de StartImage só é interpretado como texto quando o child retorna
+  status diferente de EFI_SUCCESS, mantendo FreePool defensivo do buffer;
+- gEfiBlockIoProtocolGuid foi removido do INF porque não existe consumidor Block
+  I/O no source atual.
+
+O relatório AuditReports/AUDIT-REPORT.txt contém a matriz por módulo/serviço e
+os gates de sanitizers, análise estática, BaseTools e infraestrutura da Round21.
+
+VERSÃO 1.66 — RELEASE AUDIT ROUND 20 — 2026-09-08
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.65/Round19 entregue ao
+usuário (SHA-256 b3eb45e141b787b00bc45a6df8b9aa548f9dc05592aad04bcc20eb0ff1b5ba79).
+Arquitetura UEFI, política de boot, interface, configuração persistente e
+funcionalidades existentes foram preservadas.
+
+Correções e otimizações confirmadas nesta rodada:
+- a validação de configuration tables/SMBIOS usa agora um único snapshot
+  validado da UEFI memory map por leitura SMBIOS, em vez de consultar, alocar e
+  liberar uma nova map para cada pointer/range. Isso reduz chamadas de firmware,
+  churn de pool e trabalho de inicialização sem alterar a política de validação;
+- aquisição, validação e liberação da memory map foram consolidadas em um único
+  helper com limites de tamanho/descritores, retries e cleanup centralizados;
+- BlsReadMemoryMapFallback() foi migrado para o mesmo helper, removendo uma
+  segunda implementação de retry/allocation/free e reduzindo superfície de
+  divergência/leak em caminhos de erro;
+- regressões validam que uma leitura SMBIOS válida usa somente a sequência
+  sizing+read (2 GetMemoryMap), uma alocação e uma liberação, e que falha após o
+  sizing libera o buffer exatamente uma vez e falha fechado;
+- o builder Release não tenta mais executar `open -R` fora do macOS nos caminhos
+  de erro/finalização; em Linux isso evitava uma chamada host-specific inútil e
+  ruído de terminal sem alterar o resultado do build;
+- foram revalidados os contratos UEFI aplicáveis a Delete(), StartImage(),
+  ExitData, timers/eventos, device paths e lifecycle dos handles, sem necessidade
+  de mudança funcional adicional nesses fluxos.
+
+BootLoaderSelector continua sendo UEFI_APPLICATION single-threaded. Não existem
+janela Cocoa/AppKit, live resize, worker pool, retain cycles ou render loop GPU;
+os equivalentes aplicáveis são text mode/redraw, eventos/timers, watchdog,
+filesystem, handles/protocolos, pools/buffers e firmware tables.
+
+VERSÃO 1.65 — RELEASE AUDIT ROUND 19 — 2026-09-08
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.64/Round18 entregue ao
+usuário (SHA-256 ce34d5c99fcef95f8b33ef9c780dc9e3746cf64009526537c0156605d289b5c8).
+Arquitetura UEFI, política de boot, interface, configuração persistente e fluxos
+existentes foram preservados; somente defeitos/ineficiências confirmados e suas
+regressões foram alterados.
+
+Correções e otimizações confirmadas nesta rodada:
+- BlsUiClear() não invalida mais a geometria em todo redraw. O tamanho do console
+  permanece cacheado durante operações internas e é invalidado explicitamente
+  após StartImage() devolver o controle, única fronteira em que um EFI externo
+  pode ter mudado o text mode. Isso remove polling QueryMode() redundante sem
+  perder revalidação após retorno de bootloader;
+- a tela Options foi refatorada para manter uma geometria única e redesenhar
+  somente as linhas realmente alteradas: Up/Down escrevem duas linhas e mudanças
+  de valor uma linha. O layout compacto/full, footer, textos e comportamento
+  anteriores permanecem preservados; limites de timeout sem mudança não geram
+  redraw inútil;
+- validação de memória usada para dereferenciar configuration tables/SMBIOS não
+  trata mais EfiUnusableMemory, EfiMemoryMappedIO ou EfiMemoryMappedIOPortSpace
+  como evidência de RAM legível. Firmware corrompido que aponta tabelas para
+  MMIO/port-space passa a falhar fechado antes da dereferência;
+- regressões host-side foram ampliadas para cache/invalidação de geometria,
+  redraw delta da tela Options em layouts normal/compacto e rejeição de MMIO,
+  MMIO port-space e memória explicitamente unusable em pointers de tabelas de
+  firmware;
+- o cálculo do layout Options agora deriva footer/linha diretamente das dimensões
+  já obtidas e o menu não solicita a dimensão vertical quando só precisa da
+  largura, removendo trabalho auxiliar redundante sem alterar geometria visual.
+
+A aplicação continua sendo UEFI_APPLICATION single-threaded. Não há janela
+Cocoa/AppKit, live resize, worker pool, retain cycles ou render loop GPU; os
+equivalentes relevantes auditados são text mode, redraw, eventos/timers,
+watchdog, handles/protocolos, buffers e pools UEFI.
+
+Validação final da Round19: 70/70 execuções Clang ASan+UBSan e 70/70 GCC
+ASan+UBSan, 36/36 gates strict/static, BaseTools deep/fuzz em ambos compiladores,
+319 Python AST, 2 YAML e 4 scripts .command aprovados. O builder Release passou
+os gates de manifesto/toolchain, mas este host Linux não possui NASM nativo e
+os binários empacotados são Mach-O/macOS; por isso o build EFI nativo fica
+explicitamente bloqueado no preflight, sem reaproveitar output antigo.
+
+VERSÃO 1.64 — RELEASE AUDIT ROUND 18 — 2026-09-08
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.63/Round17 fornecido pelo
+usuário (SHA-256 52c03a1e6fa6b6f8f629aa09f3178af1701eef5000f9fb3e41650695c23268fe).
+Arquitetura UEFI, política de boot, interface e funcionalidades existentes foram
+preservadas; as alterações funcionais ficam restritas à robustez/performance do
+console e às regressões correspondentes.
+
+Correções e otimizações confirmadas nesta rodada:
+- o estado original de texto (modo, atributo e cursor) é salvo antes de depender
+  de QueryMode(), permitindo restauração mesmo em firmware com implementação
+  parcial do protocolo de console;
+- dimensões inválidas/indisponíveis passam a usar fallback 80x25 cacheado. Isso
+  evita repetir QueryMode() em cada operação de desenho quando o firmware está
+  defeituoso ou anuncia metadata absurda;
+- a dimensão válida já retornada para o modo corrente e para o modo escolhido é
+  reutilizada. QueryMode() redundante foi removido do caminho de inicialização;
+- falha de SetMode() não contamina o cache com a geometria solicitada: o código
+  continua usando a geometria realmente ativa, ou o fallback conservador;
+- SetAttribute()/SetCursorPosition()/EnableCursor evitam chamadas redundantes
+  quando o estado reportado pelo protocolo já coincide com o solicitado;
+- navegação Up/Down dentro da mesma viewport redesenha apenas as duas linhas cuja
+  seleção mudou. Mudança de viewport/scrolling e consoles muito pequenos mantêm
+  o redraw integral anterior para preservar exatamente o layout existente;
+- regressões host-side foram ampliadas para firmware sem QueryMode(), SetMode()
+  falhando, cache de fallback, supressão de chamadas redundantes e redraw delta.
+
+A aplicação continua sendo um UEFI_APPLICATION single-threaded. Portanto não há
+janela Cocoa/AppKit, live resize, worker pool ou render loop GPU; os equivalentes
+relevantes são seleção inicial do text mode, console redraw, eventos/timers e
+lifecycle dos handles/protocolos UEFI.
+
+VERSÃO 1.63 — RELEASE AUDIT ROUND 17 — 2026-09-06
+----------------------------------------------------
+Esta rodada corrige exclusivamente uma falha de portabilidade do preflight de
+integridade que bloqueava a compilação no macOS antes de qualquer código ser
+compilado. O FULL-SOURCE v1.62/Round16 foi usado como única base.
+
+Correção confirmada nesta rodada:
+- o gate que proíbe outputs gerados no MANIFEST.sha256 passava a expressão
+  regular como string via `awk -v re=...`. Implementações de awk usadas no
+  macOS processam escapes de string de modo diferente do mawk do Linux; `\.`
+  podia perder o escape antes de virar regex e fazer arquivos legítimos
+  terminados em `d` serem classificados como `.d` gerado. O mesmo falso
+  positivo foi reproduzido fora do macOS com BusyBox awk: README.md, brotli.md
+  e makefile.old eram marcados incorretamente.
+- a detecção agora usa regex literal dentro do programa awk, normaliza somente
+  o prefixo opcional `./` e representa ponto literal como `[.]`, removendo a
+  dupla interpretação string->regex. A política de integridade não foi
+  relaxada: Build/, Conf/, Release/, BaseTools bin/libs, `.o`, `.d` e os dois
+  helpers Pccts gerados continuam proibidos.
+- a mensagem de erro agora informa o primeiro caminho proibido real encontrado,
+  facilitando diagnóstico sem mascarar o gate.
+- versão incrementada para 1.63 / Round17. Nenhum módulo `.c` funcional foi
+  alterado além da constante de versão em Utils.h. Branding permanece
+  © 2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+VERSÃO 1.62 — RELEASE AUDIT ROUND 16 — 2026-09-06
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.61 Round15 entregue, cujo
+ZIP, CRC e manifesto interno foram novamente validados antes de qualquer
+alteração. Interface, política de boot e arquitetura UEFI foram preservadas.
+
+Correções confirmadas nesta rodada:
+- SMBIOS 3.x: TableMaximumSize é um limite máximo, não o comprimento exato da
+  tabela. A v1.61 exigia que todo o máximo anunciado estivesse mapeado e podia
+  descartar uma tabela válida que terminasse antes em Type 127. A regressão foi
+  reproduzida contra v1.61 com tabela real válida em 4 KiB e máximo anunciado
+  de 8 KiB. A v1.62 calcula o prefixo físico contíguo efetivamente mapeado e
+  limita o parser a esse prefixo, mantendo o parser bounded e fail-closed;
+- os deep tests de BaseTools não compilam mais dentro da árvore imutável. Eles
+  trabalham em cópia temporária e deixam BaseTools/Source/C byte-for-byte
+  idêntico após a auditoria;
+- 39 outputs históricos gerados de BaseTools (.o/.d/libCommon.a) foram removidos
+  do FULL-SOURCE. O Release builder remove outputs BaseTools antes da cobertura
+  e o manifesto proíbe explicitamente Build/Conf/Release e outputs BaseTools;
+- outputs gerados são removidos antes do preflight de ferramentas. Assim, um
+  build que falhe por NASM/toolchain ausente não pode deixar uma EFI ou árvores
+  Build/Conf/Release antigas aparentando pertencer à tentativa atual;
+- o Release builder não executa mais chmod sobre scripts imutáveis antes do gate
+  de symlinks. Foi reproduzido que a v1.61 podia seguir um edksetup.sh simbólico
+  e mudar permissões do alvo externo antes de recusar o source;
+- o único log canônico agora também rejeita hard links (link count > 1) antes de
+  truncar ou anexar. A v1.61 foi reproduzida sobrescrevendo o outro pathname do
+  mesmo inode; Release e Debug agora falham fechados sem modificar o alvo;
+- CI ganhou regressões permanentes para hard-link/symlink de log, symlink em
+  script imutável sem side effect de chmod, source symlink, limpeza antecipada,
+  rebuild consecutivo e ausência de poluição BaseTools;
+- versão incrementada para 1.62; branding permanece © 2026 DNMTechLabs /
+  dnmtechlabs@gmail.com.
+
+A aplicação permanece UEFI text-console single-threaded. Não existe janela
+Cocoa/AppKit, live resize, worker-thread pool ou render loop de GPU; o modo de
+console final continua selecionado antes do primeiro desenho próprio.
+
+VERSÃO 1.61 — RELEASE AUDIT ROUND 15 — 2026-09-06
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.60 Round14 entregue e cujo
+ZIP SHA-256 e manifesto interno foram novamente validados antes de qualquer
+alteração. Interface, política de boot e arquitetura UEFI foram preservadas.
+
+Correções confirmadas nesta rodada:
+- BlsFirmwareRangeIsMapped() deixava de reconhecer uma faixa válida quando ela
+  atravessava dois ou mais EFI_MEMORY_DESCRIPTOR fisicamente contíguos. O caso
+  0x1800..0x2800 sobre os descritores 0x1000..0x2000 e 0x2000..0x3000 foi
+  reproduzido diretamente contra v1.60. A validação agora expande a cobertura
+  por todos os descritores necessários, independentemente da ordem, mantendo
+  gaps reais como inválidos;
+- mapas de memória passam a ter budget defensivo de 4.096 descritores. Metadata
+  que já anuncia quantidade superior é recusada antes de AllocateZeroPool(),
+  evitando alocação excessiva e trabalho quadrático sem limite prático tanto na
+  validação de tabelas de firmware quanto no fallback de memória RAM;
+- a cobertura SHA-256 do Release builder agora exclui somente metadata VCS
+  .git/.git/*, permitindo execução normal em checkouts do GitHub Actions e em
+  worktrees sem classificar metadata do Git como source imutável;
+- symlinks dentro da árvore imutável passam a ser recusados antes do build. Na
+  v1.60 um symlink novo era invisível a find -type f e, portanto, podia passar
+  pela cobertura do manifesto;
+- Release e Debug builders recusam BuildLogs/ e o log canônico quando são
+  symlink ou objeto de tipo inválido antes de qualquer escrita. A v1.60 foi
+  reproduzida sobrescrevendo um arquivo externo apontado pelo log simbólico;
+- CI ganhou regressões permanentes para log simbólico, symlink em source
+  imutável, checkout com .git, cleanup de outputs e smoke boot, e a versão foi
+  incrementada para 1.61;
+- branding permanece © 2026 DNMTechLabs / dnmtechlabs@gmail.com.
+
+A aplicação continua sendo UEFI text-console single-threaded. Não existe
+janela Cocoa/AppKit, live resize, worker-thread pool ou GPU render loop nativo;
+o modo final do console continua selecionado antes do primeiro desenho próprio.
+
+VERSÃO 1.60 — RELEASE AUDIT ROUND 14 — 2026-09-06
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.59 Round13 recebido, cujo
+ZIP e manifesto interno foram validados antes de qualquer alteração. A
+arquitetura, interface, política de boot e comportamento do runtime UEFI foram
+preservados.
+
+Correções confirmadas nesta rodada:
+- foi reproduzida uma inconsistência real no cleanup do Release builder: a CI
+  semeava resíduos em Build/Stale/ e exigia sua remoção, mas o script v1.59
+  apagava somente Build/BootLoaderSelector. Assim, resíduos em outras áreas de
+  Build/ sobreviviam e podiam contaminar ou quebrar rebuilds consecutivos. O
+  v1.60 remove a árvore Build/ gerada inteira, além de Conf/ e Release/, antes
+  de iniciar a nova compilação;
+- a etapa Clang Static Analyzer da CI usava a saída padrão do analyzer, que
+  gerava nove arquivos .plist na raiz do source (um por módulo do runtime).
+  Esses temporários poluíam o pacote e acionavam corretamente o gate de
+  cobertura SHA-256 numa execução Release subsequente. A análise agora usa
+  saída textual explícita e não deixa artefatos no projeto;
+- SECURITY-NOTES.txt ainda descrevia o antigo TOOLCHAIN.sha256. A documentação
+  foi alinhada ao mecanismo atual: MANIFEST.sha256 com cobertura exata dos
+  inputs imutáveis, catálogo pinado do subconjunto da toolchain e hashes dos
+  executáveis críticos;
+- versão incrementada para 1.60; branding confirmado como © 2026 DNMTechLabs /
+  dnmtechlabs@gmail.com.
+
+A auditoria do runtime não encontrou defeito reproduzível que justificasse
+alterar os módulos .c nesta rodada. Em particular, ownership de pools/handles,
+eventos/timers, caminhos de cancelamento/erro, chainload, parsing e I/O foram
+revisados preservando o comportamento já estabilizado. Como aplicação UEFI
+text-console single-threaded, o projeto não possui janela Cocoa/AppKit, live
+resize ou worker threads nativos; o modo final de console continua resolvido
+antes do primeiro desenho próprio do aplicativo.
+
+VERSÃO 1.59 — RELEASE AUDIT ROUND 13 — 2026-09-04
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.58 Round12 entregue, cujo
+ZIP e manifesto interno foram validados antes de qualquer alteração. A
+arquitetura, interface, política de boot e comportamento do runtime UEFI foram
+preservados.
+
+Correção de integridade/rebuild confirmada nesta rodada:
+- foi reproduzido que o gate de cobertura v1.58 classificava como source
+  imutável os diretórios Build/, Conf/ e Release/, embora sejam criados pelo
+  próprio builder. Após um build bem-sucedido, uma execução consecutiva podia
+  portanto falhar antes da limpeza, acusando os próprios outputs anteriores
+  como arquivos não rastreados;
+- o v1.59 separa explicitamente inputs imutáveis de outputs gerados. Build/,
+  Conf/ e Release/ são excluídos somente da cobertura imutável e são proibidos
+  dentro do MANIFEST.sha256. O builder continua removendo essas três árvores
+  antes da compilação, evitando que conteúdo antigo influencie o novo build;
+- a correção foi reproduzida com resíduos artificiais nas três árvores: a
+  cobertura e os 3.512 hashes imutáveis passaram, o catálogo de 951 arquivos da
+  toolchain manteve o fingerprint pinado e o fluxo avançou até a limitação
+  externa de NASM deste host;
+- a barreira inversa também foi validada: qualquer tentativa de listar Build/,
+  Conf/ ou Release/ no manifesto é recusada imediatamente;
+- o CI Linux agora semeia marcadores obsoletos nas três árvores antes do Release
+  build e exige que o builder os elimine, protegendo rebuilds consecutivos;
+- versão incrementada para 1.59; branding permanece © 2026 DNMTechLabs /
+  dnmtechlabs@gmail.com.
+
+Nenhum arquivo .c funcional do runtime UEFI precisou ser alterado nesta rodada.
+O aplicativo continua single-threaded em text-console, sem janela GUI nativa,
+e o modo final do console continua resolvido antes do primeiro desenho próprio.
+
+VERSÃO 1.58 — RELEASE AUDIT ROUND 12 — 2026-09-04
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.57 Round11 entregue, cujo
+ZIP e manifesto interno foram validados antes de qualquer alteração. A
+arquitetura, interface, política de boot e comportamento do runtime UEFI foram
+preservados.
+
+Correção de integridade/release confirmada nesta rodada:
+- o Release builder agora verifica o manifesto SHA-256 completo do conteúdo
+  imutável do projeto antes de derivar ou executar qualquer ferramenta de build.
+  Além dos hashes, compara o conjunto exato de arquivos imutáveis presentes com
+  o conjunto listado, recusando tanto arquivos alterados/ausentes quanto novos
+  arquivos não rastreados. Na v1.57 apenas o subconjunto da toolchain era
+  efetivamente verificado pelo builder; drift de runtime/configuração podia
+  prosseguir até o preflight da toolchain;
+- a falha foi reproduzida em cópia isolada alterando Utils.c sem regenerar o
+  manifesto: o v1.57 ignorava a divergência e avançava até a ausência de NASM.
+  Também foi reproduzido o caso de arquivo imutável novo não listado, que fazia
+  a checagem tradicional de hashes passar;
+- o v1.58 falha imediatamente de forma fechada nos dois cenários, registra a
+  divergência no único build log e se recusa a compilar source cujo conteúdo ou
+  cobertura não correspondam exatamente ao manifesto;
+- a política da Round11 permanece: o manifesto exclui apenas ele próprio e o
+  único log mutável de compilação; todo o restante continua coberto;
+- versão incrementada para 1.58; branding permanece © 2026 DNMTechLabs /
+  dnmtechlabs@gmail.com.
+
+Nenhum código funcional do runtime UEFI precisou ser alterado nesta correção.
+A aplicação continua single-threaded em text-console e o modo final de console
+continua resolvido antes do primeiro desenho próprio.
+
+VERSÃO 1.57 — RELEASE AUDIT ROUND 11 — 2026-09-04
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.56 Round10 entregue, cujo
+ZIP e manifesto interno foram validados antes de qualquer alteração. A
+arquitetura, interface, política de boot e comportamento de runtime permanecem
+preservados.
+
+Correção de integridade/release confirmada nesta rodada:
+- AuditReports/MANIFEST.sha256 passa a representar somente conteúdo imutável do
+  source/toolchain e exclui deliberadamente o único log canônico
+  BuildLogs/BootLoaderSelector-Build.log. O builder reescreve esse arquivo em
+  toda execução; incluí-lo no manifesto fazia uma árvore íntegra invalidar o
+  próprio manifesto apenas por executar uma compilação ou preflight;
+- o Release builder agora rejeita preventivamente qualquer manifesto que volte a
+  incluir o log mutável, impedindo regressão silenciosa dessa política;
+- o log de compilação continua obrigatório e único. A mudança não reduz a
+  verificação da toolchain: seu catálogo continua dentro do manifesto e mantém
+  o fingerprint independente pinado;
+- versão incrementada para 1.57; branding permanece © 2026 DNMTechLabs /
+  dnmtechlabs@gmail.com.
+
+Nenhuma funcionalidade do runtime UEFI foi alterada nesta correção de pipeline.
+A aplicação continua sendo um seletor UEFI text-console single-threaded, sem
+janela GUI nativa; a geometria final do console é definida antes do primeiro
+desenho próprio.
+
+VERSÃO 1.56 — RELEASE AUDIT ROUND 10 — 2026-09-04
+----------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.55 Round9 entregue, cujo
+manifesto foi validado integralmente (3.513/3.513) antes de qualquer alteração.
+A arquitetura, a interface, a política de boot e os fluxos existentes foram
+preservados.
+
+Correções e otimizações confirmadas nesta rodada:
+- o probe de hotkey do startup passa a ter um teto defensivo de 1.024 ciclos
+  sem tecla seletora quando firmware não conforme mantém WaitForKey sinalizado
+  e simultaneamente nunca sinaliza o timer em CheckEvent(). Isso elimina um
+  livelock/busy-loop residual e falha de forma segura mostrando o seletor;
+- a varredura de volumes passa a consultar DevicePathFromHandle() uma única vez
+  por filesystem handle e reutiliza o mesmo Device Path validado tanto para a
+  identidade persistente quanto para a classificação USB. O pior caso de 1.024
+  volumes elimina até 1.024 chamadas síncronas redundantes de firmware durante
+  o scan de startup;
+- regressão dedicada força o contrato de eventos duplamente inválido e comprova
+  término determinístico no limite, sem alterar prioridade das setas nem o timer
+  normal de dois segundos;
+- versão incrementada para 1.56; branding permanece © 2026 DNMTechLabs /
+  dnmtechlabs@gmail.com.
+
+A aplicação permanece um seletor UEFI text-console single-threaded, sem janela
+GUI nativa. O modo final de console continua definido antes do primeiro desenho
+próprio do aplicativo, sem frame intermediário criado pela aplicação.
+
+VERSÃO 1.55 — RELEASE AUDIT ROUND 9 — 2026-09-04
+---------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.54 Round8 entregue e cujo
+manifesto foi validado integralmente (3.513/3.513) antes de qualquer alteração.
+A arquitetura, a interface e os fluxos existentes foram preservados.
+
+Correções e otimizações confirmadas nesta rodada:
+- hardening do countdown contra firmware não conforme: se CreateEvent() retorna
+  EFI_SUCCESS sem fornecer handle, o resultado passa a ser tratado imediatamente
+  como EFI_DEVICE_ERROR, antes de qualquer SetTimer(). Isso impede SetTimer(NULL),
+  preserva cleanup determinístico dos handles parciais e desativa o countdown de
+  forma segura sem impedir o uso manual do menu;
+- descoberta do GOP do console elimina uma segunda chamada redundante a
+  DevicePathFromHandle() para o mesmo ConsoleOutHandle quando o primeiro path é
+  ausente/inválido, reduzindo uma chamada síncrona de firmware nesse caminho;
+- o helper Build-Debug-Full-Log.command passa a anexar diagnósticos ao único log
+  canônico BuildLogs/BootLoaderSelector-Build.log em vez de criar um segundo .log,
+  mantendo a política de um único artefato consolidado por tipo;
+- regressões dedicadas cobrem CreateEvent sucesso+NULL nos dois eventos e provam
+  ausência de SetTimer com handle nulo, além da consulta única de DevicePath;
+- versão incrementada para 1.55; branding permanece © 2026 DNMTechLabs /
+  dnmtechlabs@gmail.com.
+
+A aplicação permanece um seletor UEFI text-console, sem janela GUI nativa. A
+seleção do modo final de console continua concluída antes do primeiro desenho
+próprio do aplicativo; nenhuma transição visual adicional foi introduzida.
+
+VERSÃO 1.54 — RELEASE AUDIT ROUND 8 — 2026-09-04
+---------------------------------------------------
+Esta rodada parte exclusivamente do FULL-SOURCE v1.53 Round7 entregue e cujo
+manifesto foi validado integralmente antes de qualquer alteração. A arquitetura,
+a interface e os fluxos existentes foram preservados.
+
+Alteração de produção confirmada nesta rodada:
+- captura de screenshot passa a usar um único buffer de linha GOP/BMP. O layout
+  EFI_GRAPHICS_OUTPUT_BLT_PIXEL é B,G,R,Reserved, idêntico ao layout byte a byte
+  do BMP 32-bit usado pelo projeto; portanto o segundo buffer e a cópia completa
+  por pixel eram redundantes. O byte Reserved é zerado in-place antes da escrita.
+  Isso reduz pela metade a memória temporária de linha e elimina uma passagem de
+  cópia por pixel, mantendo o conteúdo do BMP e o comportamento externo.
+- o teste de screenshot passa a validar explicitamente o layout BGRA padronizado
+  e o lifecycle da nova alocação única (1 allocate / 1 free em erro precoce).
+- versão incrementada para 1.54; branding permanece © 2026 DNMTechLabs /
+  dnmtechlabs@gmail.com.
+
+A aplicação permanece um seletor UEFI text-console, sem janela GUI nativa. A
+seleção do modo de console continua concluída antes do primeiro desenho próprio.
+
+VERSÃO 1.53 — RELEASE AUDIT ROUND 7 — 2026-09-04
+---------------------------------------------------
+Esta rodada parte exclusivamente do source v1.52 Round6 recebido e preserva os
+fluxos, a interface e a arquitetura existentes. Alterações confirmadas:
+
+- hardening de chainload: BlsStartBootEntryEx valida HandleProtocol antes de
+  FileDevicePath, impedindo null-call em tabela de Boot Services parcialmente
+  inválida; StartStatus passa a distinguir corretamente “não iniciado”;
+- seleção inicial de modo de texto reduzida de até duas varreduras para uma só,
+  mantendo exatamente a mesma política de escolha e reduzindo o pior caso de
+  QueryMode de 2.048 para 1.024 chamadas antes da primeira tela do app;
+- desenho de linhas da UI passa a emitir blocos de até 64 caracteres por chamada
+  OutputString, eliminando uma chamada de firmware por caractere;
+- topologia MP passa de busca quadrática de duplicatas/cores para ordenação heap
+  in-place O(n log n), preservando a política fail-closed e o mesmo resultado;
+- fallback de nomes de screenshot sem GetNextMonotonicCount passa a ter limite
+  de 1.024 probes síncronos, removendo o antigo pior caso de 65.535 acessos;
+- AuditTests ganhou repetição controlada por BLS_AUDIT_REPEAT (1..1000), e a CI
+  passa a executar repetição sanitizada, strict compile em Clang/GCC, GCC
+  -fanalyzer e Clang Static Analyzer;
+- artefatos auxiliares históricos .log foram removidos do pacote e a verificação
+  da toolchain foi consolidada no único AuditReports/MANIFEST.sha256, mantendo
+  o catálogo de toolchain pinado pelo mesmo SHA-256 conhecido;
+- versão incrementada para 1.53; copyright e e-mail permanecem © 2026
+  DNMTechLabs / dnmtechlabs@gmail.com.
+
+A aplicação continua sendo um UEFI text-console selector; não existe janela GUI.
+A geometria de console é resolvida antes de qualquer desenho próprio do menu e
+apenas um SetMode final é permitido, sem frames intermediários do aplicativo.
+
+VERSÃO 1.52 — FINAL AUDIT FIXES — 2026-08-31
+
+Esta árvore sucede a v1.51 sem reabrir áreas já estabilizadas. A rodada v1.52
+corrige dois achados confirmados na auditoria profunda final:
+
+- autoboot lembrado fail-closed: quando existe DefaultVolumeDevicePath forte,
+  uma entrada sem identidade forte correspondente nunca pode cair para match
+  apenas por VolumeLabel;
+- smoke test OVMF não usa mais uma cópia do próprio BootLoaderSelector como
+  OpenCore.efi. Um child UEFI mínimo e determinístico retorna EFI_SUCCESS e
+  valida o ciclo real LoadImage/StartImage/return sem recursão.
+
+Os testes de parser/config incluem agora a política de identidade forte.
+
+VERSÃO 1.51 — 16 CORREÇÕES / HARDENING — 2026-08-31
+---------------------------------------------------
+A árvore v1.51 foi identificada separadamente das builds v1.50 anteriores.
+A rodada v1.51 ficou limitada aos 16 itens aprovados após a auditoria profunda da
+v1.50 Final Corrections. O ZIP/base original permanece imutável.
+
+Runtime/configuração:
+- BLS.plist inválido não é sobrescrito automaticamente: defaults são usados apenas em
+  memória e o arquivo original é preservado para diagnóstico/recuperação;
+- um BLS.plist final válido é autoritativo; BLS.tmp passa a ser apenas staging/cleanup
+  best-effort e um erro ao acessar o temporário não invalida o final válido;
+- foi adicionado teste de lifecycle completo da configuração cobrindo filesystem,
+  final válido, staging e erro de parse sem gravação destrutiva;
+- sinais espúrios repetidos de WaitForKey + EFI_NOT_READY/tecla vazia passam a ter
+  limite explícito tanto no menu sem countdown quanto em Options;
+- os testes de entrada cobrem esses caminhos para impedir busy-loop indefinido;
+- SMBIOS/configuration tables passam a usar política fail-closed: se o memory map não
+  comprovar o range, o dado opcional não é dereferenciado;
+- identidade compacta de volume para Device Paths longos usa GPT Partition GUID quando
+  disponível e, como fallback, SHA-256 do Device Path binário completo;
+- screenshots com monotonic usam os 64 bits completos no nome, reduzindo colisões;
+- GPU ativa é procurada primeiro pela correlação GOP -> DevicePath -> PCI parent;
+- informação global de tipo/clock da RAM só é apresentada quando todos os DIMMs
+  populados fornecem informação compatível; conflitos continuam sendo marcados Mixed.
+
+Build/release/QA:
+- a toolchain bundled é verificada por manifesto SHA-256 conhecido ANTES de qualquer
+  executável bundled ser iniciado; gcc, g++ e NASM também têm hashes esperados;
+- BUILD-PROVENANCE.txt registra source/toolchain manifest, make, Python, GenFw,
+  comando de build, formato e hashes dos dois .efi e confirma que as cópias coincidem;
+- foi incluído workflow CI com sanitizers host, build macOS real e smoke test OVMF;
+- foi adicionado teste host dedicado ao lifecycle do Logger, incluindo short/failing
+  writes, rollback, flush/close, retry, truncamento e enable/disable;
+- documentação atual foi corrigida para não afirmar remoção automática de quarantine e
+  para refletir a política real de configuração/teclado.
+
+COMPILAÇÃO DE RELEASE
+---------------------
+1. Extraia o ZIP mantendo toda a estrutura.
+2. Execute Build-BootLoaderSelector-Release.command.
+3. Em macOS, o caminho oficial permanece usando a toolchain bundled. Antes de executar
+   qualquer binário bundled, o script extrai de AuditReports/MANIFEST.sha256 o catálogo
+   da toolchain, valida esse subconjunto contra o hash esperado e confere todo o seu
+   conteúdo. O script NÃO remove quarantine do macOS automaticamente.
+4. Em Linux x86_64, quando detecta que a toolchain bundled é Mach-O, o script seleciona
+   automaticamente gcc, g++, gcc-ar, objcopy e nasm nativos do PATH. Todos são
+   submetidos a preflight e seus hashes são registrados na proveniência. NASM é uma
+   dependência obrigatória para os fontes X64 BaseLib do EDK2.
+5. BaseTools é recompilado para o host e o Release X64 é gerado com o perfil GCC53; ao
+   final o script valida o formato EFI e a igualdade das duas cópias produzidas.
+6. O log é criado em BuildLogs/BootLoaderSelector-Build.log e a proveniência em
+   Release/BUILD-PROVENANCE.txt, incluindo o modo de toolchain (bundled/native).
+7. Build-Debug-Full-Log.command permanece disponível para diagnóstico ampliado.
+8. A CI contém builds de release macOS e Linux. O job Linux instala NASM e exercita o
+   caminho de toolchain nativa; o smoke OVMF continua usando o artefato de release
+   validado.
+
+LIMITAÇÃO DE VALIDAÇÃO DESTA CÓPIA
+----------------------------------
+Neste host Linux de auditoria não há NASM nativo instalado. A tentativa de build
+Release validou integralmente o catálogo/hashes da toolchain e abortou no preflight,
+antes da compilação, porque a toolchain bundled é Mach-O/macOS e não existe nasm
+nativo no PATH. Separadamente, os 9 módulos C do runtime passaram compilação estrita
+com macros de Release em Clang e GCC, além das análises estáticas e suítes host
+sanitizadas descritas no relatório consolidado. Portanto, esta cópia não declara um
+EFI final linkado nem smoke OVMF executado neste host. A CI mantém jobs que instalam
+NASM no Linux, além do build macOS e do smoke OVMF.
+
+HISTÓRICO v1.50
+---------------
+O material abaixo permanece preservado como histórico. Afirmações de estado da v1.50
+não descrevem automaticamente a implementação v1.57.
+
+VERSÃO 1.50 — AUDITORIA PROFUNDA DE FV/FFS, VOLINFO E FERRAMENTAS HOST
+--------------------------------------------------------------------
+Esta rodada foi reconstruída sobre a v1.49 verificada. A revisão percorreu a árvore
+inteira, revalidou BaseTools, runtime, scripts, Python, arquivos de configuração,
+permissões, duplicatas, colisões de nome e conteúdo empacotado. As alterações de
+implementação ficaram limitadas a três arquivos BaseTools e a novos testes de regressão.
+O runtime do BootLoaderSelector permanece byte a byte igual ao da v1.49.
+
+Problemas corrigidos nesta rodada:
+- validação incompleta de assinatura, HeaderLength, FvLength e block map de Firmware
+  Volumes, incluindo terminador ausente, pares parcialmente nulos e overflow;
+- iteração FFS que interpretava tamanho/atributos antes de validar o estado do header;
+- regressão em FV vazio/apagado, que podia ser classificado como volume corrompido;
+- FvBufAddVtfFile perdia o último arquivo válido e calculava LastFileSize usando o
+  arquivo novo, permitindo decisão incorreta de sobreposição/espaço livre;
+- headers FFS grandes/truncados e tamanhos fora do buffer;
+- dados RAW e seções com header maior que o objeto, comprimento estendido truncado,
+  alinhamento/avanço inválido e outputs não inicializados em erro;
+- overflow antes da alocação ao empacotar RAW/freeform FFS;
+- cleanup incompleto em falha parcial de CloneString ao carregar guided-section tools;
+- VolInfo confiava em campos do FV antes de confirmar o tamanho real do arquivo;
+- block maps, child FVs, Unicode, GUIDs, depex, compressão e guided sections sem todos
+  os limites necessários;
+- recursão de seções sem limite explícito;
+- base incorreta ao recursar payload de CRC32 guided section;
+- rebase PE/COFF sem validação integral de headers, section table, offsets e tamanhos;
+- execução de ferramentas externas via shell e nomes temporários previsíveis;
+- concatenação de caminho OpenSSL sem aritmética verificada;
+- interpretação por bitmask do campo enumerado de alinhamento FV, que imprimia vários
+  alinhamentos falsos e duplicados.
+
+Preservação do coração do projeto:
+- descoberta, seleção e chainload de OpenCore/Clover: inalterados;
+- LauncherOption, menu, teclado, countdown, GOP e screenshot: inalterados;
+- hardware detection, configurações, caminhos EFI, interface e comportamento: inalterados;
+- APIs públicas e estrutura do pacote preservadas;
+- nenhuma dependência nova e nenhum hardcode de equipamento/plataforma.
+
+Política de warnings:
+- BaseTools completo compilado com GCC e Clang usando -Wall -Wextra -Werror;
+- arquivos modificados também passaram -Wpedantic -Werror e Clang Static Analyzer;
+- builds GCC e Clang com NDEBUG passaram;
+- nenhum novo -Wno-*, pragma de diagnóstico ou supressão foi adicionado;
+- seis mensagens históricas de ambiguidade da gramática VFR do PCCTS permanecem
+  visíveis. Elas não são warnings C/C++ e não foram mascaradas.
+
+Validação executada:
+- BaseTools GCC: build completo + 285/285 testes;
+- BaseTools Clang: build completo + 285/285 testes;
+- BaseTools GCC NDEBUG: 285/285;
+- BaseTools Clang NDEBUG: 285/285;
+- novos testes FV/FFS e VolInfo com ASan/UBSan: PASS;
+- fuzz direto de ParseSection: 20.000 entradas determinísticas;
+- fuzz do executável VolInfo com FV malformado: 1.500 processos, zero sanitizer/crash;
+- FV vazio válido: aceito e reportado com zero arquivos;
+- AuditTests runtime GCC e Clang: 6/6 em cada;
+- runtime estrito: 18/18 combinações compilador/módulo;
+- GCC -fanalyzer + Clang Static Analyzer no runtime: 18/18;
+- Python: 319/319 arquivos compilados em memória com warnings como erros;
+- shell: 7/7 scripts aprovados em bash -n;
+- filesystem: zero symlink, arquivo especial, world-writable ou colisão case-insensitive;
+- runtime: 9/9 arquivos .c idênticos por SHA-256 à v1.49.
+
+Limitação real:
+O link UEFI final não pode ser executado neste host Linux porque o GCC cross e o NASM
+incluídos no projeto são binários Mach-O para macOS. Não é declarado um link macOS que
+não foi realizado. O script Release incluído continua sendo o método oficial para gerar
+BootLoaderSelector.efi no macOS.
+
+ARQUIVOS DE AUDITORIA
+---------------------
+AuditReports/BootLoaderSelector-v1.50-Technical-Report.txt
+AuditReports/BootLoaderSelector-v1.50-Changelog.txt
+AuditReports/Validation-*.log
+AuditReports/MANIFEST.sha256
+
+HISTÓRICO
+---------
+A documentação e os logs v1.49 permanecem em AuditReports para rastreabilidade.

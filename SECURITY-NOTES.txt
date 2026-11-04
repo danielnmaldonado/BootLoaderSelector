@@ -1,0 +1,53 @@
+BootLoaderSelector v2.32 — source security notes
+===============================================
+Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
+
+SOURCE INTEGRITY
+The builder compares the exact source file set with AuditReports/MANIFEST.sha256,
+then verifies every listed hash before running source helpers. Git metadata,
+the mutable canonical build log, generated Build/Conf/Release directories and
+Finder .DS_Store metadata are excluded. Source symlinks are rejected. Legitimate
+source/documentation edits require a regenerated manifest. This detects drift
+relative to the supplied manifest, not independent publisher authenticity.
+
+EXTERNAL TOOLS
+This source distribution contains no legacy toolchain binaries. Linux uses
+host-installed native GCC/binutils/NASM. macOS can use an owner-supplied legacy
+cross-toolchain via BLS_TOOLCHAIN_DIR; the complete file set and contents must
+match the independently pinned Toolchains/gcc102-snb.sha256 before execution.
+Its provenance is not established; it is not offered for redistribution.
+The build never removes macOS quarantine attributes. Finder reveal is opt-in
+with BLS_REVEAL_LOG=1. Jsign 7.5 bootstrap checks its pinned SHA-256 and uses an
+external cache; BLS_JSIGN_AUTO_DOWNLOAD=0 disables the network bootstrap.
+
+SIGNATURES
+Release EFI files are ad-hoc Authenticode signed with a fresh ephemeral key.
+Private keys are created in a private temporary workspace and cleaned up; only
+the public certificate and signing/build metadata are included with outputs.
+The verifier checks the certificate's own signature using its public key as
+well as validity, leaf Basic Constraints, digitalSignature and codeSigning.
+CMS and PE/COFF digest verification remain separate required checks.
+A valid ad-hoc signature does not make the firmware trust this certificate.
+Secure Boot and real-hardware boot behavior require separate platform testing.
+
+TRANSACTIONS
+A directory lock serializes builds and debug diagnostics. Existing releases
+remain available until a complete replacement has passed signing/provenance.
+Normal errors and handled HUP/INT/TERM exit through rollback and cleanup.
+SIGKILL and power loss cannot run shell traps; inspect stale locks and retained
+backups before recovery. The signer also stages its output/certificate/metadata
+as a rollback-capable transaction. Build scripts do not install EFI payloads,
+modify firmware settings or write NVRAM.
+
+PUBLIC TEST FIXTURES
+BaseTools/Source/Python/Pkcs7Sign/TestRoot.pem
+BaseTools/Source/Python/Pkcs7Sign/TestCert.pem
+BaseTools/Source/Python/Rsa2048Sha256Sign/TestSigningPrivateKey.pem
+These upstream public test keys are retained as fixtures only. They must never
+be used for production signing. Root LICENSE does not relicense upstream files.
+
+TEST LIMITS
+Host tests mock firmware services. A successful sanitizer run or static analyzer
+is not firmware certification. Compiler/sanitizer capability skips are explicit;
+Linux CI retains required ASan/leak coverage. See VALIDATION.md for actual runs.
+The prior version's notes are retained under AuditReports/Historical/.

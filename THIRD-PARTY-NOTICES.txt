@@ -1,0 +1,46 @@
+BootLoaderSelector — third-party notice index (v2.32)
+==================================================
+Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
+
+The root BSD-3-Clause LICENSE applies to original BootLoaderSelector code,
+project-owned build/audit helpers and documentation. It does not relicense
+upstream components. Copyright and license headers in all upstream files remain
+intact; the source file's own terms control if they differ from this index.
+
+EDK II / TianoCore: MdePkg and BaseTools, primarily BSD-2-Clause-Patent.
+Full license: LICENSES/BSD-2-Clause-Patent.txt.
+Upstream: https://github.com/tianocore/edk2
+License source: https://github.com/tianocore/edk2/blob/master/License.txt
+The exact imported upstream revision is not established by the supplied archive;
+AuditReports/MANIFEST.sha256 identifies the actual distributed bytes.
+Local defensive DevicePathLib changes retain the upstream license and headers.
+
+Brotli: BaseTools/Source/C/BrotliCompress, MIT.
+Original notice: BaseTools/Source/C/BrotliCompress/LICENSE.
+Convenience copy: LICENSES/MIT-Brotli.txt.
+
+LZMA SDK: BaseTools/Source/C/LzmaCompress/Sdk, Igor Pavlov, public domain as
+stated in its source headers. See, for example, Sdk/C/LzmaDec.c.
+
+PCCTS / ANTLR 1.33: BaseTools/Source/C/VfrCompile/Pccts.
+Terence Parr, Purdue University, AHPCRC / University of Minnesota and contributors.
+Public-domain statement and requested acknowledgment are preserved in
+BaseTools/Source/C/VfrCompile/Pccts/antlr/main.c. This project acknowledges PCCTS
+as the parser generator used by the upstream BaseTools VFR compiler.
+
+Unused prebuilt ARM CompilerIntrinsicsLib libraries and Windows EOT Python
+extensions from the original archive are also excluded; the x64 application and
+its Linux/macOS build/tests do not use them. Their original source notices remain.
+
+The legacy binary toolchain.gcc102.snb is NOT included in this public source
+release. Its matching source/provenance was not established. A checksum catalog
+is retained solely to verify a separately supplied local dependency; hashes do
+not establish redistribution rights. See Toolchains/README.md.
+
+GCC/binutils/NASM, Clang/LLVM/LLD, OpenSSL, Java, Jsign, sbsigntools and QEMU/OVMF
+are external build/test dependencies under their respective licenses. They are
+not redistributed as binaries in this source package. Jsign bootstrap downloads
+its official hash-pinned JAR into an external cache, not into the source tree.
+
+Public test keys/certificates from EDK2 are fixtures, identified in SECURITY-NOTES.txt.
+They are never production signing credentials.

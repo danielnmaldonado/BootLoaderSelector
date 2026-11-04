@@ -1,0 +1,500 @@
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_origin_clean/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt /mnt/data/bls_round67_work/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt
+--- /mnt/data/bls_round67_origin_clean/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt	2026-09-20 15:55:16.000000000 +0000
++++ /mnt/data/bls_round67_work/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt	2026-10-05 01:20:18.862135028 +0000
+@@ -1,42 +1,59 @@
+-BootLoaderSelector v2.13 — Professional Evolution Round 67
+-Audit/fix date: 2026-09-20
++BootLoaderSelector v2.14 — Professional Evolution Round 68
++Audit/fix date: 2026-10-04
+ Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
+-Base: v2.12/Round66 FULL-SOURCE
+-Base ZIP SHA-256: 12e21ee4d7d8f84c90c7fcfe86792b5b7b40857151f9785f0b448c9975716ce4
++Base: v2.13/Round67 FULL-SOURCE
++Base ZIP SHA-256: 7b5f95ef0ab97bf6092077c100ee860672a2d37b844f081ece802b3e9508d85f
+ 
+-SOURCE E REPRODUÇÃO
+-------------------
+-O log real do Mac da v2.12 confirma signer Jsign 7.5, toolchain Mach-O íntegra e
+-compilação EDK II concluída até [GENFW] BootLoaderSelector / "- Done -". A falha
+-acontece exclusivamente depois: "unable to compile the Jsign compatibility verifier".
++ESCOPO E BASELINE
++-----------------
++Foi auditado o FULL-SOURCE recebido sem substituir dependências vendorizadas nem
++refatorar o runtime por preferência. A baseline passou os gates de metadata, créditos,
++invariantes de UI/Release e bootstrap do signer. O runtime passou ASan+UBSan em Clang
++e GCC, IntegerSan em Clang, ThreadSanitizer em GCC, BaseTools deep bounds/fuzz nos dois
++compiladores e compilação/análise estática estrita das 9 unidades C do aplicativo.
++
++ACHADOS REPRODUZIDOS
++--------------------
++1. EKU — falso positivo: verify_certificate_policy() procurava os bytes "Code Signing"
++   na saída textual completa de `openssl x509 -text`. Um certificado SEM extensão
++   extendedKeyUsage era aceito quando seu Subject/CN continha literalmente esse texto.
++2. Validade — falso positivo: `openssl x509 -checkend 0` verifica expiração/notAfter,
++   mas não comprova que notBefore já foi atingido. Um certificado codeSigning ainda
++   não válido foi aceito pelo verificador anterior.
+ 
+ CAUSA RAIZ
+ ----------
+-A Round66 tentava compilar em runtime um source Java contra o JAR all-in-one Jsign
+-7.5. Essa distribuição é minimizada/sombreada e não constitui uma API de compilação
+-estável para helpers externos entre JDKs/macOS. A Release não deve depender de javac
+-nem de source-file mode para verificar um binário já compilado.
++A política de certificado dependia de apresentação textual e de uma operação OpenSSL
++que cobre apenas uma extremidade do intervalo de validade. As duas verificações eram,
++portanto, menos estritas que as garantias documentadas para a Release.
+ 
+ CORREÇÃO
+ --------
+-Foi removido JsignLegacyVerifier.java e todo compile-on-the-fly. Para Jsign 7.x, o
+-helper usa `jsign extract --format DER` e passa a assinatura para o project-owned
+-Verify-PeCoff-Authenticode.py. O verificador usa somente Python stdlib + OpenSSL e
+-exige certificado publicado exato, validade/EKU codeSigning, RSA-3072, SHA-256,
+-signedAttrs corretos, digest Authenticode PE/COFF independente e assinatura CMS/RSA
+-válida. Native `jsign verify` permanece preferido quando disponível.
++Verify-PeCoff-Authenticode.py passa a decodificar a estrutura X.509 DER usando o parser
++ASN.1 project-owned já existente. A política extrai Validity e Extensions diretamente,
++exige notBefore <= UTC agora <= notAfter e exige o OID codeSigning exato
++1.3.6.1.5.5.7.3.3 dentro da extensão EKU. A checagem self-issued via subject/issuer e
++todas as verificações criptográficas Authenticode existentes permanecem preservadas.
+ 
+ REGRESSÕES / VALIDAÇÃO
+ ----------------------
+-- RED: v2.12 falha quando javac é propositalmente inutilizável;
+-- GREEN: Jsign 7.x route independe de javac;
+-- EFI PE32+ real sign -> extract -> verify -> publish -> reverify: PASS;
+-- alteração de byte no EFI assinado: rejeitada;
+-- certificado diferente: rejeitado;
+-- falhas do extract/verificador propagam diagnóstico detalhado ao Terminal;
+-- runtime UEFI C não alterado nesta correção.
++- RED confirmado na base v2.13: spoof de Subject sem EKU era aceito;
++- RED confirmado na base v2.13: certificado com notBefore futuro era aceito;
++- GREEN: certificado válido com EKU codeSigning é aceito;
++- GREEN: spoof de Subject sem EKU é rejeitado;
++- GREEN: certificado codeSigning ainda não válido é rejeitado;
++- regressão adicionada ao quality gate e ao conjunto obrigatório de créditos;
++- runtime UEFI: nenhuma alteração funcional além do metadata de versão;
++- lifecycle, ownership, buffers, aritmética de tamanhos, boot scan, timers/watchdog,
++  persistência, GOP/screenshot e geometria do menu foram revistos sem novo defeito
++  reproduzível; não foram aplicadas mudanças especulativas de layout/runtime;
++- bash -n e Python bytecode compile: PASS;
++- canonical signing/build end-to-end não pôde ser executado neste host Linux: não há
++  signer PE/COFF local, o bootstrap Jsign não consegue resolver github.com nesta
++  sandbox e a ferramenta NASM vendorizada é Mach-O/macOS. Essa limitação ambiental
++  não foi convertida em alteração ou relaxamento do pipeline fail-closed.
+ 
+ CHANGE CONTROL
+ --------------
+-- versão: 2.13 / Professional Evolution Round67 / 2026-09-20;
++- versão: 2.14 / Professional Evolution Round68 / 2026-10-04;
+ - crédito obrigatório preservado: ©DNMTechLabs / dnmtechlabs@gmail.com.
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_origin_clean/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/AuditTests/Run-Release-Quality-Gate.command /mnt/data/bls_round67_work/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/AuditTests/Run-Release-Quality-Gate.command
+--- /mnt/data/bls_round67_origin_clean/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/AuditTests/Run-Release-Quality-Gate.command	2026-09-20 15:52:20.000000000 +0000
++++ /mnt/data/bls_round67_work/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/AuditTests/Run-Release-Quality-Gate.command	2026-10-05 01:20:18.861187030 +0000
+@@ -44,6 +44,7 @@
+   AuditTests/Run-Release-Quality-Gate.command
+   AuditTests/Test-AdHoc-Signing.command
+   AuditTests/Test-Signer-Bootstrap.command
++  AuditTests/Test-Authenticode-Verifier-Policy.command
+   AuditTests/Test-Release-Publish-Invariants.command
+   AuditTools/Sign-PeCoff-AdHoc.command
+   AuditTools/Verify-PeCoff-Authenticode.py
+@@ -128,6 +129,9 @@
+ fi
+ echo "== Release PE/COFF signing invariant: PASS =="
+ 
++echo "== Authenticode certificate-policy regression =="
++"$PROJECT_ROOT/AuditTests/Test-Authenticode-Verifier-Policy.command"
++
+ echo "== Ad-hoc signer bootstrap regression =="
+ "$PROJECT_ROOT/AuditTests/Test-Signer-Bootstrap.command"
+ 
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_origin_clean/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/AuditTests/Test-Authenticode-Verifier-Policy.command /mnt/data/bls_round67_work/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/AuditTests/Test-Authenticode-Verifier-Policy.command
+--- /mnt/data/bls_round67_origin_clean/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/AuditTests/Test-Authenticode-Verifier-Policy.command	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bls_round67_work/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/AuditTests/Test-Authenticode-Verifier-Policy.command	2026-10-05 01:22:58.002325274 +0000
+@@ -0,0 +1,117 @@
++#!/bin/bash
++set -euo pipefail
++
++# Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++cd "$(dirname "$0")/.."
++PROJECT_ROOT="$PWD"
++VERIFIER="$PROJECT_ROOT/AuditTools/Verify-PeCoff-Authenticode.py"
++
++command -v openssl >/dev/null 2>&1 || { echo "openssl is required" >&2; exit 2; }
++command -v python3 >/dev/null 2>&1 || { echo "python3 is required" >&2; exit 2; }
++
++TMP_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/BootLoaderSelector.AuthenticodePolicyTest.XXXXXX")"
++cleanup() { rm -rf "$TMP_ROOT"; }
++trap cleanup EXIT
++
++check_policy() {
++  local mode="$1"
++  local cert="$2"
++  PYTHONDONTWRITEBYTECODE=1 python3 - "$VERIFIER" "$cert" "$mode" <<'PY'
++import importlib.util
++import pathlib
++import sys
++
++verifier_path = pathlib.Path(sys.argv[1])
++cert_path = pathlib.Path(sys.argv[2])
++mode = sys.argv[3]
++spec = importlib.util.spec_from_file_location("bls_authenticode_verifier", verifier_path)
++if spec is None or spec.loader is None:
++    raise SystemExit("unable to load verifier module")
++module = importlib.util.module_from_spec(spec)
++sys.modules[spec.name] = module
++spec.loader.exec_module(module)
++
++try:
++    module.verify_certificate_policy(cert_path)
++except module.VerifyError as exc:
++    if mode == "reject":
++        print(f"policy rejection: {exc}")
++        raise SystemExit(0)
++    print(f"unexpected policy rejection: {exc}", file=sys.stderr)
++    raise SystemExit(1)
++else:
++    if mode == "accept":
++        print("policy acceptance: PASS")
++        raise SystemExit(0)
++    print("invalid certificate policy was accepted", file=sys.stderr)
++    raise SystemExit(1)
++PY
++}
++
++# Positive control: the exact policy expected from the release signer must pass.
++openssl req -new -x509 -newkey rsa:3072 -sha256 -nodes -days 1 \
++  -subj '/CN=DNMTechLabs Policy Positive/O=DNMTechLabs' \
++  -addext 'basicConstraints=critical,CA:FALSE' \
++  -addext 'keyUsage=critical,digitalSignature' \
++  -addext 'extendedKeyUsage=codeSigning' \
++  -keyout "$TMP_ROOT/positive-key.pem" -out "$TMP_ROOT/positive-cert.pem" >/dev/null 2>&1
++check_policy accept "$TMP_ROOT/positive-cert.pem"
++
++# Regression: the old verifier searched all of `openssl x509 -text` for the
++# words "Code Signing". A certificate with that text only in its subject could
++# therefore bypass the EKU requirement.
++openssl req -new -x509 -newkey rsa:3072 -sha256 -nodes -days 1 \
++  -subj '/CN=Code Signing/O=DNMTechLabs Policy Negative' \
++  -addext 'basicConstraints=critical,CA:FALSE' \
++  -addext 'keyUsage=critical,digitalSignature' \
++  -keyout "$TMP_ROOT/no-eku-key.pem" -out "$TMP_ROOT/no-eku-cert.pem" >/dev/null 2>&1
++check_policy reject "$TMP_ROOT/no-eku-cert.pem"
++
++# Regression: `openssl x509 -checkend 0` checks notAfter only. Build a
++# self-issued code-signing certificate whose notBefore is in the future; the
++# policy verifier must reject it.
++mkdir -p "$TMP_ROOT/future-ca"
++cd "$TMP_ROOT/future-ca"
++touch index.txt
++printf '1000\n' > serial
++cat > openssl.cnf <<'EOF'
++[ ca ]
++default_ca = CA_default
++
++[ CA_default ]
++database = index.txt
++serial = serial
++new_certs_dir = .
++default_md = sha256
++policy = policy_any
++copy_extensions = copy
++
++[ policy_any ]
++commonName = supplied
++organizationName = optional
++
++[ req ]
++distinguished_name = dn
++prompt = no
++
++[ dn ]
++CN = DNMTechLabs Future Policy Test
++O = DNMTechLabs
++
++[ code_signing ]
++basicConstraints = critical,CA:FALSE
++keyUsage = critical,digitalSignature
++extendedKeyUsage = codeSigning
++EOF
++openssl req -new -newkey rsa:3072 -sha256 -nodes \
++  -keyout future-key.pem -out future.csr -config openssl.cnf >/dev/null 2>&1
++FUTURE_START="$(date -u -d '+2 days' '+%Y%m%d%H%M%SZ' 2>/dev/null || date -u -v+2d '+%Y%m%d%H%M%SZ')"
++FUTURE_END="$(date -u -d '+4 days' '+%Y%m%d%H%M%SZ' 2>/dev/null || date -u -v+4d '+%Y%m%d%H%M%SZ')"
++openssl ca -batch -selfsign -config openssl.cnf -keyfile future-key.pem \
++  -in future.csr -startdate "$FUTURE_START" -enddate "$FUTURE_END" \
++  -extensions code_signing -out future-cert.pem >/dev/null 2>&1
++cd "$PROJECT_ROOT"
++check_policy reject "$TMP_ROOT/future-ca/future-cert.pem"
++
++echo "Authenticode certificate-policy regression: PASS"
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_origin_clean/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/AuditTools/Verify-PeCoff-Authenticode.py /mnt/data/bls_round67_work/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/AuditTools/Verify-PeCoff-Authenticode.py
+--- /mnt/data/bls_round67_origin_clean/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/AuditTools/Verify-PeCoff-Authenticode.py	2026-09-20 15:52:20.000000000 +0000
++++ /mnt/data/bls_round67_work/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/AuditTools/Verify-PeCoff-Authenticode.py	2026-10-05 01:08:54.502351312 +0000
+@@ -9,6 +9,7 @@
+ 
+ import hashlib
+ import os
++from datetime import datetime, timezone
+ import shutil
+ import struct
+ import subprocess
+@@ -24,6 +25,8 @@
+ OID_MESSAGE_DIGEST = "1.2.840.113549.1.9.4"
+ OID_RSA_ENCRYPTION = "1.2.840.113549.1.1.1"
+ OID_SHA256_WITH_RSA = "1.2.840.113549.1.1.11"
++OID_EXTENDED_KEY_USAGE = "2.5.29.37"
++OID_CODE_SIGNING_EKU = "1.3.6.1.5.5.7.3.3"
+ 
+ 
+ class VerifyError(Exception):
+@@ -167,10 +170,92 @@
+     return cp.stdout
+ 
+ 
+-def verify_certificate_policy(cert: Path) -> None:
+-    cp = run(["openssl", "x509", "-in", str(cert), "-noout", "-checkend", "0"])
+-    if cp.returncode != 0:
++def _parse_x509_time(node: Node) -> datetime:
++    try:
++        text = node.content.decode("ascii")
++    except UnicodeDecodeError as exc:
++        raise VerifyError("X.509 validity contains a non-ASCII time") from exc
++    if node.tag_class != 0:
++        raise VerifyError("X.509 validity contains an invalid time tag")
++    try:
++        if node.tag_number == 23 and len(text) == 13 and text.endswith("Z"):
++            year2 = int(text[0:2])
++            year = 2000 + year2 if year2 < 50 else 1900 + year2
++            parts = (year, int(text[2:4]), int(text[4:6]), int(text[6:8]), int(text[8:10]), int(text[10:12]))
++        elif node.tag_number == 24 and len(text) == 15 and text.endswith("Z"):
++            parts = (int(text[0:4]), int(text[4:6]), int(text[6:8]), int(text[8:10]), int(text[10:12]), int(text[12:14]))
++        else:
++            raise VerifyError("X.509 validity uses an unsupported time encoding")
++        return datetime(*parts, tzinfo=timezone.utc)
++    except ValueError as exc:
++        raise VerifyError("X.509 validity contains an invalid time") from exc
++
++
++def _certificate_policy_fields(cert_der: bytes) -> tuple[datetime, datetime, bool]:
++    root = parse_node(cert_der)
++    require_universal(root, 16, "X.509 Certificate SEQUENCE")
++    if root.end != len(cert_der):
++        raise VerifyError("X.509 certificate has trailing data")
++    certificate = root.children()
++    if len(certificate) != 3:
++        raise VerifyError("X.509 certificate has an invalid top-level structure")
++    tbs = certificate[0]
++    require_universal(tbs, 16, "X.509 TBSCertificate SEQUENCE")
++    fields = tbs.children()
++    offset = 1 if fields and fields[0].tag_class == 2 and fields[0].tag_number == 0 else 0
++    if len(fields) < offset + 6:
++        raise VerifyError("X.509 TBSCertificate is truncated")
++
++    validity = fields[offset + 3]
++    require_universal(validity, 16, "X.509 Validity SEQUENCE")
++    validity_fields = validity.children()
++    if len(validity_fields) != 2:
++        raise VerifyError("X.509 Validity has an invalid structure")
++    not_before = _parse_x509_time(validity_fields[0])
++    not_after = _parse_x509_time(validity_fields[1])
++    if not_before > not_after:
++        raise VerifyError("X.509 validity interval is reversed")
++
++    has_code_signing_eku = False
++    extensions_wrapper = next(
++        (node for node in fields[offset + 6:] if node.tag_class == 2 and node.tag_number == 3),
++        None,
++    )
++    if extensions_wrapper is not None:
++        wrapper_children = extensions_wrapper.children()
++        if len(wrapper_children) != 1:
++            raise VerifyError("X.509 Extensions wrapper has an invalid structure")
++        extensions = wrapper_children[0]
++        require_universal(extensions, 16, "X.509 Extensions SEQUENCE")
++        for extension in extensions.children():
++            require_universal(extension, 16, "X.509 Extension SEQUENCE")
++            extension_fields = extension.children()
++            if len(extension_fields) not in (2, 3):
++                raise VerifyError("X.509 Extension has an invalid structure")
++            if decode_oid(extension_fields[0]) != OID_EXTENDED_KEY_USAGE:
++                continue
++            extn_value = extension_fields[-1]
++            require_universal(extn_value, 4, "X.509 extnValue OCTET STRING")
++            eku_sequence = parse_node(extn_value.content)
++            require_universal(eku_sequence, 16, "X.509 Extended Key Usage SEQUENCE")
++            if eku_sequence.end != len(extn_value.content):
++                raise VerifyError("X.509 Extended Key Usage has trailing data")
++            has_code_signing_eku = any(
++                decode_oid(usage) == OID_CODE_SIGNING_EKU for usage in eku_sequence.children()
++            )
++            break
++
++    return not_before, not_after, has_code_signing_eku
++
++
++def verify_certificate_policy(cert: Path, cert_der: bytes | None = None) -> None:
++    if cert_der is None:
++        cert_der = openssl_cert_der(cert)
++    not_before, not_after, has_code_signing_eku = _certificate_policy_fields(cert_der)
++    now = datetime.now(timezone.utc)
++    if now < not_before or now > not_after:
+         raise VerifyError("signer certificate is expired or not yet valid")
++
+     cp = run(["openssl", "x509", "-in", str(cert), "-noout", "-subject", "-issuer", "-nameopt", "RFC2253"])
+     if cp.returncode != 0:
+         raise VerifyError("unable to inspect signer certificate")
+@@ -179,8 +264,7 @@
+     issuer = next((x.partition("=")[2].strip() for x in lines if x.startswith("issuer=")), None)
+     if not subject or subject != issuer:
+         raise VerifyError("ad-hoc signer certificate is not self-issued")
+-    cp = run(["openssl", "x509", "-in", str(cert), "-noout", "-text"])
+-    if cp.returncode != 0 or b"Code Signing" not in cp.stdout:
++    if not has_code_signing_eku:
+         raise VerifyError("signer certificate does not contain the codeSigning EKU")
+ 
+ 
+@@ -383,8 +467,8 @@
+     if not shutil.which("openssl"):
+         raise VerifyError("openssl is required")
+ 
+-    verify_certificate_policy(cert_path)
+     cert_der = openssl_cert_der(cert_path)
++    verify_certificate_policy(cert_path, cert_der)
+     signed_attrs, cms_signature, signed_file_digest, _ = parse_signature(sig_path.read_bytes(), cert_der)
+     computed_file_digest = authenticode_digest_sha256(image_path.read_bytes())
+     if computed_file_digest != signed_file_digest:
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_origin_clean/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/BootLoaderSelector.dsc /mnt/data/bls_round67_work/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/BootLoaderSelector.dsc
+--- /mnt/data/bls_round67_origin_clean/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/BootLoaderSelector.dsc	2026-09-20 15:55:16.000000000 +0000
++++ /mnt/data/bls_round67_work/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/BootLoaderSelector.dsc	2026-10-05 01:20:18.860963621 +0000
+@@ -6,7 +6,7 @@
+ [Defines]
+   PLATFORM_NAME                  = BootLoaderSelector
+   PLATFORM_GUID                  = 3F71A792-6E03-4D84-9F1D-F3C81EC80F44
+-  PLATFORM_VERSION = 2.13
++  PLATFORM_VERSION = 2.14
+   DSC_SPECIFICATION              = 0x00010006
+   OUTPUT_DIRECTORY               = Build/BootLoaderSelector
+   SUPPORTED_ARCHITECTURES        = X64
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_origin_clean/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf /mnt/data/bls_round67_work/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf
+--- /mnt/data/bls_round67_origin_clean/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf	2026-09-20 15:55:16.000000000 +0000
++++ /mnt/data/bls_round67_work/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf	2026-10-05 01:20:18.861059833 +0000
+@@ -8,7 +8,7 @@
+   BASE_NAME                      = BootLoaderSelector
+   FILE_GUID                      = F9C8E131-0A87-4C6C-A3E4-CA03DE31F6F1
+   MODULE_TYPE                    = UEFI_APPLICATION
+-  VERSION_STRING = 2.13
++  VERSION_STRING = 2.14
+   ENTRY_POINT                    = UefiMain
+ 
+ [Sources]
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_origin_clean/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h /mnt/data/bls_round67_work/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h
+--- /mnt/data/bls_round67_origin_clean/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h	2026-09-20 15:55:16.000000000 +0000
++++ /mnt/data/bls_round67_work/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h	2026-10-05 01:20:18.861096297 +0000
+@@ -9,8 +9,8 @@
+ #include <Protocol/SimpleFileSystem.h>
+ #include <Guid/FileInfo.h>
+ 
+-#define BLS_VERSION_ASCII "2.13"
+-#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.13"
++#define BLS_VERSION_ASCII "2.14"
++#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.14"
+ 
+ #define BLS_MAX_TEXT      128
+ #define BLS_MAX_PATH      192
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_origin_clean/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/CHANGELOG.txt /mnt/data/bls_round67_work/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/CHANGELOG.txt
+--- /mnt/data/bls_round67_origin_clean/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/CHANGELOG.txt	2026-09-20 15:55:16.000000000 +0000
++++ /mnt/data/bls_round67_work/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/CHANGELOG.txt	2026-10-05 01:20:18.862092916 +0000
+@@ -1,7 +1,27 @@
+ BootLoaderSelector — CHANGELOG
+ ===========================
+ 
+-Versão atual: 2.13
++Versão atual: 2.14
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++VERSÃO 2.14 — PROFESSIONAL EVOLUTION ROUND 68 — 2026-10-04
++------------------------------------------------------------
++Base exclusiva: v2.13/Round67 FULL-SOURCE
++SHA-256 do ZIP-base: 7b5f95ef0ab97bf6092077c100ee860672a2d37b844f081ece802b3e9508d85f
++
++Alterações desta rodada:
++- reproduzido falso positivo de EKU: certificado sem codeSigning era aceito quando
++  "Code Signing" existia apenas no Subject/CN;
++- reproduzido falso positivo temporal: certificado codeSigning com notBefore futuro
++  era aceito pela checagem anterior baseada somente em `openssl x509 -checkend 0`;
++- validade X.509 agora é decodificada do DER e exige notBefore <= agora <= notAfter;
++- EKU agora é decodificado do DER e exige o OID exato 1.3.6.1.5.5.7.3.3;
++- nova regressão AuditTests/Test-Authenticode-Verifier-Policy.command integrada ao
++  quality gate e à verificação obrigatória de créditos;
++- runtime UEFI e layout não alterados funcionalmente após auditoria de lifecycle,
++  bounds, console/GOP, persistência, boot path e ownership sem novo defeito reproduzível;
++- versão/build incrementados para 2.14/Round68.
++
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+ 
+ VERSÃO 2.13 — PROFESSIONAL EVOLUTION ROUND 67 — 2026-09-20
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_origin_clean/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/INFO.txt /mnt/data/bls_round67_work/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/INFO.txt
+--- /mnt/data/bls_round67_origin_clean/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/INFO.txt	2026-09-20 15:55:16.000000000 +0000
++++ /mnt/data/bls_round67_work/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/INFO.txt	2026-10-05 01:20:18.861923286 +0000
+@@ -1,12 +1,39 @@
+ BootLoaderSelector — INFORMAÇÕES COMPLETAS DO PROJETO
+ =====================================================
+ 
+-Versão atual: 2.13
+-Base imediata: BootLoaderSelector v2.12 Professional Evolution Round66 (2026-09-20)
+-SHA-256 do ZIP-base recebido nesta rodada: 12e21ee4d7d8f84c90c7fcfe86792b5b7b40857151f9785f0b448c9975716ce4
+-Data desta rodada: 2026-09-20
++Versão atual: 2.14
++Base imediata: BootLoaderSelector v2.13 Professional Evolution Round67 (2026-09-20)
++SHA-256 do ZIP-base recebido nesta rodada: 7b5f95ef0ab97bf6092077c100ee860672a2d37b844f081ece802b3e9508d85f
++Data desta rodada: 2026-10-04
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+ 
++VERSÃO 2.14 — PROFESSIONAL EVOLUTION ROUND 68 — 2026-10-04
++------------------------------------------------------------
++Esta rodada parte exclusivamente do FULL-SOURCE v2.13/Round67 recebido nesta
++conversa (SHA-256 7b5f95ef0ab97bf6092077c100ee860672a2d37b844f081ece802b3e9508d85f).
++
++Fine-tune de segurança e confiabilidade do pipeline de Release:
++- reproduzidos dois falsos positivos independentes no verificador Authenticode usado
++  pela rota de compatibilidade Jsign 7.x;
++- um certificado sem EKU codeSigning podia ser aceito quando a string literal
++  "Code Signing" aparecia apenas no Subject/CN, porque a política procurava texto em
++  toda a saída de `openssl x509 -text` em vez de decodificar a extensão EKU;
++- um certificado cujo notBefore ainda estava no futuro também podia ser aceito,
++  porque `openssl x509 -checkend 0` protege o limite notAfter, não o início da validade;
++- AuditTools/Verify-PeCoff-Authenticode.py agora decodifica a estrutura X.509 DER com
++  o parser ASN.1 project-owned já usado pelo verificador, valida notBefore <= agora <=
++  notAfter e exige o OID exato codeSigning 1.3.6.1.5.5.7.3.3 dentro da extensão EKU;
++- preservadas as demais garantias: certificado publicado exato, signer self-issued,
++  RSA-3072/SHA-256, signedAttrs, digest Authenticode independente e CMS/RSA válido;
++- adicionada regressão canônica com controle positivo, spoof de Subject sem EKU e
++  certificado codeSigning ainda não válido; a regressão faz parte do quality gate;
++- runtime UEFI, scan/boot policy e geometria/layout não receberam mudança funcional:
++  ASan/UBSan/IntegerSan/TSan, BaseTools deep tests e analyzers estritos permaneceram
++  limpos na auditoria desta rodada, evitando alterações especulativas.
++
++Versão/build incrementados para 2.14/Round68.
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
++
+ VERSÃO 2.13 — PROFESSIONAL EVOLUTION ROUND 67 — 2026-09-20
+ ------------------------------------------------------------
+ Esta correção parte exclusivamente do FULL-SOURCE v2.12/Round66 entregue nesta
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_origin_clean/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/SECURITY-NOTES.txt /mnt/data/bls_round67_work/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/SECURITY-NOTES.txt
+--- /mnt/data/bls_round67_origin_clean/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/SECURITY-NOTES.txt	2026-09-20 15:55:16.000000000 +0000
++++ /mnt/data/bls_round67_work/BootLoaderSelector-Source-v2.13-DNMTechLabs-Professional-Evolution-Round67-2026-09-20-FULL-SOURCE/SECURITY-NOTES.txt	2026-10-05 01:20:18.861252958 +0000
+@@ -85,6 +85,11 @@
+ certificate validity, codeSigning EKU, RSA-3072, SHA-256, expected Authenticode
+ content type and messageDigest signed attributes, an independently recomputed
+ PE/COFF Authenticode file digest, and a cryptographically valid CMS/RSA signature.
++Starting with v2.14/Round68, certificate validity and EKU are decoded from the
++certificate DER structure itself: both notBefore and notAfter are enforced and
++codeSigning must be present as the exact 1.3.6.1.5.5.7.3.3 EKU OID. This prevents
++subject/display text from impersonating an EKU and prevents not-yet-valid signer
++certificates from being accepted by the Jsign 7.x compatibility route.
+ Tampered EFI bytes or a different certificate fail closed. Native Jsign verification
+ continues to be preferred when the selected Jsign version provides it. No verifier
+ JAR, private signing material, or third-party Python package is vendored.

@@ -1,0 +1,506 @@
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r71_base/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt /mnt/data/bls_r71_final/BootLoaderSelector-Source-v2.17-DNMTechLabs-Professional-Evolution-Round71-2026-10-05-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt
+--- /mnt/data/bls_r71_base/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt	2026-10-05 02:22:27.000000000 +0000
++++ /mnt/data/bls_r71_final/BootLoaderSelector-Source-v2.17-DNMTechLabs-Professional-Evolution-Round71-2026-10-05-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt	2026-10-05 03:32:43.019514765 +0000
+@@ -1,109 +1,75 @@
+-BootLoaderSelector v2.16 — Professional Evolution Round 70
+-Audit/fix date: 2026-10-04
++BootLoaderSelector v2.17 — Professional Evolution Round 71
++Audit/fix date: 2026-10-05
+ Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
+-Base: v2.15/Round69 FULL-SOURCE
+-Base ZIP SHA-256: 00d65d337330f87bbb59bc93442e0dce0fd554e75c1f9210be9bff8a6706bbef
++Base: v2.16/Round70 FULL-SOURCE
++Base ZIP SHA-256: b0fc6f5c794592f614ec64fd72320e529eb72315388cf033bb07f8f8939751f9
+ 
+ ESCOPO E METODOLOGIA
+ --------------------
+-Foi auditado o FULL-SOURCE v2.15/Round69 mais recente recebido nesta conversa. A
+-revisão preservou dependências vendorizadas e comportamento já comprovado, usando
+-regressões RED→GREEN antes de cada correção, ASan/LeakSanitizer/UBSan/IntegerSan,
+-ThreadSanitizer, fuzz/bounds do BaseTools, Clang Static Analyzer, GCC -fanalyzer,
+-warnings estritos e revisão manual de ownership, device paths, configuração,
+-screenshot/GOP, menu/layout, lifecycle UEFI e pipeline de assinatura/publicação.
++Foi auditado o FULL-SOURCE v2.16/Round70 mais recente recebido nesta conversa. A
++revisão preservou dependências vendorizadas, comportamento comprovado e layout sem
++falha reproduzível. Foram usados regressões RED→GREEN, ASan/LeakSanitizer/UBSan,
++IntegerSan, ThreadSanitizer, fuzz/bounds do BaseTools, Clang Static Analyzer, GCC
++-fanalyzer, warnings estritos e revisão manual de parser/configuração, ownership,
++boot scan, logger, screenshot/GOP, UI/layout, lifecycle UEFI e release tooling.
+ 
+ ACHADOS REPRODUZIDOS
+ --------------------
+-1. USB WWID sem serial — falso positivo de conformidade introduzido na Round69.
+-   O v2.15 aceitava Length == sizeof(USB_WWID_DEVICE_PATH), isto é, um subtype 16
+-   sem nenhum CHAR16 de serial.
+-
+-2. Certificado self-issued, mas não self-signed — falso positivo de política.
+-   verify_certificate_policy() exigia Subject == Issuer, porém não verificava a
+-   assinatura do certificado contra sua própria chave. Um leaf codeSigning assinado
+-   por outra chave/certificado com o mesmo DN era aceito.
+-
+-3. Volume de configuração acoplado indevidamente a screenshot/priorização.
+-   Um BLS.plist malformado deixa ConfigVolumeHandle=NULL de propósito para impedir
+-   overwrite automático. O mesmo handle era, porém, usado por F10 e pela priorização
+-   do volume do selector, desabilitando funcionalidades independentes do plist.
++1. Markup XML ignorável alterava silenciosamente character data scalar.
++   BlsValidateAndSanitizeRootDict() substituía comentários `<!--...-->` e processing
++   instructions `<?...?>` por espaços. Portanto, por exemplo,
++   `<string>Open<!--ignored-->Core</string>` não produzia `OpenCore`.
++
++2. Comentário XML malformado com `--` no corpo era aceito.
++   Os quatro caminhos que localizavam o fechamento de comentário procuravam somente
++   o próximo `-->`. Assim, `<!--bad--comment-->` atravessava a validação apesar de
++   `--` ser proibido no corpo de um comentário XML.
+ 
+ EVIDÊNCIA / CAUSA RAIZ
+ ----------------------
+-USB WWID:
+-- UEFI Specification 2.10 §10.3.4.7 descreve USB WWID por Vendor ID, Product ID,
+-  Interface e Serial Number e afirma que dispositivos sem serial devem usar o USB
+-  Device Path subtype 5;
+-- a estrutura base mede 10 bytes e o serial ocupa o restante do nó. Portanto um WWID
+-  conforme precisa conter ao menos 1 CHAR16 e no máximo 64 CHAR16;
+-- a Round69 inferiu conformidade a partir do comportamento permissivo de um helper EDK2.
+-  Esse comportamento de construção não substitui a exigência normativa do formato.
+-
+-X.509:
+-- igualdade textual entre Subject e Issuer prova somente self-issued;
+-- foi criado um root e um leaf distintos com o mesmo DN. O leaf possui validade atual,
+-  digitalSignature e EKU codeSigning, e Subject==Issuer, mas sua assinatura foi feita
+-  pela chave do root;
+-- o verificador v2.15 aceitou esse leaf; `openssl verify -CAfile leaf leaf` o rejeitou.
+-
+-Config/screenshot:
+-- BlsLoadConfig() mantém ConfigVolumeHandle=NULL após EFI_LOAD_ERROR para que options,
+-  remember e logger não sobrescrevam um plist malformado/futuro;
+-- BlsRunMenu()/BlsRunOptions() reutilizavam esse mesmo handle em BlsSaveScreenshot();
+-- Main.c também reutilizava ConfigVolume em BlsPrioritizeVolume();
+-- portanto uma restrição de escrita de configuração vazava para recursos que só
+-  precisam conhecer o volume físico da imagem do selector.
++Semântica de markup ignorável:
++- o parser valida uma cópia privada do root dict e depois extrai valores scalar;
++- substituir markup por espaços conserva offsets, porém muda o conteúdo textual;
++- regressões adicionadas antes da correção exigem que comentários/PIs não produzam
++  caracteres no valor e falharam no comportamento v2.16.
++
++Gramática de comentário:
++- a implementação usava AsciiStrStr(..., "-->") em múltiplos caminhos;
++- não existia verificação do primeiro par `--` dentro do corpo;
++- regressão adicionada antes da correção exige EFI_LOAD_ERROR para comentário com
++  `--` interno e falhou antes do hardening.
+ 
+ CORREÇÕES
+ ---------
+-1. BootScan.c
+-   - USB WWID exige Length >= sizeof(USB_WWID_DEVICE_PATH) + sizeof(CHAR16);
+-   - preservados: tamanho exato dos nós USB/USB Class, múltiplo de CHAR16 e máximo de
+-     64 caracteres para WWID;
+-   - o nó WWID base de 10 bytes volta a ser rejeitado como não conforme.
+-
+-2. Verify-PeCoff-Authenticode.py
+-   - preservadas validações DER de notBefore/notAfter e EKU codeSigning;
+-   - após confirmar Subject==Issuer, o certificado publicado precisa também passar
+-     `openssl verify -CAfile <cert> <cert>`;
+-   - falha gera rejeição explícita: certificado não é criptograficamente self-signed.
+-
+-3. Config/Main/Menu
+-   - BlsGetImageVolumeHandle() foi exposto sem mudança de sua lógica;
+-   - Main.c mantém `ConfigVolume` como autorização de escrita da configuração e usa
+-     `SelectorVolume` separadamente para o volume físico da imagem;
+-   - screenshots usam ScreenshotVolumeHandle independente em menu e options;
+-   - BlsPrioritizeVolume() usa SelectorVolume;
+-   - plist malformado continua protegido: ConfigVolume permanece NULL nesse caso.
++1. Config.c — preservação de character data
++   - BlsValidateAndSanitizeRootDict() passa a validar/ignorar comentário e PI sem
++     preencher a região com espaços;
++   - após a validação estrutural, BlsStripXmlIgnorableMarkup() compacta a cópia do XML
++     em uma única passada read/write in-place;
++   - comentários e PIs são removidos sem nova alocação e sem shifts repetidos O(n²);
++   - o parser scalar recebe exatamente o texto lógico restante.
++
++2. Config.c — gramática de comentário centralizada
++   - BlsFindXmlCommentClose() localiza o primeiro `--` de forma bounded;
++   - somente `-->` é aceito como esse primeiro par; qualquer outro `--` torna o XML
++     inválido e o parser falha fechado;
++   - BlsSkipXmlIgnorable(), BlsFindRootDictClose(), o stripper e a validação estrutural
++     usam a mesma regra central.
+ 
+ REGRESSÕES RED→GREEN
+ --------------------
+-USB WWID:
+-- teste alterado primeiro para exigir FALSE para o nó base de 10 bytes;
+-- RED no v2.15: test_bootscan_policy abortou exatamente nessa asserção;
+-- GREEN após a correção mínima;
+-- 1 CHAR16 continua positivo, +1 byte continua negativo, 65 CHAR16 continua negativo.
+-
+-Certificado self-sign:
+-- a regressão foi adicionada antes do verificador;
+-- RED no v2.15: o leaf same-DN externamente assinado foi aceito;
+-- GREEN após a auto-verificação criptográfica;
+-- controle positivo, certificado sem EKU e certificado notBefore futuro continuam com
+-  seus resultados esperados.
+-
+-Screenshot/config:
+-- o teste de menu foi alterado primeiro para exigir handles independentes e falhou na
+-  compilação contra a API v2.15, que oferecia apenas ConfigVolumeHandle;
+-- após a separação mínima, F10 recebe um ScreenshotVolumeHandle válido mesmo quando
+-  ConfigVolumeHandle é NULL; a regressão captura e compara o handle recebido.
++- `<string>Open<!--ignored-->Core</string>`: RED antes / GREEN com `OpenCore` depois;
++- `<string>Open<?bls ignored?>Core</string>`: RED antes / GREEN com `OpenCore` depois;
++- `<!--bad--comment-->`: RED antes / GREEN com EFI_LOAD_ERROR depois;
++- probe adicional de tag aninhada em `<string>` já retornava EFI_LOAD_ERROR no source
++  original; o teste temporário foi removido e nenhum código foi alterado para esse caso.
+ 
+ VALIDAÇÃO EXECUTADA DURANTE A RODADA
+ ------------------------------------
+-- Clang ASan+UBSan+leak detection: 17/17 testes x2 — PASS;
+-- GCC ASan+UBSan+leak detection: 17/17 testes x2 — PASS;
+-- Clang ASan+IntegerSan: 17/17 testes x1 — PASS;
+-- GCC ThreadSanitizer: 17/17 testes x1 — PASS;
++- Clang ASan+UBSan+leak detection: 17/17 testes — PASS;
++- GCC ASan+UBSan+leak detection: 17/17 testes — PASS;
++- Clang ASan+IntegerSan: 17/17 testes — PASS;
++- GCC ThreadSanitizer: 17/17 testes — PASS;
+ - BaseTools deep bounds/fuzz: Clang — PASS; GCC — PASS;
+ - Clang -fsyntax-only + Static Analyzer: 9/9 unidades C — PASS;
+ - GCC -fsyntax-only + -fanalyzer: 9/9 unidades C — PASS;
+@@ -111,45 +77,42 @@
+ - Test-Authenticode-Verifier-Policy.command — PASS;
+ - Test-Signer-Bootstrap.command — PASS;
+ - Test-Release-Publish-Invariants.command — PASS;
+-- `bash -n` nos 11 scripts .command/.sh próprios — PASS;
+-- sintaxe do verificador Python via compile(), sem gerar bytecode — PASS;
+-- manifest imutável: 3.497 arquivos, cobertura exata + SHA-256 — PASS;
+-- catálogo derivado do toolchain manteve o SHA-256 pinado
++- `bash -n` em todos os scripts próprios/relevantes enumerados — PASS;
++- sintaxe do verificador Python via compile(), sem bytecode — PASS;
++- resíduos gerados de BaseTools/Python — nenhum;
++- manifest imutável: 3.498 arquivos, cobertura exata + SHA-256 — PASS;
++- catálogo derivado do toolchain: SHA-256
+   8f4b02181becf4526501d6ece6fe0c04f092af0a20f4929fde0becfbb6cda7ab — PASS;
+-- builder canônico aceitou versão 2.16 e manifest; com bootstrap de rede desabilitado
+-  e sem signer local, recusou Release unsigned e removeu `Release/` parcial — PASS
+-  para o contrato fail-closed;
+-- quality gate passou metadata, créditos, DSE scope, invariantes de UI/Release,
+-  política Authenticode e bootstrap do signer;
+-- o teste de assinatura PE/COFF real não pôde iniciar porque a sandbox não resolve
+-  github.com para obter o Jsign 7.5 quando nenhum signer local está instalado.
++- builder canônico aceitou metadata 2.17 e manifest; com BLS_JSIGN_AUTO_DOWNLOAD=0
++  e sem signer local, recusou Release unsigned e deixou `Release/` ausente — PASS para
++  o contrato fail-closed.
+ 
+ REVISÃO DE LAYOUT / LIFECYCLE
+ -----------------------------
+-Foram revistos novamente clipping, ellipsis/wrapping, viewport do menu, options compact,
+-footer, console-mode cache/restore, GOP/BMP bounds, files/protocols/events, watchdog,
+-LoadImage/StartImage/UnloadImage, config transacional e logger. Os primitives de UI
+-limitam escrita às dimensões reportadas e protegem a célula inferior direita contra
+-scroll de firmware. Não surgiu outro defeito reproduzível que justificasse modificar
+-geometria, cores, timing ou comportamento visual nesta rodada.
++Foram revistos novamente viewport do menu, options compacto, clipping, ellipsis/wrap,
++footer, console mode, GOP/BMP, arquivos/protocolos/eventos, watchdog,
++LoadImage/StartImage/UnloadImage, config transacional, logger e ownership. Não surgiu
++novo defeito reproduzível que justificasse alterar geometria, cores, timing ou fluxo
++visual. Essas áreas permanecem inalteradas nesta rodada.
+ 
+ LIMITAÇÃO AMBIENTAL DO BUILD CANÔNICO
+ -------------------------------------
+-Este host não possui um signer PE/COFF local utilizável. O fallback Jsign é pinado e
+-fail-closed, mas seu bootstrap oficial exige github.com e a sandbox não possui resolução
+-DNS para esse host. A limitação não foi contornada desabilitando assinatura nem alterando
+-o trust model. O build/publicação final signed deve ser executado em um host macOS com
+-o signer/cache disponível para comprovação end-to-end do EFI real.
++A sandbox não possui signer PE/COFF local. O fallback Jsign 7.5 é pinado e fail-closed,
++mas seu bootstrap requer github.com e este ambiente não possui resolução DNS para esse
++host. A proteção não foi removida nem relaxada. Em prova explícita com bootstrap de
++rede desativado, o builder terminou com erro no preflight do signer e não deixou
++`Release/` parcial. O build/assinatura EFI real continua dependente de um host com
++signer/cache válido disponível.
+ 
+ CHANGE CONTROL
+ --------------
+-- versão: 2.16 / Professional Evolution Round70 / 2026-10-04;
+-- base imutável: v2.15/Round69 SHA-256
+-  00d65d337330f87bbb59bc93442e0dce0fd554e75c1f9210be9bff8a6706bbef;
+-- runtime: BootScan.c, Config.c/.h, Main.c, Menu.c/.h;
+-- segurança/tooling: Verify-PeCoff-Authenticode.py e regressão de política;
+-- testes: test_bootscan_policy.c e test_menu_countdown_starvation.c;
+-- metadata/documentação: Utils.h, INF, DSC, INFO, CHANGELOG, SECURITY-NOTES,
+-  AUDIT-REPORT, ROUND70.diff e MANIFEST.sha256;
++- versão: 2.17 / Professional Evolution Round71 / 2026-10-05;
++- base imutável: v2.16/Round70 SHA-256
++  b0fc6f5c794592f614ec64fd72320e529eb72315388cf033bb07f8f8939751f9;
++- runtime alterado: somente BootLoaderSelectorPkg/BootLoaderSelector/Config.c e
++  Utils.h de versão;
++- regressão alterada: AuditTests/Host/test_config_parser.c;
++- metadata: BootLoaderSelector.inf, BootLoaderSelector.dsc, INFO.txt, CHANGELOG.txt;
++- auditoria: AUDIT-REPORT.txt, ROUND71.diff e MANIFEST.sha256;
+ - dependências vendorizadas não foram modificadas;
+ - crédito obrigatório preservado: ©DNMTechLabs / dnmtechlabs@gmail.com.
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r71_base/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/AuditTests/Host/test_config_parser.c /mnt/data/bls_r71_final/BootLoaderSelector-Source-v2.17-DNMTechLabs-Professional-Evolution-Round71-2026-10-05-FULL-SOURCE/AuditTests/Host/test_config_parser.c
+--- /mnt/data/bls_r71_base/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/AuditTests/Host/test_config_parser.c	2026-10-05 00:57:54.000000000 +0000
++++ /mnt/data/bls_r71_final/BootLoaderSelector-Source-v2.17-DNMTechLabs-Professional-Evolution-Round71-2026-10-05-FULL-SOURCE/AuditTests/Host/test_config_parser.c	2026-10-05 03:25:40.479622741 +0000
+@@ -147,6 +147,29 @@
+   assert(BlsStrEq(config.DefaultBootloader, L"OpenCore"));
+   assert(BlsStrEq(config.DefaultPath, L"\\EFI\\OC\\OpenCore.efi"));
+ 
++  /* XML comments and processing instructions are markup, not character data.
++     Preserve scalar semantics instead of converting ignored markup into spaces. */
++  {
++    static CONST CHAR8 commentedScalar[] =
++      "<plist><dict><key>DefaultBootloader</key><string>Open<!--ignored-->Core</string></dict></plist>";
++    static CONST CHAR8 processingInstructionScalar[] =
++      "<plist><dict><key>DefaultBootloader</key><string>Open<?bls ignored?>Core</string></dict></plist>";
++
++    BlsConfigDefaults(&config);
++    assert(BlsParseConfig(commentedScalar, &config) == EFI_SUCCESS);
++    assert(BlsStrEq(config.DefaultBootloader, L"OpenCore"));
++    BlsConfigDefaults(&config);
++    assert(BlsParseConfig(processingInstructionScalar, &config) == EFI_SUCCESS);
++    assert(BlsStrEq(config.DefaultBootloader, L"OpenCore"));
++
++    /* XML comments may not contain "--" in their body. */
++    BlsConfigDefaults(&config);
++    assert(BlsParseConfig(
++      "<plist><dict><key>DefaultBootloader</key><string>Open<!--bad--comment-->Core</string></dict></plist>",
++      &config
++    ) == EFI_LOAD_ERROR);
++  }
++
+   BlsConfigDefaults(&config);
+   assert(BlsParseConfig(duplicateTimeout, &config) == EFI_LOAD_ERROR);
+   BlsConfigDefaults(&config);
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r71_base/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelector.dsc /mnt/data/bls_r71_final/BootLoaderSelector-Source-v2.17-DNMTechLabs-Professional-Evolution-Round71-2026-10-05-FULL-SOURCE/BootLoaderSelector.dsc
+--- /mnt/data/bls_r71_base/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelector.dsc	2026-10-05 02:19:16.000000000 +0000
++++ /mnt/data/bls_r71_final/BootLoaderSelector-Source-v2.17-DNMTechLabs-Professional-Evolution-Round71-2026-10-05-FULL-SOURCE/BootLoaderSelector.dsc	2026-10-05 03:29:55.290076269 +0000
+@@ -6,7 +6,7 @@
+ [Defines]
+   PLATFORM_NAME                  = BootLoaderSelector
+   PLATFORM_GUID                  = 3F71A792-6E03-4D84-9F1D-F3C81EC80F44
+-  PLATFORM_VERSION = 2.16
++  PLATFORM_VERSION = 2.17
+   DSC_SPECIFICATION              = 0x00010006
+   OUTPUT_DIRECTORY               = Build/BootLoaderSelector
+   SUPPORTED_ARCHITECTURES        = X64
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r71_base/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf /mnt/data/bls_r71_final/BootLoaderSelector-Source-v2.17-DNMTechLabs-Professional-Evolution-Round71-2026-10-05-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf
+--- /mnt/data/bls_r71_base/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf	2026-10-05 02:19:16.000000000 +0000
++++ /mnt/data/bls_r71_final/BootLoaderSelector-Source-v2.17-DNMTechLabs-Professional-Evolution-Round71-2026-10-05-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf	2026-10-05 03:29:55.290039584 +0000
+@@ -8,7 +8,7 @@
+   BASE_NAME                      = BootLoaderSelector
+   FILE_GUID                      = F9C8E131-0A87-4C6C-A3E4-CA03DE31F6F1
+   MODULE_TYPE                    = UEFI_APPLICATION
+-  VERSION_STRING = 2.16
++  VERSION_STRING = 2.17
+   ENTRY_POINT                    = UefiMain
+ 
+ [Sources]
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r71_base/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Config.c /mnt/data/bls_r71_final/BootLoaderSelector-Source-v2.17-DNMTechLabs-Professional-Evolution-Round71-2026-10-05-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Config.c
+--- /mnt/data/bls_r71_base/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Config.c	2026-10-05 02:14:44.000000000 +0000
++++ /mnt/data/bls_r71_final/BootLoaderSelector-Source-v2.17-DNMTechLabs-Professional-Evolution-Round71-2026-10-05-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Config.c	2026-10-05 03:26:39.130990556 +0000
+@@ -736,6 +736,21 @@
+   return TRUE;
+ }
+ 
++static CONST CHAR8 *BlsFindXmlCommentClose(IN CONST CHAR8 *Start, IN CONST CHAR8 *End) {
++  CONST CHAR8 *Cursor;
++
++  if (Start == NULL || End == NULL || Start > End) return NULL;
++  Cursor = Start;
++  while ((UINTN)(End - Cursor) >= 2U) {
++    if (Cursor[0] == '-' && Cursor[1] == '-') {
++      if ((UINTN)(End - Cursor) >= 3U && Cursor[2] == '>') return Cursor;
++      return NULL;
++    }
++    Cursor++;
++  }
++  return NULL;
++}
++
+ static CONST CHAR8 *BlsSkipXmlIgnorable(IN CONST CHAR8 *Start, IN CONST CHAR8 *End) {
+   CONST CHAR8 *Cursor;
+ 
+@@ -749,7 +764,7 @@
+       continue;
+     }
+     if ((UINTN)(End - Cursor) >= 4 && CompareMem(Cursor, "<!--", 4) == 0) {
+-      Close = AsciiStrStr(Cursor + 4, "-->");
++      Close = BlsFindXmlCommentClose(Cursor + 4, End);
+       if (Close == NULL || Close + 3 > End) return NULL;
+       Cursor = Close + 3;
+       continue;
+@@ -828,7 +843,7 @@
+       continue;
+     }
+     if ((UINTN)(End - Cursor) >= 4 && CompareMem(Cursor, "<!--", 4) == 0) {
+-      Close = AsciiStrStr(Cursor + 4, "-->");
++      Close = BlsFindXmlCommentClose(Cursor + 4, End);
+       if (Close == NULL || Close + 3 > End) return NULL;
+       Cursor = Close + 3;
+       continue;
+@@ -938,6 +953,42 @@
+   return NULL;
+ }
+ 
++static BOOLEAN BlsStripXmlIgnorableMarkup(IN OUT CHAR8 *Xml) {
++  CONST CHAR8 *Read;
++  CHAR8 *Write;
++  CONST CHAR8 *End;
++  UINTN Length;
++
++  if (Xml == NULL) return FALSE;
++  Length = BlsAsciiLenBounded(Xml, BLS_CONFIG_MAX + 1U);
++  if (Length > BLS_CONFIG_MAX || Xml[Length] != '\0') return FALSE;
++
++  Read = Xml;
++  Write = Xml;
++  End = Xml + Length;
++  while (Read < End) {
++    if ((UINTN)(End - Read) >= 4U && CompareMem(Read, "<!--", 4U) == 0) {
++      CONST CHAR8 *Close;
++
++      Close = BlsFindXmlCommentClose(Read + 4U, End);
++      if (Close == NULL || Close + 3U > End) return FALSE;
++      Read = Close + 3U;
++      continue;
++    }
++    if ((UINTN)(End - Read) >= 2U && CompareMem(Read, "<?", 2U) == 0) {
++      CHAR8 *Close;
++
++      Close = AsciiStrStr(Read + 2U, "?>");
++      if (Close == NULL || Close + 2U > End) return FALSE;
++      Read = Close + 2U;
++      continue;
++    }
++    *Write++ = *Read++;
++  }
++  *Write = '\0';
++  return TRUE;
++}
++
+ static BOOLEAN BlsValidateAndSanitizeRootDict(IN OUT CHAR8 *DictXml) {
+   BLS_XML_TAG_FRAME Stack[BLS_XML_MAX_DEPTH];
+   CONST CHAR8 *Cursor;
+@@ -992,23 +1043,17 @@
+ 
+     if ((UINTN)(XmlEnd - Cursor) >= 4 && CompareMem(Cursor, "<!--", 4) == 0) {
+       CONST CHAR8 *Close;
+-      UINTN Span;
+ 
+-      Close = AsciiStrStr(Cursor + 4, "-->");
++      Close = BlsFindXmlCommentClose(Cursor + 4, XmlEnd);
+       if (Close == NULL || Close + 3 > XmlEnd) goto Done;
+-      Span = (UINTN)((Close + 3) - Cursor);
+-      SetMem(DictXml + (UINTN)(Cursor - DictXml), Span, ' ');
+       Cursor = Close + 3;
+       continue;
+     }
+     if ((UINTN)(XmlEnd - Cursor) >= 2 && CompareMem(Cursor, "<?", 2) == 0) {
+       CONST CHAR8 *Close;
+-      UINTN Span;
+ 
+       Close = AsciiStrStr(Cursor + 2, "?>");
+       if (Close == NULL || Close + 2 > XmlEnd) goto Done;
+-      Span = (UINTN)((Close + 2) - Cursor);
+-      SetMem(DictXml + (UINTN)(Cursor - DictXml), Span, ' ');
+       Cursor = Close + 2;
+       continue;
+     }
+@@ -1176,7 +1221,7 @@
+   if (Copy == NULL) return EFI_OUT_OF_RESOURCES;
+   CopyMem(Copy, DictOpen, DictSize);
+   Copy[DictSize] = '\0';
+-  if (!BlsValidateAndSanitizeRootDict(Copy)) {
++  if (!BlsValidateAndSanitizeRootDict(Copy) || !BlsStripXmlIgnorableMarkup(Copy)) {
+     FreePool(Copy);
+     return EFI_LOAD_ERROR;
+   }
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r71_base/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h /mnt/data/bls_r71_final/BootLoaderSelector-Source-v2.17-DNMTechLabs-Professional-Evolution-Round71-2026-10-05-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h
+--- /mnt/data/bls_r71_base/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h	2026-10-05 02:19:16.000000000 +0000
++++ /mnt/data/bls_r71_final/BootLoaderSelector-Source-v2.17-DNMTechLabs-Professional-Evolution-Round71-2026-10-05-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h	2026-10-05 03:29:55.289949768 +0000
+@@ -9,8 +9,8 @@
+ #include <Protocol/SimpleFileSystem.h>
+ #include <Guid/FileInfo.h>
+ 
+-#define BLS_VERSION_ASCII "2.16"
+-#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.16"
++#define BLS_VERSION_ASCII "2.17"
++#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.17"
+ 
+ #define BLS_MAX_TEXT      128
+ #define BLS_MAX_PATH      192
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r71_base/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/CHANGELOG.txt /mnt/data/bls_r71_final/BootLoaderSelector-Source-v2.17-DNMTechLabs-Professional-Evolution-Round71-2026-10-05-FULL-SOURCE/CHANGELOG.txt
+--- /mnt/data/bls_r71_base/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/CHANGELOG.txt	2026-10-05 02:19:16.000000000 +0000
++++ /mnt/data/bls_r71_final/BootLoaderSelector-Source-v2.17-DNMTechLabs-Professional-Evolution-Round71-2026-10-05-FULL-SOURCE/CHANGELOG.txt	2026-10-05 03:29:55.290888329 +0000
+@@ -1,7 +1,28 @@
+ BootLoaderSelector — CHANGELOG
+ ===========================
+ 
+-Versão atual: 2.16
++Versão atual: 2.17
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++VERSÃO 2.17 — PROFESSIONAL EVOLUTION ROUND 71 — 2026-10-05
++------------------------------------------------------------
++Base exclusiva: v2.16/Round70 FULL-SOURCE
++SHA-256 do ZIP-base: b0fc6f5c794592f614ec64fd72320e529eb72315388cf033bb07f8f8939751f9
++
++Alterações desta rodada:
++- corrigida semântica de comentários e processing instructions dentro de valores XML:
++  o v2.16 os transformava em espaços, alterando silenciosamente character data scalar;
++- adicionada remoção linear in-place de markup ignorável depois da validação estrutural,
++  preservando `Open<!--ignored-->Core` e `Open<?bls ignored?>Core` como `OpenCore`;
++- centralizada a validação de fechamento de comentário XML; qualquer `--` no corpo é
++  agora rejeitado fail-closed conforme a gramática XML, em vez de aceitar plist malformado;
++- regressões RED→GREEN comprovam ambos os defeitos antes/depois da correção;
++- probe de markup aninhado em `<string>` confirmou que o v2.16 já o rejeitava; nenhuma
++  mudança especulativa foi aplicada nesse ou em outros caminhos sem falha reproduzível;
++- ASan/LeakSanitizer/UBSan, IntegerSan, TSan, deep fuzz/bounds e analyzers estritos foram
++  reexecutados; revisão de layout/lifecycle não encontrou nova alteração justificável;
++- versão/build incrementados para 2.17/Round71.
++
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+ 
+ VERSÃO 2.16 — PROFESSIONAL EVOLUTION ROUND 70 — 2026-10-04
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r71_base/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/INFO.txt /mnt/data/bls_r71_final/BootLoaderSelector-Source-v2.17-DNMTechLabs-Professional-Evolution-Round71-2026-10-05-FULL-SOURCE/INFO.txt
+--- /mnt/data/bls_r71_base/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/INFO.txt	2026-10-05 02:19:16.000000000 +0000
++++ /mnt/data/bls_r71_final/BootLoaderSelector-Source-v2.17-DNMTechLabs-Professional-Evolution-Round71-2026-10-05-FULL-SOURCE/INFO.txt	2026-10-05 03:29:55.290692653 +0000
+@@ -1,12 +1,35 @@
+ BootLoaderSelector — INFORMAÇÕES COMPLETAS DO PROJETO
+ =====================================================
+ 
+-Versão atual: 2.16
+-Base imediata: BootLoaderSelector v2.15 Professional Evolution Round69 (2026-10-04)
+-SHA-256 do ZIP-base recebido nesta rodada: 00d65d337330f87bbb59bc93442e0dce0fd554e75c1f9210be9bff8a6706bbef
+-Data desta rodada: 2026-10-04
++Versão atual: 2.17
++Base imediata: BootLoaderSelector v2.16 Professional Evolution Round70 (2026-10-04)
++SHA-256 do ZIP-base recebido nesta rodada: b0fc6f5c794592f614ec64fd72320e529eb72315388cf033bb07f8f8939751f9
++Data desta rodada: 2026-10-05
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+ 
++VERSÃO 2.17 — PROFESSIONAL EVOLUTION ROUND 71 — 2026-10-05
++------------------------------------------------------------
++Esta rodada parte exclusivamente do FULL-SOURCE v2.16/Round70 recebido nesta
++conversa (SHA-256 b0fc6f5c794592f614ec64fd72320e529eb72315388cf033bb07f8f8939751f9).
++
++Fine-tune do parser XML/plist e nova auditoria integral do release:
++- comentários XML e processing instructions são markup ignorável e não produzem
++  character data. O v2.16 os substituía por espaços dentro de valores scalar, de modo
++  que `<string>Open<!--ignored-->Core</string>` era lido como um valor diferente;
++- após validar a estrutura, o parser agora remove comentários/PIs em uma passada linear
++  in-place, preservando exatamente `OpenCore` sem alocações adicionais nem shifts O(n²);
++- a validação de comentários foi centralizada: XML com `--` dentro do corpo de comentário
++  passa a ser rejeitado fail-closed, em vez de aceitar markup malformado;
++- regressões foram escritas antes das correções e confirmaram RED no comportamento v2.16
++  para os dois casos; depois das mudanças, ambos ficam GREEN;
++- tags aninhadas dentro de `<string>` foram testadas como probe e já eram rejeitadas pelo
++  source original; nenhuma alteração foi feita nesse fluxo;
++- runtime UEFI, scan/boot, logger, screenshot/GOP, lifecycle, ownership, UI/layout e
++  pipeline de release foram reavaliados; sem outro defeito reproduzível, foram preservados.
++
++Versão/build incrementados para 2.17/Round71.
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
++
+ VERSÃO 2.16 — PROFESSIONAL EVOLUTION ROUND 70 — 2026-10-04
+ ------------------------------------------------------------
+ Esta rodada parte exclusivamente do FULL-SOURCE v2.15/Round69 recebido nesta

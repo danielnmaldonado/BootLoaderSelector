@@ -1,0 +1,624 @@
+--- a/INFO.txt
++++ b/INFO.txt
+@@ -1,11 +1,27 @@
+ BootLoaderSelector — INFORMAÇÕES COMPLETAS DO PROJETO
+ =====================================================
+ 
+-Versão atual: 2.23
+-Base imediata: BootLoaderSelector v2.22 Professional Evolution Round76 (2026-10-08)
+-SHA-256 do ZIP-base recebido nesta rodada: c56e6771b37dc15321fbf2c33e81443f3598a6cba828265e5ef84eb45b002b7e
++Versão atual: 2.24
++Base imediata: BootLoaderSelector v2.23 Professional Evolution Round77 (2026-10-08)
++SHA-256 do ZIP-base recebido nesta rodada: 960c7c676833dd14322a2d8ab59f79bc60b04474059dc00c43b0d988979f9d5a
+ Data desta rodada: 2026-10-08
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++VERSÃO 2.24 — PROFESSIONAL EVOLUTION ROUND 78 — 2026-10-08
++------------------------------------------------------------
++Base exclusiva: FULL-SOURCE v2.23/Round77, SHA-256 960c7c676833dd14322a2d8ab59f79bc60b04474059dc00c43b0d988979f9d5a.
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++Correções pontuais em Ui.c: geometria real após SetMode() parcial com
++código de erro; eliminação de firmware I/O para strings formatadas vazias.
++Proteções contra ponteiro ConOut->Mode invalidado por callbacks não conformes
++QueryMode() durante restauração do cursor, consulta inicial e varredura de
++modos, e EnableCursor() na inicialização. Dois asserts e dois crashes com
++AddressSanitizer reproduzidos no source anterior; testes adicionais de
++regressão dos quatro caminhos passam no novo código. O boot, GPIO/GOP,
++configuração, screenshot, assinatura e dependências não foram alterados.
++Relatório: AuditReports/ROUND78-VALIDATION.txt. EFI assinado e boot real
++não validados neste host; não se declara rodada cronometrada de 30 minutos.
+ 
+ VERSÃO 2.23 — PROFESSIONAL EVOLUTION ROUND 77 — 2026-10-08
+ ------------------------------------------------------------
+--- a/CHANGELOG.txt
++++ b/CHANGELOG.txt
+@@ -1,8 +1,31 @@
+ BootLoaderSelector — CHANGELOG
+ ===========================
+ 
+-Versão atual: 2.23
+-Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++Versão atual: 2.24
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++VERSÃO 2.24 — PROFESSIONAL EVOLUTION ROUND 78 — 2026-10-08
++------------------------------------------------------------
++Base exclusiva: FULL-SOURCE v2.23/Round77 (ZIP SHA-256: 960c7c676833dd14322a2d8ab59f79bc60b04474059dc00c43b0d988979f9d5a).
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++- UI / seleção de console: quando SetMode() altera o modo mesmo retornando
++  erro, não confiar em geometria fixa 80x25. Após detectar uma alteração
++  efetiva do modo, consultar QueryMode() do modo ativo uma vez e usar o
++  resultado validado (fallback limitado quando a firmware falhar).
++  Preserva-se o status de erro para diagnóstico e o comportamento normal.
++- UI / saída vazia: texto formatado sem caracteres agora retorna antes de
++  alterar atributo/cursor ou chamar OutputString() sem conteúdo.
++- UI / callbacks de firmware defeituosos: após QueryMode() ou EnableCursor()
++  revalidar ConOut->Mode antes de qualquer dereferência. Cobertura das
++  consultas durante restauro do cursor, consulta inicial, varredura de modos
++  e ocultação do cursor na inicialização. Crashes ASan reproduzidos no
++  source-base antes de aplicar as proteções; todos os testes novos passaram.
++- Regressões reproduzidas RED→GREEN sob host ASan/UBSan, compilação
++  otimizada -O2 Clang/GCC, fuzz, sanitizers e análise estática verificados.
++- Versão/build incrementados: v2.24 / Round78. Nenhum recurso removido.
++- EFI Release ad-hoc e boot real não certificados neste host Linux.
++- Matriz e limitações: AuditReports/ROUND78-VALIDATION.txt.
+ 
+ VERSÃO 2.23 — PROFESSIONAL EVOLUTION ROUND 77 — 2026-10-08
+ ------------------------------------------------------------
+--- a/AuditReports/AUDIT-REPORT.txt
++++ b/AuditReports/AUDIT-REPORT.txt
+@@ -1,3 +1,47 @@
++BootLoaderSelector v2.24 — Professional Evolution Round78
++Data: 2026-10-08
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++Origem EXCLUSIVA: FULL-SOURCE v2.23/Round77
++SHA-256 ZIP-base: 960c7c676833dd14322a2d8ab59f79bc60b04474059dc00c43b0d988979f9d5a
++
++CORREÇÕES REPRODUZIDAS RED → GREEN
++--------------------------------
++UI.SETMODE-ERROR-WITH-PARTIAL-MODE-SWITCH: console inicial 60x15, SetMode(1)
++retorna EFI_DEVICE_ERROR mas altera Mode para 1 (100x30). O código v2.23
++cacheava 80x25, divergindo do modo ativo e podendo deslocar elementos do
++menu. Após detectar a mudança, a rotina consulta a geometria real do modo
++ativo uma única vez e mantém o status de erro para diagnóstico.
++RED: assert 100x30 falhou (exit 134); GREEN: teste passou ASan/UBSan.
++
++UI.EMPTY-PRINT-SIDE-EFFECT: BlsUiPrintAt(L"%s", L"") chamava
++OutputString() e podia alterar o cursor/atributo sem desenhar nada.
++RED: assert chamadas OutputString == 0 falhou (exit 134); GREEN: zero
++chamadas, mantendo o cursor e atributo anteriores, sem alterar conteúdo.
++
++UI.QUERYMODE-INVALIDATES-MODE / UI.ENABLECURSOR-INVALIDATES-MODE:
++Callbacks não conformes da firmware podem retornar sucesso e invalidar o
++ponteiro ConOut->Mode. Três trajetos de QueryMode() (verificação de posição
++do cursor após restauro, consulta de modo atual e busca de outros modos) e
++um trajeto de EnableCursor() na inicialização são protegidos com validação
++pós-callback, erro EFI_DEVICE_ERROR e fallback conservador quando pertinente.
++Na base v2.23, os cenários de restauração QueryMode e de inicialização
++EnableCursor produziram crashes reproduzidos sob AddressSanitizer (RED).
++Após correção, os testes de regressão passaram com ASan/UBSan (GREEN).
++
++ESCOPO E LIMITAÇÕES
++-------------------
++Somente Ui.c modificado no runtime. Teste host de UI expandido com casos de geometria, saída vazia e
++callbacks que invalidam Mode, além do mock UnicodeVSPrint mínimo. Versões, CHANGELOG,
++INFO, relatório, diff e SHA-256 atualizados; nenhum arquivo original removido.
++Não houve alteração de boot scan, persistência, dependências ou GOP.
++Ver AuditReports/ROUND78-VALIDATION.txt para matriz e limitações: EFI
++Release assinado/OVMF/hardware e profiling físico não foram certificados.
++Não houve rodadas literalmente cronometradas de 30 minutos.
++
++========================================================================
++HISTÓRICO: RELATÓRIO ORIGINAL ROUND77 (preservado integralmente)
++========================================================================
++
+ BootLoaderSelector v2.23 — Professional Evolution Round77
+ Data: 2026-10-08
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+--- a/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h
++++ b/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h
+@@ -9,8 +9,8 @@
+ #include <Protocol/SimpleFileSystem.h>
+ #include <Guid/FileInfo.h>
+ 
+-#define BLS_VERSION_ASCII "2.23"
+-#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.23"
++#define BLS_VERSION_ASCII "2.24"
++#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.24"
+ 
+ #define BLS_MAX_TEXT      128
+ #define BLS_MAX_PATH      192
+--- a/BootLoaderSelectorPkg/BootLoaderSelector/Ui.c
++++ b/BootLoaderSelectorPkg/BootLoaderSelector/Ui.c
+@@ -92,6 +92,11 @@
+       Cols == 0 || Rows == 0) {
+     return FALSE;
+   }
++  /* QueryMode() normally leaves Mode intact. If broken firmware invalidates
++     or changes it, the just-reported dimensions no longer authorize a move.
++     The caller would otherwise dereference Mode after this callback. */
++  if (ConOut->Mode == NULL || ConOut->Mode->Mode != CurrentMode ||
++      ConOut->Mode->MaxMode <= CurrentMode) return FALSE;
+ 
+   return (BOOLEAN)((UINTN)mBlsUiOriginalCursorColumn < Cols &&
+                    (UINTN)mBlsUiOriginalCursorRow < Rows);
+@@ -227,6 +232,13 @@
+      the cursor visible again, the post-switch check below hides it once more. */
+   if (gST->ConOut->EnableCursor != NULL && gST->ConOut->Mode->CursorVisible) {
+     (VOID)gST->ConOut->EnableCursor(gST->ConOut, FALSE);
++    if (gST->ConOut->Mode == NULL) {
++      /* Firmware callbacks may invalidate the console state. Never probe
++         QueryMode or the current mode through an invalidated pointer. */
++      mBlsUiModeStatus = EFI_DEVICE_ERROR;
++      BlsUiCacheSize(80, 25);
++      return;
++    }
+   }
+ 
+   if (gST->ConOut->QueryMode == NULL) {
+@@ -247,9 +259,19 @@
+   CurrentRows = 0;
+   CurrentQuerySucceeded = FALSE;
+   CurrentDimensionsUsable = FALSE;
+-  if (CurrentModeValid &&
+-      gST->ConOut->QueryMode(gST->ConOut, CurrentMode, &CurrentCols, &CurrentRows) == EFI_SUCCESS) {
+-    CurrentQuerySucceeded = TRUE;
++  if (CurrentModeValid) {
++    CurrentQuerySucceeded = (BOOLEAN)(gST->ConOut->QueryMode(
++                              gST->ConOut, CurrentMode, &CurrentCols, &CurrentRows
++                              ) == EFI_SUCCESS);
++    if (gST->ConOut->Mode == NULL) {
++      /* A non-conforming QueryMode callback destroyed the published state.
++         Fail closed rather than dereferencing Mode->CursorVisible below. */
++      mBlsUiModeStatus = EFI_DEVICE_ERROR;
++      BlsUiCacheSize(80, 25);
++      return;
++    }
++  }
++  if (CurrentQuerySucceeded) {
+     if (BlsUiDimensionsAreUsable(CurrentCols, CurrentRows)) {
+       CurrentDimensionsUsable = TRUE;
+       /* A readable current mode must remain active: switching from e.g.
+@@ -296,7 +318,14 @@
+     } else {
+       Cols = 0;
+       Rows = 0;
+-      if (gST->ConOut->QueryMode(gST->ConOut, Mode, &Cols, &Rows) != EFI_SUCCESS) continue;
++      EFI_STATUS QueryStatus;
++      QueryStatus = gST->ConOut->QueryMode(gST->ConOut, Mode, &Cols, &Rows);
++      if (gST->ConOut->Mode == NULL) {
++        mBlsUiModeStatus = EFI_DEVICE_ERROR;
++        BlsUiCacheSize(80, 25);
++        return;
++      }
++      if (QueryStatus != EFI_SUCCESS) continue;
+       if (!BlsUiDimensionsAreUsable(Cols, Rows)) continue;
+     }
+     if (Cols < 80 || Rows < 20) continue;
+@@ -347,6 +376,17 @@
+       } else if (CurrentDimensionsUsable && gST->ConOut->Mode != NULL &&
+                  gST->ConOut->Mode->Mode == (INT32)CurrentMode) {
+         BlsUiCacheSize(CurrentCols, CurrentRows);
++      } else if (gST->ConOut->Mode != NULL &&
++                 gST->ConOut->Mode->Mode >= 0 &&
++                 gST->ConOut->Mode->MaxMode > 0 &&
++                 gST->ConOut->Mode->Mode < gST->ConOut->Mode->MaxMode &&
++                 (!CurrentModeValid ||
++                  gST->ConOut->Mode->Mode != (INT32)CurrentMode)) {
++        /* Some firmware changes the text mode before reporting a failure.
++           A post-call Mode change invalidates pre-switch dimensions; query
++           the actual active geometry once rather than guessing 80x25 and
++           drawing the selector at positions that no longer match the screen. */
++        BlsUiCacheCurrentSize();
+       } else {
+         BlsUiCacheSize(80, 25);
+       }
+@@ -442,6 +482,9 @@
+   VA_START(Marker, Format);
+   UnicodeVSPrint(Buffer, sizeof(Buffer), Format, Marker);
+   VA_END(Marker);
++  /* An empty format result has no pixels to render. Avoid changing the
++     cursor/attribute state and issuing an empty firmware OutputString(). */
++  if (Buffer[0] == L'\0') return;
+ 
+   /*
+     Several firmware text consoles scroll the whole screen when a print reaches
+--- a/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf
++++ b/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf
+@@ -8,7 +8,7 @@
+   BASE_NAME                      = BootLoaderSelector
+   FILE_GUID                      = F9C8E131-0A87-4C6C-A3E4-CA03DE31F6F1
+   MODULE_TYPE                    = UEFI_APPLICATION
+-  VERSION_STRING = 2.23
++  VERSION_STRING = 2.24
+   ENTRY_POINT                    = UefiMain
+ 
+ [Sources]
+--- a/AuditTests/Host/test_ui_mode_bound.c
++++ b/AuditTests/Host/test_ui_mode_bound.c
+@@ -8,10 +8,47 @@
+ #endif
+ #include <Uefi.h>
+ #include <Library/UefiBootServicesTableLib.h>
++#include <Library/PrintLib.h>
++#include "../../BootLoaderSelectorPkg/BootLoaderSelector/Utils.h"
+ 
+ EFI_HANDLE gImageHandle = NULL;
+ EFI_SYSTEM_TABLE *gST = NULL;
+ EFI_BOOT_SERVICES *gBS = NULL;
++
++/* A minimal host print shim for the UI empty-string side-effect regression.
++   The only exercised formatting is %s with a CHAR16 string. */
++UINTN BlsStrLen16(IN CONST CHAR16 *Str) {
++  UINTN Length = 0U;
++  if (Str == NULL) return 0U;
++  while (Length < 65535U && Str[Length] != L'\0') Length++;
++  return Length;
++}
++
++UINTN EFIAPI UnicodeVSPrint(
++  OUT CHAR16 *StartOfBuffer, IN UINTN BufferSize,
++  IN CONST CHAR16 *FormatString, IN VA_LIST Marker
++  ) {
++  CONST CHAR16 *Text;
++  UINTN Capacity;
++  UINTN Index;
++
++  if (StartOfBuffer == NULL || BufferSize < sizeof(CHAR16) ||
++      FormatString == NULL) return 0U;
++  if (FormatString[0] != L'%' || FormatString[1] != L's' ||
++      FormatString[2] != L'\0') {
++    StartOfBuffer[0] = L'\0';
++    return 0U;
++  }
++  Text = VA_ARG(Marker, CONST CHAR16 *);
++  Capacity = BufferSize / sizeof(CHAR16);
++  Index = 0U;
++  while (Text != NULL && Index + 1U < Capacity && Text[Index] != L'\0') {
++    StartOfBuffer[Index] = Text[Index];
++    Index++;
++  }
++  StartOfBuffer[Index] = L'\0';
++  return Index;
++}
+ 
+ typedef enum {
+   TestModesUnsupported,
+@@ -24,9 +61,12 @@
+ } TEST_MODE_SCENARIO;
+ 
+ static UINTN gQueryCount;
++static UINTN gQueryNullModeOnMode;
++static BOOLEAN gEnableCursorNullMode;
+ static UINTN gSetModeCount;
+ static EFI_STATUS gSetModeStatus;
+ static BOOLEAN gSetModeNoopOnSuccess;
++static BOOLEAN gSetModeAppliesDespiteError;
+ static BOOLEAN gSetModeNullModeOnSuccess;
+ static UINTN gSetAttributeCount;
+ static UINTN gSetCursorCount;
+@@ -36,13 +76,21 @@
+ static UINTN gOutputChars;
+ static TEST_MODE_SCENARIO gScenario;
+ 
++/* Deliberately non-conforming console: QueryMode reports a result while
++   invalidating its shared Mode structure, as a previous SetMode mock does. */
++static EFI_STATUS TestQueryModeSuccess(
++  IN EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This, IN UINTN ModeNumber
++  ) {
++  if (gQueryNullModeOnMode == ModeNumber && This != NULL) This->Mode = NULL;
++  return EFI_SUCCESS;
++}
++
+ static EFI_STATUS EFIAPI TestQueryMode(
+   IN EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This,
+   IN UINTN ModeNumber,
+   OUT UINTN *Columns,
+   OUT UINTN *Rows
+   ) {
+-  (void)This;
+   gQueryCount++;
+   if (Columns == NULL || Rows == NULL) return EFI_INVALID_PARAMETER;
+   *Columns = 0;
+@@ -51,59 +99,59 @@
+   if (gScenario == TestModesHugeOnly && ModeNumber == 0) {
+     *Columns = MAX_UINTN;
+     *Rows = MAX_UINTN;
+-    return EFI_SUCCESS;
++    return TestQueryModeSuccess(This, ModeNumber);
+   }
+   if (gScenario == TestModesCurrentValid && ModeNumber == 0) {
+     *Columns = 100;
+     *Rows = 30;
+-    return EFI_SUCCESS;
++    return TestQueryModeSuccess(This, ModeNumber);
+   }
+   if (gScenario == TestModesCurrentWide) {
+     if (ModeNumber == 0) {
+       *Columns = 120;
+       *Rows = 40;
+-      return EFI_SUCCESS;
++      return TestQueryModeSuccess(This, ModeNumber);
+     }
+     if (ModeNumber == 1) {
+       *Columns = 100;
+       *Rows = 30;
+-      return EFI_SUCCESS;
++      return TestQueryModeSuccess(This, ModeNumber);
+     }
+   }
+   if (gScenario == TestModesSmallThenValid) {
+     if (ModeNumber == 0) {
+       *Columns = 60;
+       *Rows = 15;
+-      return EFI_SUCCESS;
++      return TestQueryModeSuccess(This, ModeNumber);
+     }
+     if (ModeNumber == 1) {
+       *Columns = 100;
+       *Rows = 30;
+-      return EFI_SUCCESS;
++      return TestQueryModeSuccess(This, ModeNumber);
+     }
+   }
+   if (gScenario == TestModesTwoValid) {
+     if (ModeNumber == 0) {
+       *Columns = 80;
+       *Rows = 25;
+-      return EFI_SUCCESS;
++      return TestQueryModeSuccess(This, ModeNumber);
+     }
+     if (ModeNumber == 1) {
+       *Columns = 100;
+       *Rows = 30;
+-      return EFI_SUCCESS;
++      return TestQueryModeSuccess(This, ModeNumber);
+     }
+   }
+   if (gScenario == TestModesHugeThenValid) {
+     if (ModeNumber == 0) {
+       *Columns = MAX_UINTN;
+       *Rows = MAX_UINTN;
+-      return EFI_SUCCESS;
++      return TestQueryModeSuccess(This, ModeNumber);
+     }
+     if (ModeNumber == 1) {
+       *Columns = 100;
+       *Rows = 30;
+-      return EFI_SUCCESS;
++      return TestQueryModeSuccess(This, ModeNumber);
+     }
+   }
+   return EFI_UNSUPPORTED;
+@@ -115,7 +163,10 @@
+   ) {
+   gSetModeCount++;
+   if (This == NULL || This->Mode == NULL || ModeNumber > MAX_INT32) return EFI_INVALID_PARAMETER;
+-  if (gSetModeStatus != EFI_SUCCESS) return gSetModeStatus;
++  if (gSetModeStatus != EFI_SUCCESS) {
++    if (gSetModeAppliesDespiteError) This->Mode->Mode = (INT32)ModeNumber;
++    return gSetModeStatus;
++  }
+   if (gSetModeNoopOnSuccess) return EFI_SUCCESS;
+   if (gSetModeNullModeOnSuccess) { This->Mode = NULL; return EFI_SUCCESS; }
+   This->Mode->Mode = (INT32)ModeNumber;
+@@ -129,6 +180,7 @@
+   if (This == NULL || This->Mode == NULL) return EFI_INVALID_PARAMETER;
+   if (gUiOperationCount < sizeof(gUiOperations)) gUiOperations[gUiOperationCount++] = Visible ? 'V' : 'H';
+   This->Mode->CursorVisible = Visible;
++  if (gEnableCursorNullMode) This->Mode = NULL;
+   return EFI_SUCCESS;
+ }
+ 
+@@ -182,8 +234,11 @@
+   mBlsUiOriginalCursorRow = 0;
+   mBlsUiOriginalCursorVisible = TRUE;
+   mBlsUiModeStatus = EFI_SUCCESS;
++  gQueryNullModeOnMode = MAX_UINTN;
++  gEnableCursorNullMode = FALSE;
+   gSetModeStatus = EFI_SUCCESS;
+   gSetModeNoopOnSuccess = FALSE;
++  gSetModeAppliesDespiteError = FALSE;
+   gSetModeNullModeOnSuccess = FALSE;
+   gSetAttributeCount = 0U;
+   gSetCursorCount = 0U;
+@@ -434,6 +489,26 @@
+   assert(mode.Mode == 0);
+   assert(cols == 60U && rows == 15U);
+   gSetModeNoopOnSuccess = FALSE;
++
++  /* A firmware may update Mode before returning a non-success code. The
++     selector must use the *actual* geometry after that partial transition:
++     60x15 -> 100x30, rather than a guessed 80x25, to avoid clipped or
++     misplaced menu elements. Preserve the error status for diagnostics. */
++  ResetUiCache();
++  conOut.Mode = &mode;
++  gScenario = TestModesSmallThenValid;
++  mode.MaxMode = 2;
++  mode.Mode = 0;
++  mode.CursorVisible = TRUE;
++  gSetModeStatus = EFI_DEVICE_ERROR;
++  gSetModeAppliesDespiteError = TRUE;
++  BlsUiInitReadableMode();
++  BlsUiGetSize(&cols, &rows);
++  assert(mode.Mode == 1);
++  assert(BlsUiLastModeStatus() == EFI_DEVICE_ERROR);
++  assert(cols == 100U && rows == 30U);
++  gSetModeStatus = EFI_SUCCESS;
++  gSetModeAppliesDespiteError = FALSE;
+ 
+   /* Firmware can invalidate Mode even after returning EFI_SUCCESS. The
+      visible-menu path must survive that as the restoration path already does. */
+@@ -498,6 +573,20 @@
+   assert(gSetAttributeCount == 1U);
+   assert(gSetCursorCount == 1U);
+ 
++  /* Empty formatted UI output is a no-op. It should not move the cursor,
++     change the color attribute, or call firmware OutputString(""). */
++  mode.Attribute = BLS_ATTR_BG;
++  mode.CursorColumn = 3;
++  mode.CursorRow = 4;
++  gSetAttributeCount = 0U;
++  gSetCursorCount = 0U;
++  gOutputStringCount = 0U;
++  BlsUiPrintAt(10U, 11U, BLS_ATTR_ACCENT, L"%s", L"");
++  assert(gOutputStringCount == 0U);
++  assert(gSetAttributeCount == 0U);
++  assert(gSetCursorCount == 0U);
++  assert(mode.CursorColumn == 3 && mode.CursorRow == 4);
++
+   /* Ordinary full clears must reuse the known geometry instead of polling
+      QueryMode() again. Only the explicit external-image ownership boundary
+      invalidates the cache, and the next clear refreshes it exactly once. */
+@@ -661,6 +750,81 @@
+   conOut.Mode = &mode;
+   gSetModeNullModeOnSuccess = FALSE;
+ 
++  /* A non-conforming QueryMode() callback may invalidate the console Mode
++     pointer. Cursor restore must not dereference it or issue a position move
++     using geometry from a no-longer-available Mode structure. */
++  ResetUiCache();
++  conOut.Mode = &mode;
++  gScenario = TestModesTwoValid;
++  mode.MaxMode = 2;
++  mode.Mode = 1;
++  mode.CursorColumn = 12;
++  mode.CursorRow = 10;
++  mode.CursorVisible = TRUE;
++  BlsUiCaptureOriginalState();
++  mode.CursorColumn = 0;
++  mode.CursorRow = 0;
++  gQueryNullModeOnMode = 1U;
++  gSetCursorCount = 0U;
++  BlsUiRestoreOriginalState();
++  assert(conOut.Mode == NULL);
++  assert(gSetCursorCount == 0U);
++  conOut.Mode = &mode;
++  gQueryNullModeOnMode = MAX_UINTN;
++
++  /* Same issue during initialization: the current-mode QueryMode() can
++     report success yet invalidate Mode. Fail closed and preserve no bad
++     geometry assumptions or cursor calls. */
++  ResetUiCache();
++  conOut.Mode = &mode;
++  gScenario = TestModesCurrentValid;
++  mode.MaxMode = 1;
++  mode.Mode = 0;
++  mode.CursorVisible = FALSE;
++  gQueryNullModeOnMode = 0U;
++  BlsUiInitReadableMode();
++  assert(conOut.Mode == NULL);
++  assert(BlsUiLastModeStatus() == EFI_DEVICE_ERROR);
++  BlsUiGetSize(&cols, &rows);
++  assert(cols == 80U && rows == 25U);
++  conOut.Mode = &mode;
++  gQueryNullModeOnMode = MAX_UINTN;
++
++  /* A non-current mode query can likewise invalidate Mode halfway through
++     the mode scan. No subsequent SetMode() call is safe in that situation. */
++  ResetUiCache();
++  conOut.Mode = &mode;
++  gScenario = TestModesSmallThenValid;
++  mode.MaxMode = 2;
++  mode.Mode = 0;
++  mode.CursorVisible = FALSE;
++  gQueryNullModeOnMode = 1U;
++  gSetModeCount = 0U;
++  BlsUiInitReadableMode();
++  assert(conOut.Mode == NULL);
++  assert(BlsUiLastModeStatus() == EFI_DEVICE_ERROR);
++  assert(gSetModeCount == 0U);
++  conOut.Mode = &mode;
++  gQueryNullModeOnMode = MAX_UINTN;
++
++  /* The initial cursor-hide callback can also invalidate the console Mode
++     pointer on bad firmware. Never touch the freed Mode state while
++     initializing the menu after that callback. */
++  ResetUiCache();
++  conOut.Mode = &mode;
++  gScenario = TestModesCurrentValid;
++  mode.MaxMode = 1;
++  mode.Mode = 0;
++  mode.CursorVisible = TRUE;
++  gEnableCursorNullMode = TRUE;
++  BlsUiInitReadableMode();
++  assert(conOut.Mode == NULL);
++  assert(BlsUiLastModeStatus() == EFI_DEVICE_ERROR);
++  BlsUiGetSize(&cols, &rows);
++  assert(cols == 80U && rows == 25U);
++  gEnableCursorNullMode = FALSE;
++  conOut.Mode = &mode;
++
+   /* Bits 7 and above are reserved by UEFI SIMPLE_TEXT_OUTPUT. Never replay
+      a malformed firmware attribute snapshot through SetAttribute(). */
+   ResetUiCache();
+--- a/BootLoaderSelector.dsc
++++ b/BootLoaderSelector.dsc
+@@ -6,7 +6,7 @@
+ [Defines]
+   PLATFORM_NAME                  = BootLoaderSelector
+   PLATFORM_GUID                  = 3F71A792-6E03-4D84-9F1D-F3C81EC80F44
+-  PLATFORM_VERSION = 2.23
++  PLATFORM_VERSION = 2.24
+   DSC_SPECIFICATION              = 0x00010006
+   OUTPUT_DIRECTORY               = Build/BootLoaderSelector
+   SUPPORTED_ARCHITECTURES        = X64
+--- /dev/null
++++ b/AuditReports/ROUND78-VALIDATION.txt
+@@ -0,0 +1,54 @@
++BootLoaderSelector v2.24 — Round78 validation matrix — 2026-10-08
++Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
++Source: exclusively v2.23/Round77 FULL-SOURCE, ZIP SHA-256 960c7c676833dd14322a2d8ab59f79bc60b04474059dc00c43b0d988979f9d5a
++
++- Baseline ZIP archive integrity and SHA-256: PASS.
++- Baseline host Clang ASan/UBSan 17 tests: PASS.
++- UI partial-mode transition on EFI_DEVICE_ERROR: RED (assert 100x30, exit 134), GREEN after fix.
++- UI empty formatted text redundant console calls: RED (assert OutputString count 0, exit 134), GREEN after fix.
++- UI restore QueryMode() invalidating Mode: RED ASan segmentation fault; GREEN with post-callback validation.
++- UI initialization QueryMode() invalidating Mode on current-mode or scanned-mode lookup: GREEN regression coverage.
++- UI initial EnableCursor() invalidating Mode: RED ASan segmentation fault; GREEN after callback guard.
++- Only runtime module changed: Ui.c; all new conditions covered in test_ui_mode_bound.c.
++- Clang host 17 tests x2 ASan/UBSan: PASS.
++- GCC host 17 tests x2 ASan/UBSan: PASS.
++- Clang host 17 tests x1 ASan/IntegerSan: PASS.
++- GCC host 17 tests x1 ThreadSanitizer: PASS (config parser fuzz took longer).
++- UI optimized -O2 ASan/UBSan Clang and GCC: PASS.
++- Clang/GCC full syntax -Wall/-Wextra/-Werror, 9 C modules each: PASS.
++- Clang static analysis 9 C modules, independent per-module runs: PASS (no diagnostics).
++- GCC -fanalyzer 9 C modules, independent per-module runs: PASS (no diagnostics).
++- BaseTools bounds/fuzz Clang and GCC: PASS; malformed-firmware messages expected.
++- Release publish/rollback/lock regression: PASS.
++- Authenticode certificate policy regression: PASS.
++- Signer bootstrap regression with simulated environment: PASS.
++- Bash syntax checks / CI YAML 4 jobs: PASS.
++- Final post-fix Clang and GCC ASan/UBSan 17 tests each: PASS.
++- Final post-fix Clang IntegerSan 17 tests: PASS.
++- Final post-fix GCC ThreadSanitizer 17 tests: PASS.
++- Final UI optimized -O2 Clang and GCC with ASan/UBSan: PASS.
++- Final changed Ui.c Clang and GCC static analysis: PASS, no diagnostics.
++- A redundant full-project re-analysis attempt hit the execution timeout on an
++  unchanged module; the earlier complete 9-module analyses passed, the final
++  changed module passed, and all 9 modules compiled -O2 in both compilers.
++- Final v2.24 Release preflight: fail-closed, missing PE/COFF signer, no Release
++  or lock left behind; manifest still valid (3,510 entries).
++- Versioned source preflight and updated manifest: see later sections of this report.
++
++IMPORTANT SCOPE LIMITATIONS:
++- Host sanitizers/static analysis do not prove actual UEFI/EDK2 Release behavior.
++- This Linux host has no native Apple macOS toolchain and its bundled NASM is Mach-O;
++  PE/COFF signer (sbsign/jsign) is unavailable, and bootstrap is network-dependent.
++- A REAL signed EFI Release, Authenticode signature verification on output images,
++  OVMF/hardware boot, and hardware RAM/CPU/GPU/energy profiling were NOT performed.
++- No literal 30-minute timed cycle was performed. These checks are finite targeted rounds.
++- No claim of global absence of bugs or regressions is made.
++- Real ad-hoc signing test with BLS_JSIGN_AUTO_DOWNLOAD=0: BLOCKED (exit 1,
++  no supported PE/COFF signer installed); no signed output generated.
++- Clang/GCC optimized -O2 host object compile: 9/9 C modules each PASS.
++- v2.24 canonical Release builder preflight: version 2.24 recognized;
++  FAIL-CLOSED (exit 1), signer unavailable; no Release, stage or build lock.
++- SHA-256 manifest before/after failed Release preflight: PASS (3,510 immutable files).
++- Final source comparison against exclusive v2.23/Round77 base: 8 existing
++  files changed, 2 reports added, 0 files removed, 3,500 original immutable
++  paths byte-for-byte identical; runtime change limited to Ui.c.

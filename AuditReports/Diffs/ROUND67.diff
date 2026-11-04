@@ -1,0 +1,913 @@
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt
+--- /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt	2026-09-20 15:26:15.000000000 +0000
++++ /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt	2026-09-20 15:55:16.454781356 +0000
+@@ -1,42 +1,42 @@
+-BootLoaderSelector v2.12 — Professional Evolution Round 66
++BootLoaderSelector v2.13 — Professional Evolution Round 67
+ Audit/fix date: 2026-09-20
+ Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
+-Base: v2.11/Round65 FULL-SOURCE
+-Base ZIP SHA-256: a036f415e6fe57f7420dc446ed3d962faba51a1d2719144ec6411d645715938d
++Base: v2.12/Round66 FULL-SOURCE
++Base ZIP SHA-256: 12e21ee4d7d8f84c90c7fcfe86792b5b7b40857151f9785f0b448c9975716ce4
+ 
+ SOURCE E REPRODUÇÃO
+ ------------------
+-O log real do Mac fornecido nesta rodada mostra signer Jsign 7.5 selecionado e a
+-compilação EDK II concluída até [GENFW] BootLoaderSelector e "- Done -". A falha
+-ocorre depois: "Ad-hoc PE/COFF signing error: jsign rejected signature".
++O log real do Mac da v2.12 confirma signer Jsign 7.5, toolchain Mach-O íntegra e
++compilação EDK II concluída até [GENFW] BootLoaderSelector / "- Done -". A falha
++acontece exclusivamente depois: "unable to compile the Jsign compatibility verifier".
+ 
+ CAUSA RAIZ
+ ----------
+-A Round65 passou a fixar/baixar Jsign 7.5, mas Sign-PeCoff-AdHoc.command tentava
+-validar com `jsign verify`. O CLI 7.5 não implementa esse comando; ele retorna
+-"Unknown command 'verify'". Logo, a etapa classificava como assinatura inválida uma
+-operação de verificação inexistente.
++A Round66 tentava compilar em runtime um source Java contra o JAR all-in-one Jsign
++7.5. Essa distribuição é minimizada/sombreada e não constitui uma API de compilação
++estável para helpers externos entre JDKs/macOS. A Release não deve depender de javac
++nem de source-file mode para verificar um binário já compilado.
+ 
+ CORREÇÃO
+ --------
+-O helper agora detecta a capability do Jsign. Quando `verify` existe, mantém a
+-verificação nativa. Quando o CLI reporta explicitamente `Unknown command 'verify'`,
+-AuditTools/JsignLegacyVerifier.java usa as APIs do mesmo JAR Jsign pinado para validar:
+-certificado exato/validade/EKU codeSigning, RSA-3072, SHA-256, digest Authenticode
+-computado sobre o PE/COFF e integridade CMS/RSA. Não há downgrade para teste de mera
+-presença de assinatura e qualquer erro mantém o Release fail-closed.
++Foi removido JsignLegacyVerifier.java e todo compile-on-the-fly. Para Jsign 7.x, o
++helper usa `jsign extract --format DER` e passa a assinatura para o project-owned
++Verify-PeCoff-Authenticode.py. O verificador usa somente Python stdlib + OpenSSL e
++exige certificado publicado exato, validade/EKU codeSigning, RSA-3072, SHA-256,
++signedAttrs corretos, digest Authenticode PE/COFF independente e assinatura CMS/RSA
++válida. Native `jsign verify` permanece preferido quando disponível.
+ 
+ REGRESSÕES / VALIDAÇÃO
+ ----------------------
+-- RED reproduziu o falso "jsign rejected signature" com semântica Jsign 7.5;
+-- GREEN: bootstrap/capability routing PASS;
+-- fluxo EFI real sign -> verify -> publish -> reverify: PASS;
+-- EFI adulterado após assinatura: rejeitado;
++- RED: v2.12 falha quando javac é propositalmente inutilizável;
++- GREEN: Jsign 7.x route independe de javac;
++- EFI PE32+ real sign -> extract -> verify -> publish -> reverify: PASS;
++- alteração de byte no EFI assinado: rejeitada;
+ - certificado diferente: rejeitado;
+-- quality gate inclui o novo source Java como artefato crítico/creditado;
++- falhas do extract/verificador propagam diagnóstico detalhado ao Terminal;
+ - runtime UEFI C não alterado nesta correção.
+ 
+ CHANGE CONTROL
+ --------------
+-- versão: 2.12 / Professional Evolution Round66 / 2026-09-20;
++- versão: 2.13 / Professional Evolution Round67 / 2026-09-20;
+ - crédito obrigatório preservado: ©DNMTechLabs / dnmtechlabs@gmail.com.
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditTests/Run-Release-Quality-Gate.command /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditTests/Run-Release-Quality-Gate.command
+--- /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditTests/Run-Release-Quality-Gate.command	2026-09-20 15:26:15.000000000 +0000
++++ /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditTests/Run-Release-Quality-Gate.command	2026-09-20 15:52:20.413099882 +0000
+@@ -46,7 +46,7 @@
+   AuditTests/Test-Signer-Bootstrap.command
+   AuditTests/Test-Release-Publish-Invariants.command
+   AuditTools/Sign-PeCoff-AdHoc.command
+-  AuditTools/JsignLegacyVerifier.java
++  AuditTools/Verify-PeCoff-Authenticode.py
+   AuditTests/Host/*.c
+   AuditTests/UefiSmokeChild/*.c
+   AuditTests/UefiSmokeChild/*.inf
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditTests/Test-Signer-Bootstrap.command /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditTests/Test-Signer-Bootstrap.command
+--- /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditTests/Test-Signer-Bootstrap.command	2026-09-20 15:26:15.000000000 +0000
++++ /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditTests/Test-Signer-Bootstrap.command	2026-09-20 15:52:20.413222706 +0000
+@@ -56,6 +56,12 @@
+   echo "jsign: Unknown command 'verify'" >&2
+   exit 1
+ fi
++if [ "${1:-}" = "-jar" ] && [ -f "${2:-}" ] && [ "${3:-}" = "extract" ]; then
++  last="${@: -1}"
++  printf 'synthetic detached Authenticode fixture\n' > "$last.sig"
++  printf '%s\n' "$*" > "$BLS_TEST_EXTRACT_LOG"
++  exit 0
++fi
+ if [ "${1:-}" = "-cp" ]; then
+   printf '%s\n' "$*" > "$BLS_TEST_COMPAT_JAVA_LOG"
+   exit 0
+@@ -66,22 +72,20 @@
+ 
+ cat > "$TMP_ROOT/bin/javac" <<'SH'
+ #!/bin/bash
++# Regression: macOS may expose javac while the legacy verifier source cannot
++# compile against Jsign's minimized/shaded distribution JAR. The signing path
++# must not depend on compiling Java source at build time.
++exit 99
++SH
++chmod 755 "$TMP_ROOT/bin/javac"
++
++cat > "$TMP_ROOT/bin/python3" <<'SH'
++#!/bin/bash
+ set -euo pipefail
+-outdir=""
+-while [ "$#" -gt 0 ]; do
+-  if [ "$1" = "-d" ] && [ "$#" -ge 2 ]; then
+-    outdir="$2"
+-    shift 2
+-  else
+-    shift
+-  fi
+-done
+-[ -n "$outdir" ] || exit 93
+-mkdir -p "$outdir"
+-printf 'synthetic class fixture\n' > "$outdir/JsignLegacyVerifier.class"
++printf '%s\n' "$*" > "$BLS_TEST_COMPAT_PYTHON_LOG"
+ exit 0
+ SH
+-chmod 755 "$TMP_ROOT/bin/javac"
++chmod 755 "$TMP_ROOT/bin/python3"
+ 
+ cat > "$TMP_ROOT/bin/uname" <<'SH'
+ #!/bin/bash
+@@ -167,15 +171,18 @@
+   -addext 'extendedKeyUsage=codeSigning' \
+   -keyout "$TMP_ROOT/test-key.pem" -out "$TMP_ROOT/test-cert.pem" >/dev/null 2>&1
+ printf 'synthetic PE fixture for routing test\n' > "$TMP_ROOT/test.efi"
+-: > "$TMP_ROOT/compat-java.log"
++: > "$TMP_ROOT/compat-python.log"
++: > "$TMP_ROOT/extract.log"
+ VERIFY_OUT="$(
+   PATH="$TMP_ROOT/bin:/usr/bin:/bin" \
+   BLS_SIGNER_BACKEND=jsign \
+   BLS_JSIGN_JAR="$TMP_ROOT/cache/jsign-7.5.jar" \
+-  BLS_TEST_COMPAT_JAVA_LOG="$TMP_ROOT/compat-java.log" \
++  BLS_TEST_COMPAT_PYTHON_LOG="$TMP_ROOT/compat-python.log" \
++  BLS_TEST_EXTRACT_LOG="$TMP_ROOT/extract.log" \
+     "$SIGNER" verify "$TMP_ROOT/test.efi" "$TMP_ROOT/test-cert.pem"
+ )"
+ echo "$VERIFY_OUT" | grep -Fx 'Signature verification: PASS' >/dev/null
+-grep -F 'JsignLegacyVerifier' "$TMP_ROOT/compat-java.log" >/dev/null
++grep -F 'Verify-PeCoff-Authenticode.py' "$TMP_ROOT/compat-python.log" >/dev/null
++grep -F 'extract --format DER' "$TMP_ROOT/extract.log" >/dev/null
+ 
+ echo "Ad-hoc signer bootstrap regression: PASS"
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditTools/JsignLegacyVerifier.java /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditTools/JsignLegacyVerifier.java
+--- /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditTools/JsignLegacyVerifier.java	2026-09-20 15:22:21.000000000 +0000
++++ /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditTools/JsignLegacyVerifier.java	1970-01-01 00:00:00.000000000 +0000
+@@ -1,116 +0,0 @@
+-/*
+- * BootLoaderSelector Jsign 7.x compatibility verifier.
+- * Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
+- *
+- * This source is executed/compiled against the official all-in-one Jsign JAR.
+- * It validates the exact signer certificate, Authenticode file digest and CMS
+- * signature integrity for a single ad-hoc SHA-256/RSA-3072 signature.
+- */
+-import java.io.File;
+-import java.io.FileInputStream;
+-import java.io.InputStream;
+-import java.security.interfaces.RSAPublicKey;
+-import java.security.cert.CertificateFactory;
+-import java.security.cert.X509Certificate;
+-import java.util.Arrays;
+-import java.util.Collection;
+-import java.util.List;
+-
+-import net.jsign.DigestAlgorithm;
+-import net.jsign.Signable;
+-import net.jsign.bouncycastle.asn1.ASN1Sequence;
+-import net.jsign.bouncycastle.asn1.x509.DigestInfo;
+-import net.jsign.bouncycastle.cert.X509CertificateHolder;
+-import net.jsign.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+-import net.jsign.bouncycastle.cms.CMSSignedData;
+-import net.jsign.bouncycastle.cms.SignerInformation;
+-import net.jsign.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
+-
+-public final class JsignLegacyVerifier {
+-    private static final String CODE_SIGNING_EKU = "1.3.6.1.5.5.7.3.3";
+-
+-    private static void fail(String message) {
+-        System.err.println("Jsign compatibility verification failed: " + message);
+-        System.exit(1);
+-    }
+-
+-    @SuppressWarnings({"unchecked", "rawtypes"})
+-    public static void main(String[] args) throws Exception {
+-        if (args.length != 2) {
+-            fail("expected EFI_FILE and PUBLIC_CERT_PEM");
+-        }
+-
+-        File image = new File(args[0]);
+-        File certificateFile = new File(args[1]);
+-        X509Certificate expectedCertificate;
+-        try (InputStream input = new FileInputStream(certificateFile)) {
+-            expectedCertificate = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(input);
+-        }
+-
+-        expectedCertificate.checkValidity();
+-        if (!expectedCertificate.getSubjectX500Principal().equals(expectedCertificate.getIssuerX500Principal())) {
+-            fail("expected ad-hoc certificate is not self-issued");
+-        }
+-        expectedCertificate.verify(expectedCertificate.getPublicKey());
+-        List<String> extendedKeyUsage = expectedCertificate.getExtendedKeyUsage();
+-        if (extendedKeyUsage == null || !extendedKeyUsage.contains(CODE_SIGNING_EKU)) {
+-            fail("expected certificate does not contain the codeSigning EKU");
+-        }
+-        if (!(expectedCertificate.getPublicKey() instanceof RSAPublicKey)) {
+-            fail("expected certificate does not use RSA");
+-        }
+-        RSAPublicKey expectedRsaKey = (RSAPublicKey) expectedCertificate.getPublicKey();
+-        if (expectedRsaKey.getModulus().bitLength() != 3072) {
+-            fail("expected certificate is not RSA-3072");
+-        }
+-
+-        try (Signable signable = Signable.of(image)) {
+-            List<CMSSignedData> signatures = signable.getSignatures();
+-            if (signatures.size() != 1) {
+-                fail("expected exactly one Authenticode signature, found " + signatures.size());
+-            }
+-
+-            CMSSignedData signature = signatures.get(0);
+-            Collection<SignerInformation> signerInfos = signature.getSignerInfos().getSigners();
+-            if (signerInfos.size() != 1) {
+-                fail("expected exactly one CMS signer, found " + signerInfos.size());
+-            }
+-            SignerInformation signer = signerInfos.iterator().next();
+-
+-            Collection certificateMatches = signature.getCertificates().getMatches(signer.getSID());
+-            if (certificateMatches.size() != 1) {
+-                fail("signer certificate is missing or ambiguous");
+-            }
+-            X509CertificateHolder certificateHolder = (X509CertificateHolder) certificateMatches.iterator().next();
+-            X509Certificate actualCertificate = new JcaX509CertificateConverter().getCertificate(certificateHolder);
+-            if (!Arrays.equals(expectedCertificate.getEncoded(), actualCertificate.getEncoded())) {
+-                fail("embedded signer certificate does not match the published certificate");
+-            }
+-
+-            DigestAlgorithm signerDigestAlgorithm = DigestAlgorithm.of(signer.getDigestAlgorithmID().getAlgorithm());
+-            if (signerDigestAlgorithm != DigestAlgorithm.SHA256) {
+-                fail("CMS signer digest algorithm is not SHA-256");
+-            }
+-
+-            ASN1Sequence indirectData = ASN1Sequence.getInstance(signature.getSignedContent().getContent());
+-            if (indirectData.size() < 2) {
+-                fail("Authenticode indirect-data content is truncated");
+-            }
+-            DigestInfo digestInfo = DigestInfo.getInstance(indirectData.getObjectAt(1));
+-            DigestAlgorithm fileDigestAlgorithm = DigestAlgorithm.of(digestInfo.getAlgorithmId().getAlgorithm());
+-            if (fileDigestAlgorithm != DigestAlgorithm.SHA256) {
+-                fail("Authenticode file digest algorithm is not SHA-256");
+-            }
+-            byte[] computedDigest = signable.computeDigest(fileDigestAlgorithm);
+-            if (!Arrays.equals(computedDigest, digestInfo.getDigest())) {
+-                fail("PE/COFF Authenticode file digest does not match the signed digest");
+-            }
+-
+-            if (!signer.verify(new JcaSimpleSignerInfoVerifierBuilder().build(actualCertificate))) {
+-                fail("CMS/RSA signature integrity check failed");
+-            }
+-        }
+-
+-        System.out.println("Jsign compatibility verification: PASS");
+-    }
+-}
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditTools/Sign-PeCoff-AdHoc.command /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditTools/Sign-PeCoff-AdHoc.command
+--- /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditTools/Sign-PeCoff-AdHoc.command	2026-09-20 15:22:22.000000000 +0000
++++ /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditTools/Sign-PeCoff-AdHoc.command	2026-09-20 15:54:28.608923115 +0000
+@@ -466,40 +466,35 @@
+ 
+ verify_signature_with_jsign_legacy() {
+   local image="$1" cert="$2"
+-  local verifier_source="$SCRIPT_DIR/JsignLegacyVerifier.java"
+-  local classes_dir java_major
++  local verifier="$SCRIPT_DIR/Verify-PeCoff-Authenticode.py"
++  local work_image signature_file
+ 
+-  # Jsign 7.x has no `verify` CLI command. Its official all-in-one JAR exposes
+-  # the same Signable/CMS primitives used by Jsign 8's verifier, so use those
+-  # primitives directly instead of weakening verification to a presence check.
+-  if [ -z "$JSIGN_JAR_PATH" ]; then
+-    if ! bootstrap_jsign; then
+-      fail "Jsign 7.x verification requires the pinned all-in-one Jsign JAR; bootstrap is unavailable"
+-    fi
+-  fi
+-
+-  [ -f "$JSIGN_JAR_PATH" ] && [ ! -L "$JSIGN_JAR_PATH" ] && [ -r "$JSIGN_JAR_PATH" ] || \
+-    fail "Jsign compatibility verifier JAR is not a readable regular non-symlink file: $JSIGN_JAR_PATH"
+-  [ -f "$verifier_source" ] && [ ! -L "$verifier_source" ] && [ -r "$verifier_source" ] || \
+-    fail "Jsign compatibility verifier source is missing or unsafe: $verifier_source"
++  # Jsign 7.x can sign and extract Authenticode data but has no native
++  # `verify` command. Verification therefore uses only stable public CLI
++  # behavior (`extract`) plus a standalone stdlib/OpenSSL verifier. This
++  # deliberately avoids compiling Java source against Jsign's minimized JAR,
++  # which is not a supported API surface and fails on some macOS JDK setups.
++  command -v python3 >/dev/null 2>&1 || fail "Jsign 7.x verification requires python3"
++  command -v openssl >/dev/null 2>&1 || fail "Jsign 7.x verification requires openssl"
++  [ -f "$verifier" ] && [ ! -L "$verifier" ] && [ -r "$verifier" ] || \
++    fail "Jsign compatibility verifier is missing or unsafe: $verifier"
+ 
+   JSIGN_VERIFY_TEMP_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/BootLoaderSelector.JsignVerify.XXXXXX")" || \
+     fail "unable to create Jsign compatibility verification workspace"
+   chmod 700 "$JSIGN_VERIFY_TEMP_ROOT"
++  work_image="$JSIGN_VERIFY_TEMP_ROOT/signed.efi"
++  cp -p "$image" "$work_image" || fail "unable to stage signed EFI for Jsign verification"
++
++  local extract_output verify_output
++  if ! extract_output="$("${JSIGN_CMD[@]}" extract --format DER "$work_image" 2>&1)"; then
++    fail "Jsign 7.x could not extract the Authenticode signature: $image${extract_output:+ — $extract_output}"
++  fi
++  signature_file="$work_image.sig"
++  [ -s "$signature_file" ] && [ ! -L "$signature_file" ] || \
++    fail "Jsign 7.x did not produce a usable detached Authenticode signature"
+ 
+-  if command -v javac >/dev/null 2>&1; then
+-    classes_dir="$JSIGN_VERIFY_TEMP_ROOT/classes"
+-    mkdir -p "$classes_dir"
+-    javac -Xlint:none -cp "$JSIGN_JAR_PATH" -d "$classes_dir" "$verifier_source" >/dev/null 2>&1 || \
+-      fail "unable to compile the Jsign compatibility verifier"
+-    java -cp "$JSIGN_JAR_PATH:$classes_dir" JsignLegacyVerifier "$image" "$cert" >/dev/null 2>&1 || \
+-      fail "Jsign compatibility verifier rejected signature: $image"
+-  else
+-    java_major="$(java_major_version)" || fail "unable to determine Java version for Jsign compatibility verification"
+-    [ "$java_major" -ge 11 ] || \
+-      fail "Jsign 7.x verification requires javac or Java 11+ source-file mode"
+-    java -cp "$JSIGN_JAR_PATH" "$verifier_source" "$image" "$cert" >/dev/null 2>&1 || \
+-      fail "Jsign compatibility verifier rejected signature: $image"
++  if ! verify_output="$(python3 "$verifier" "$work_image" "$signature_file" "$cert" 2>&1)"; then
++    fail "Jsign compatibility verifier rejected signature: $image${verify_output:+ — $verify_output}"
+   fi
+ 
+   rm -rf -- "$JSIGN_VERIFY_TEMP_ROOT"
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditTools/Verify-PeCoff-Authenticode.py /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditTools/Verify-PeCoff-Authenticode.py
+--- /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditTools/Verify-PeCoff-Authenticode.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/AuditTools/Verify-PeCoff-Authenticode.py	2026-09-20 15:52:20.412704377 +0000
+@@ -0,0 +1,402 @@
++#!/usr/bin/env python3
++# Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
++"""Verify one SHA-256/RSA Authenticode signature on a PE/COFF EFI image.
++
++Designed for Jsign 7.x compatibility where the Jsign CLI can sign/extract but
++has no native `verify` command. Uses only Python stdlib plus OpenSSL.
++"""
++from __future__ import annotations
++
++import hashlib
++import os
++import shutil
++import struct
++import subprocess
++import sys
++import tempfile
++from dataclasses import dataclass
++from pathlib import Path
++
++OID_PKCS7_SIGNED_DATA = "1.2.840.113549.1.7.2"
++OID_SPC_INDIRECT_DATA = "1.3.6.1.4.1.311.2.1.4"
++OID_SHA256 = "2.16.840.1.101.3.4.2.1"
++OID_CONTENT_TYPE = "1.2.840.113549.1.9.3"
++OID_MESSAGE_DIGEST = "1.2.840.113549.1.9.4"
++OID_RSA_ENCRYPTION = "1.2.840.113549.1.1.1"
++OID_SHA256_WITH_RSA = "1.2.840.113549.1.1.11"
++
++
++class VerifyError(Exception):
++    pass
++
++
++@dataclass(frozen=True)
++class Node:
++    data: bytes
++    start: int
++    tag_end: int
++    content_start: int
++    end: int
++    tag_class: int
++    constructed: bool
++    tag_number: int
++
++    @property
++    def raw(self) -> bytes:
++        return self.data[self.start:self.end]
++
++    @property
++    def content(self) -> bytes:
++        return self.data[self.content_start:self.end]
++
++    def children(self) -> list["Node"]:
++        if not self.constructed:
++            raise VerifyError("ASN.1 primitive cannot have children")
++        out: list[Node] = []
++        pos = self.content_start
++        while pos < self.end:
++            child = parse_node(self.data, pos, self.end)
++            out.append(child)
++            pos = child.end
++        if pos != self.end:
++            raise VerifyError("ASN.1 child boundary mismatch")
++        return out
++
++
++def parse_node(data: bytes, start: int = 0, limit: int | None = None) -> Node:
++    if limit is None:
++        limit = len(data)
++    if start < 0 or start >= limit or limit > len(data):
++        raise VerifyError("ASN.1 offset out of range")
++    pos = start
++    first = data[pos]
++    pos += 1
++    tag_class = first >> 6
++    constructed = bool(first & 0x20)
++    tag_number = first & 0x1F
++    if tag_number == 0x1F:
++        tag_number = 0
++        seen = 0
++        while True:
++            if pos >= limit or seen >= 6:
++                raise VerifyError("invalid high-tag-number ASN.1 value")
++            b = data[pos]
++            pos += 1
++            seen += 1
++            if seen == 1 and (b & 0x7F) == 0:
++                raise VerifyError("non-canonical ASN.1 tag")
++            tag_number = (tag_number << 7) | (b & 0x7F)
++            if not (b & 0x80):
++                break
++    tag_end = pos
++    if pos >= limit:
++        raise VerifyError("truncated ASN.1 length")
++    first_len = data[pos]
++    pos += 1
++    if first_len < 0x80:
++        length = first_len
++    else:
++        count = first_len & 0x7F
++        if count == 0:
++            raise VerifyError("indefinite ASN.1 length is not accepted")
++        if count > 8 or pos + count > limit:
++            raise VerifyError("invalid ASN.1 length")
++        if data[pos] == 0:
++            raise VerifyError("non-canonical ASN.1 length")
++        length = int.from_bytes(data[pos:pos+count], "big")
++        if length < 0x80:
++            raise VerifyError("non-canonical ASN.1 long length")
++        pos += count
++    end = pos + length
++    if end > limit:
++        raise VerifyError("truncated ASN.1 value")
++    return Node(data, start, tag_end, pos, end, tag_class, constructed, tag_number)
++
++
++def require_universal(node: Node, tag: int, label: str) -> None:
++    if node.tag_class != 0 or node.tag_number != tag:
++        raise VerifyError(f"expected {label}")
++
++
++def decode_oid(node: Node) -> str:
++    require_universal(node, 6, "OBJECT IDENTIFIER")
++    b = node.content
++    if not b:
++        raise VerifyError("empty OBJECT IDENTIFIER")
++    first = b[0]
++    a = min(first // 40, 2)
++    parts = [a, first - a * 40]
++    value = 0
++    active = False
++    for x in b[1:]:
++        active = True
++        value = (value << 7) | (x & 0x7F)
++        if not (x & 0x80):
++            parts.append(value)
++            value = 0
++            active = False
++    if active:
++        raise VerifyError("truncated OBJECT IDENTIFIER")
++    return ".".join(str(x) for x in parts)
++
++
++def encode_length(length: int) -> bytes:
++    if length < 0:
++        raise VerifyError("negative DER length")
++    if length < 0x80:
++        return bytes([length])
++    raw = length.to_bytes((length.bit_length() + 7) // 8, "big")
++    return bytes([0x80 | len(raw)]) + raw
++
++
++def der_set(content: bytes) -> bytes:
++    return b"\x31" + encode_length(len(content)) + content
++
++
++def run(args: list[str], *, input_data: bytes | None = None) -> subprocess.CompletedProcess[bytes]:
++    try:
++        return subprocess.run(args, input=input_data, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
++    except OSError as exc:
++        raise VerifyError(f"unable to execute {args[0]}: {exc}") from exc
++
++
++def openssl_cert_der(cert: Path) -> bytes:
++    cp = run(["openssl", "x509", "-in", str(cert), "-outform", "DER"])
++    if cp.returncode != 0 or not cp.stdout:
++        raise VerifyError("invalid X.509 certificate")
++    return cp.stdout
++
++
++def verify_certificate_policy(cert: Path) -> None:
++    cp = run(["openssl", "x509", "-in", str(cert), "-noout", "-checkend", "0"])
++    if cp.returncode != 0:
++        raise VerifyError("signer certificate is expired or not yet valid")
++    cp = run(["openssl", "x509", "-in", str(cert), "-noout", "-subject", "-issuer", "-nameopt", "RFC2253"])
++    if cp.returncode != 0:
++        raise VerifyError("unable to inspect signer certificate")
++    lines = cp.stdout.decode("utf-8", "replace").splitlines()
++    subject = next((x.partition("=")[2].strip() for x in lines if x.startswith("subject=")), None)
++    issuer = next((x.partition("=")[2].strip() for x in lines if x.startswith("issuer=")), None)
++    if not subject or subject != issuer:
++        raise VerifyError("ad-hoc signer certificate is not self-issued")
++    cp = run(["openssl", "x509", "-in", str(cert), "-noout", "-text"])
++    if cp.returncode != 0 or b"Code Signing" not in cp.stdout:
++        raise VerifyError("signer certificate does not contain the codeSigning EKU")
++
++
++def authenticode_digest_sha256(image: bytes) -> bytes:
++    if len(image) < 0x40 or image[:2] != b"MZ":
++        raise VerifyError("PE/COFF DOS header is invalid")
++    pe = struct.unpack_from("<I", image, 0x3C)[0]
++    if pe > len(image) - 24 or image[pe:pe+4] != b"PE\x00\x00":
++        raise VerifyError("PE/COFF signature is invalid")
++    optional = pe + 24
++    if optional + 2 > len(image):
++        raise VerifyError("PE/COFF optional header is truncated")
++    magic = struct.unpack_from("<H", image, optional)[0]
++    if magic == 0x10B:
++        checksum = pe + 88
++        number_rva = pe + 116
++        directories = pe + 120
++    elif magic == 0x20B:
++        checksum = pe + 88
++        number_rva = pe + 132
++        directories = pe + 136
++    else:
++        raise VerifyError("unsupported PE optional-header format")
++    if number_rva + 4 > len(image):
++        raise VerifyError("PE data-directory count is truncated")
++    count = struct.unpack_from("<I", image, number_rva)[0]
++    if count <= 4:
++        raise VerifyError("PE certificate-table data directory is absent")
++    cert_dir = directories + 8 * 4
++    if checksum + 4 > len(image) or cert_dir + 8 > len(image) or checksum >= cert_dir:
++        raise VerifyError("PE signing fields are outside the image")
++    cert_offset, cert_size = struct.unpack_from("<II", image, cert_dir)
++    if cert_offset == 0 or cert_size == 0:
++        raise VerifyError("PE image has no Authenticode certificate table")
++    if cert_offset % 8 != 0 or cert_offset < cert_dir + 8 or cert_offset + cert_size > len(image):
++        raise VerifyError("PE certificate table has invalid bounds or alignment")
++
++    digest = hashlib.sha256()
++    digest.update(image[:checksum])
++    digest.update(image[checksum+4:cert_dir])
++    digest.update(image[cert_dir+8:cert_offset])
++    digest.update(image[cert_offset+cert_size:])
++    return digest.digest()
++
++
++def parse_signature(signature_der: bytes, expected_cert_der: bytes) -> tuple[bytes, bytes, bytes, bytes]:
++    root = parse_node(signature_der)
++    if root.end != len(signature_der):
++        raise VerifyError("trailing data after CMS ContentInfo")
++    require_universal(root, 16, "CMS ContentInfo SEQUENCE")
++    root_children = root.children()
++    if len(root_children) != 2 or decode_oid(root_children[0]) != OID_PKCS7_SIGNED_DATA:
++        raise VerifyError("signature is not PKCS#7 SignedData")
++    tagged = root_children[1]
++    if tagged.tag_class != 2 or tagged.tag_number != 0 or not tagged.constructed:
++        raise VerifyError("CMS SignedData wrapper is invalid")
++    tagged_children = tagged.children()
++    if len(tagged_children) != 1:
++        raise VerifyError("CMS SignedData wrapper is ambiguous")
++    signed_data = tagged_children[0]
++    require_universal(signed_data, 16, "SignedData SEQUENCE")
++    sd = signed_data.children()
++    if len(sd) < 5:
++        raise VerifyError("SignedData is truncated")
++
++    # Encapsulated Authenticode content is the third SignedData element.
++    encap = sd[2]
++    require_universal(encap, 16, "encapsulated content SEQUENCE")
++    ec = encap.children()
++    if len(ec) != 2 or decode_oid(ec[0]) != OID_SPC_INDIRECT_DATA:
++        raise VerifyError("unexpected Authenticode content type")
++    content_tag = ec[1]
++    if content_tag.tag_class != 2 or content_tag.tag_number != 0 or not content_tag.constructed:
++        raise VerifyError("Authenticode content wrapper is invalid")
++    inner = content_tag.children()
++    if len(inner) != 1:
++        raise VerifyError("Authenticode content wrapper is ambiguous")
++    indirect = inner[0]
++    require_universal(indirect, 16, "SpcIndirectDataContent SEQUENCE")
++
++    # Jsign/BC's PKCS7ProcessableObject hashes SEQUENCE contents (without tag/length).
++    content_digest = hashlib.sha256(indirect.content).digest()
++
++    # Find the certificate set and signerInfos. signerInfos is the final SET.
++    cert_container = next((n for n in sd[3:-1] if n.tag_class == 2 and n.tag_number == 0), None)
++    if cert_container is None:
++        raise VerifyError("CMS certificate set is missing")
++    certs = cert_container.children()
++    if sum(1 for n in certs if n.raw == expected_cert_der) != 1:
++        raise VerifyError("embedded signer certificate does not match the published certificate")
++
++    signer_infos = sd[-1]
++    require_universal(signer_infos, 17, "SignerInfos SET")
++    si_items = signer_infos.children()
++    if len(si_items) != 1:
++        raise VerifyError("expected exactly one CMS signer")
++    signer_info = si_items[0]
++    require_universal(signer_info, 16, "SignerInfo SEQUENCE")
++    si = signer_info.children()
++    if len(si) < 6:
++        raise VerifyError("SignerInfo is truncated")
++
++    digest_alg = si[2]
++    require_universal(digest_alg, 16, "digest AlgorithmIdentifier")
++    da = digest_alg.children()
++    if not da or decode_oid(da[0]) != OID_SHA256:
++        raise VerifyError("CMS signer digest algorithm is not SHA-256")
++
++    attrs = si[3]
++    if attrs.tag_class != 2 or attrs.tag_number != 0 or not attrs.constructed:
++        raise VerifyError("CMS signed attributes are missing")
++    message_digest = None
++    content_type = None
++    for attr in attrs.children():
++        require_universal(attr, 16, "CMS Attribute SEQUENCE")
++        ac = attr.children()
++        if len(ac) != 2:
++            raise VerifyError("malformed CMS attribute")
++        oid = decode_oid(ac[0])
++        values = ac[1]
++        require_universal(values, 17, "CMS Attribute values SET")
++        vals = values.children()
++        if len(vals) != 1:
++            raise VerifyError("ambiguous CMS signed attribute")
++        if oid == OID_MESSAGE_DIGEST:
++            require_universal(vals[0], 4, "messageDigest OCTET STRING")
++            message_digest = vals[0].content
++        elif oid == OID_CONTENT_TYPE:
++            content_type = decode_oid(vals[0])
++    if content_type != OID_SPC_INDIRECT_DATA:
++        raise VerifyError("CMS contentType signed attribute is invalid")
++    if message_digest != content_digest:
++        raise VerifyError("CMS messageDigest does not match Authenticode content")
++
++    sig_alg = si[4]
++    require_universal(sig_alg, 16, "signature AlgorithmIdentifier")
++    sa = sig_alg.children()
++    if not sa or decode_oid(sa[0]) not in (OID_RSA_ENCRYPTION, OID_SHA256_WITH_RSA):
++        raise VerifyError("CMS signature algorithm is not RSA/SHA-256 compatible")
++
++    sig_value = si[5]
++    require_universal(sig_value, 4, "CMS signature OCTET STRING")
++    if len(sig_value.content) != 384:
++        raise VerifyError("CMS RSA signature is not 3072 bits")
++
++    # signedAttrs is IMPLICIT [0] SET OF; signature input uses DER SET tag.
++    signed_attrs_der = der_set(attrs.content)
++
++    # File digest is the second component of SpcIndirectDataContent.
++    ind = indirect.children()
++    if len(ind) != 2:
++        raise VerifyError("SpcIndirectDataContent is malformed")
++    digest_info = ind[1]
++    require_universal(digest_info, 16, "DigestInfo SEQUENCE")
++    di = digest_info.children()
++    if len(di) != 2:
++        raise VerifyError("Authenticode DigestInfo is malformed")
++    alg = di[0]
++    require_universal(alg, 16, "DigestInfo AlgorithmIdentifier")
++    ai = alg.children()
++    if not ai or decode_oid(ai[0]) != OID_SHA256:
++        raise VerifyError("Authenticode file digest algorithm is not SHA-256")
++    require_universal(di[1], 4, "Authenticode file digest OCTET STRING")
++    file_digest = di[1].content
++    if len(file_digest) != 32:
++        raise VerifyError("Authenticode SHA-256 digest has invalid size")
++
++    return signed_attrs_der, sig_value.content, file_digest, content_digest
++
++
++def verify_rsa_signature(cert: Path, signed_attrs_der: bytes, signature: bytes) -> None:
++    if not shutil.which("openssl"):
++        raise VerifyError("openssl is required")
++    with tempfile.TemporaryDirectory(prefix="BootLoaderSelector.AuthenticodeVerify.") as td:
++        td = Path(td)
++        pub = td / "public.pem"
++        attrs = td / "signed-attrs.der"
++        sig = td / "signature.bin"
++        cp = run(["openssl", "x509", "-in", str(cert), "-pubkey", "-noout"])
++        if cp.returncode != 0 or b"BEGIN PUBLIC KEY" not in cp.stdout:
++            raise VerifyError("unable to extract signer public key")
++        pub.write_bytes(cp.stdout)
++        attrs.write_bytes(signed_attrs_der)
++        sig.write_bytes(signature)
++        cp = run(["openssl", "dgst", "-sha256", "-verify", str(pub), "-signature", str(sig), str(attrs)])
++        if cp.returncode != 0 or b"Verified OK" not in cp.stdout:
++            raise VerifyError("CMS/RSA signature integrity check failed")
++
++
++def main() -> int:
++    if len(sys.argv) != 4:
++        print(f"Usage: {Path(sys.argv[0]).name} SIGNED_EFI SIGNATURE_DER PUBLIC_CERT_PEM", file=sys.stderr)
++        return 2
++    image_path = Path(sys.argv[1])
++    sig_path = Path(sys.argv[2])
++    cert_path = Path(sys.argv[3])
++    for path, label in ((image_path, "EFI image"), (sig_path, "signature"), (cert_path, "certificate")):
++        if not path.is_file() or path.is_symlink():
++            raise VerifyError(f"{label} is not a regular non-symlink file: {path}")
++    if not shutil.which("openssl"):
++        raise VerifyError("openssl is required")
++
++    verify_certificate_policy(cert_path)
++    cert_der = openssl_cert_der(cert_path)
++    signed_attrs, cms_signature, signed_file_digest, _ = parse_signature(sig_path.read_bytes(), cert_der)
++    computed_file_digest = authenticode_digest_sha256(image_path.read_bytes())
++    if computed_file_digest != signed_file_digest:
++        raise VerifyError("PE/COFF Authenticode file digest does not match the signed digest")
++    verify_rsa_signature(cert_path, signed_attrs, cms_signature)
++    print("Jsign 7.x Authenticode compatibility verification: PASS")
++    return 0
++
++
++if __name__ == "__main__":
++    try:
++        raise SystemExit(main())
++    except VerifyError as exc:
++        print(f"Jsign compatibility verification failed: {exc}", file=sys.stderr)
++        raise SystemExit(1)
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/BootLoaderSelector.dsc /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/BootLoaderSelector.dsc
+--- /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/BootLoaderSelector.dsc	2026-09-20 15:26:15.000000000 +0000
++++ /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/BootLoaderSelector.dsc	2026-09-20 15:55:16.453017727 +0000
+@@ -6,7 +6,7 @@
+ [Defines]
+   PLATFORM_NAME                  = BootLoaderSelector
+   PLATFORM_GUID                  = 3F71A792-6E03-4D84-9F1D-F3C81EC80F44
+-  PLATFORM_VERSION = 2.12
++  PLATFORM_VERSION = 2.13
+   DSC_SPECIFICATION              = 0x00010006
+   OUTPUT_DIRECTORY               = Build/BootLoaderSelector
+   SUPPORTED_ARCHITECTURES        = X64
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf
+--- /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf	2026-09-20 15:26:15.000000000 +0000
++++ /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf	2026-09-20 15:55:16.452819419 +0000
+@@ -8,7 +8,7 @@
+   BASE_NAME                      = BootLoaderSelector
+   FILE_GUID                      = F9C8E131-0A87-4C6C-A3E4-CA03DE31F6F1
+   MODULE_TYPE                    = UEFI_APPLICATION
+-  VERSION_STRING = 2.12
++  VERSION_STRING = 2.13
+   ENTRY_POINT                    = UefiMain
+ 
+ [Sources]
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h
+--- /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h	2026-09-20 15:26:15.000000000 +0000
++++ /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h	2026-09-20 15:55:16.452576291 +0000
+@@ -9,8 +9,8 @@
+ #include <Protocol/SimpleFileSystem.h>
+ #include <Guid/FileInfo.h>
+ 
+-#define BLS_VERSION_ASCII "2.12"
+-#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.12"
++#define BLS_VERSION_ASCII "2.13"
++#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.13"
+ 
+ #define BLS_MAX_TEXT      128
+ #define BLS_MAX_PATH      192
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/CHANGELOG.txt /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/CHANGELOG.txt
+--- /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/CHANGELOG.txt	2026-09-20 15:26:15.000000000 +0000
++++ /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/CHANGELOG.txt	2026-09-20 15:55:16.454269824 +0000
+@@ -1,7 +1,30 @@
+ BootLoaderSelector — CHANGELOG
+ ===========================
+ 
+-Versão atual: 2.12
++Versão atual: 2.13
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++VERSÃO 2.13 — PROFESSIONAL EVOLUTION ROUND 67 — 2026-09-20
++------------------------------------------------------------
++Base exclusiva: v2.12/Round66 FULL-SOURCE
++SHA-256 do ZIP-base: 12e21ee4d7d8f84c90c7fcfe86792b5b7b40857151f9785f0b448c9975716ce4
++
++Alterações desta rodada:
++- reproduzida no Mac a falha pós-build da v2.12: a compilação termina em
++  [GENFW] BootLoaderSelector / "- Done -", mas o signer aborta com
++  "unable to compile the Jsign compatibility verifier";
++- removido o compile-on-the-fly de AuditTools/JsignLegacyVerifier.java e removido o
++  próprio source Java, eliminando dependência de javac e de classes internas do JAR;
++- adicionado AuditTools/Verify-PeCoff-Authenticode.py, sem dependências Python externas;
++- Jsign 7.x usa `extract --format DER`; Python + OpenSSL validam certificado, EKU,
++  RSA-3072/SHA-256, signedAttrs, digest Authenticode PE/COFF e assinatura CMS/RSA;
++- testes RED→GREEN cobrem Jsign 7.5 com javac propositalmente inutilizável;
++- fluxo criptográfico EFI real sign -> extract -> verify -> publish -> reverify: PASS;
++- EFI adulterado após assinatura e certificado diferente: rejeitados;
++- erros de extract/verificação agora incluem o diagnóstico real no Terminal;
++- runtime UEFI não foi alterado; correção restrita ao tooling de Release;
++- versão/build incrementados obrigatoriamente para 2.13/Round67.
++
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+ 
+ VERSÃO 2.12 — PROFESSIONAL EVOLUTION ROUND 66 — 2026-09-20
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/INFO.txt /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/INFO.txt
+--- /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/INFO.txt	2026-09-20 15:26:15.000000000 +0000
++++ /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/INFO.txt	2026-09-20 15:55:16.453870106 +0000
+@@ -1,12 +1,38 @@
+ BootLoaderSelector — INFORMAÇÕES COMPLETAS DO PROJETO
+ =====================================================
+ 
+-Versão atual: 2.12
+-Base imediata: BootLoaderSelector v2.11 Professional Evolution Round65 (2026-09-20)
+-SHA-256 do ZIP-base recebido nesta rodada: a036f415e6fe57f7420dc446ed3d962faba51a1d2719144ec6411d645715938d
++Versão atual: 2.13
++Base imediata: BootLoaderSelector v2.12 Professional Evolution Round66 (2026-09-20)
++SHA-256 do ZIP-base recebido nesta rodada: 12e21ee4d7d8f84c90c7fcfe86792b5b7b40857151f9785f0b448c9975716ce4
+ Data desta rodada: 2026-09-20
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+ 
++VERSÃO 2.13 — PROFESSIONAL EVOLUTION ROUND 67 — 2026-09-20
++------------------------------------------------------------
++Esta correção parte exclusivamente do FULL-SOURCE v2.12/Round66 entregue nesta
++conversa (SHA-256 12e21ee4d7d8f84c90c7fcfe86792b5b7b40857151f9785f0b448c9975716ce4).
++
++Correção do pós-build de assinatura no macOS:
++- o novo log real do Mac confirma que BaseTools e BootLoaderSelector concluem a
++  compilação até [GENFW] BootLoaderSelector e "- Done -" em cerca de 8 segundos;
++- a única falha ocorre depois, ao tentar compilar em runtime o verificador Java de
++  compatibilidade Jsign 7.x: "unable to compile the Jsign compatibility verifier";
++- causa raiz: compilar source Java durante a Release contra o JAR all-in-one Jsign
++  7.5 minimizado/sombreado não é uma interface de build estável entre JDKs/macOS;
++- removida integralmente a dependência de javac/source-file mode do caminho Release;
++- Jsign 7.x agora usa seu comando público estável `extract --format DER`; um verificador
++  project-owned em Python stdlib + OpenSSL valida a assinatura extraída sem JAR extra;
++- a validação exige certificado publicado exato, validade, EKU codeSigning, RSA-3072,
++  SHA-256, signedAttrs contentType/messageDigest, digest Authenticode PE/COFF recomputado
++  independentemente e assinatura CMS/RSA válida;
++- EFI alterado após assinatura e certificado diferente são rejeitados fail-closed;
++- mensagens de falha de extract/verificação agora preservam o diagnóstico real no
++  Terminal, evitando o erro genérico que dificultou as rodadas anteriores.
++
++O runtime UEFI não recebeu mudança funcional nesta correção.
++Versão/build incrementados obrigatoriamente para 2.13/Round67.
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
++
+ VERSÃO 2.12 — PROFESSIONAL EVOLUTION ROUND 66 — 2026-09-20
+ ------------------------------------------------------------
+ Esta correção parte exclusivamente do FULL-SOURCE v2.11/Round65 entregue nesta
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/SECURITY-NOTES.txt /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/SECURITY-NOTES.txt
+--- /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/SECURITY-NOTES.txt	2026-09-20 15:26:15.000000000 +0000
++++ /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/SECURITY-NOTES.txt	2026-09-20 15:55:16.454482046 +0000
+@@ -74,15 +74,20 @@
+ 
+ Jsign 7.x verification compatibility
+ ----------------------------------
+-Starting with v2.12/Round66, the helper does not invoke the unavailable `verify` CLI
+-operation when the selected backend is Jsign 7.x. It first probes the Jsign command.
+-When native verification is unavailable specifically because `verify` is unknown, the
+-project-owned AuditTools/JsignLegacyVerifier.java is compiled/executed against the same
+-pinned Jsign all-in-one JAR. The verifier requires the exact published certificate,
+-codeSigning EKU, RSA-3072, SHA-256 CMS/file digest, a matching Authenticode PE/COFF
+-digest and a valid CMS/RSA signature. Tampered EFI bytes or a different certificate
+-fail closed. Jsign versions exposing native `verify` continue to use that command.
+-No second verifier JAR or additional third-party binary is vendored.
++Starting with v2.13/Round67, Jsign 7.x verification does not compile Java source at
++Release time. The helper probes the selected Jsign backend. When native `verify` is
++unavailable specifically because the command is unknown, Jsign's stable public
++`extract --format DER` operation exports the Authenticode PKCS#7 data to a private
++workspace. AuditTools/Verify-PeCoff-Authenticode.py then validates it with Python's
++standard library and the host OpenSSL command.
++
++The compatibility verifier requires the exact published certificate, current
++certificate validity, codeSigning EKU, RSA-3072, SHA-256, expected Authenticode
++content type and messageDigest signed attributes, an independently recomputed
++PE/COFF Authenticode file digest, and a cryptographically valid CMS/RSA signature.
++Tampered EFI bytes or a different certificate fail closed. Native Jsign verification
++continues to be preferred when the selected Jsign version provides it. No verifier
++JAR, private signing material, or third-party Python package is vendored.
+ 
+ Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
+ 
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/THIRD-PARTY-NOTICES.txt /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/THIRD-PARTY-NOTICES.txt
+--- /mnt/data/bls_round67_base/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/THIRD-PARTY-NOTICES.txt	2026-09-20 15:26:15.000000000 +0000
++++ /mnt/data/bls_v212_fix/BootLoaderSelector-Source-v2.12-DNMTechLabs-Professional-Evolution-Round66-2026-09-20-FULL-SOURCE/THIRD-PARTY-NOTICES.txt	2026-09-20 15:55:16.454659128 +0000
+@@ -18,8 +18,9 @@
+ These tools remain external build/validation dependencies and are not redistributed
+ inside this FULL-SOURCE package. Their upstream licenses remain applicable to the
+ separately installed/downloaded tools.
+-Starting with v2.12/Round66, Jsign 7.x signature verification uses a project-owned
+-Java compatibility verifier compiled/executed against the same external Jsign JAR.
+-This adds no third-party artifact to the FULL-SOURCE; Jsign and its bundled libraries
+-remain subject to their upstream licenses.
++Starting with v2.13/Round67, Jsign 7.x signature verification uses the project-owned
++AuditTools/Verify-PeCoff-Authenticode.py together with the external host OpenSSL
++command after Jsign exports the signature through its public `extract` CLI. No
++third-party Python package or additional verifier JAR is distributed; Jsign and
++OpenSSL remain subject to their respective upstream licenses.
+ 

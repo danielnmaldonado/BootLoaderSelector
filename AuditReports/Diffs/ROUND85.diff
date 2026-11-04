@@ -1,0 +1,1038 @@
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND85.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt	2026-10-10 04:44:56.000000000 +0000
++++ /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt	2026-10-10 12:02:55.362373554 +0000
+@@ -1,135 +1,163 @@
+-BootLoaderSelector v2.30 — Professional Evolution Round84
++BootLoaderSelector v2.31 — Professional Evolution Round85
+ Data: 2026-10-10
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+-Origem EXCLUSIVA: FULL-SOURCE v2.29/Round83
+-SHA-256 ZIP-base: d905651b1674a414dae1deeeabfdf7d0dfc72dcc76c607321cfea2ed536d53e1
++Origem EXCLUSIVA: FULL-SOURCE v2.30/Round84
++SHA-256 ZIP-base: 0f212946537593e28e1ca905d6bfc1b9d9e8d8f3384a88e673333bacece8ae19
+ 
+-ESCOPO E PRESERVAÇÃO
+-====================
+-Esta rodada usa exclusivamente o ZIP v2.29/Round83 recebido nesta conversa.
+-A integridade do baseline foi conferida antes de alterações: ZIP testável,
+-3.522 arquivos regulares, manifesto com 3.520 entradas, zero hash divergente,
+-zero entrada ausente/stale. As únicas exclusões deliberadas do manifesto são
+-o próprio AuditReports/MANIFEST.sha256 e BuildLogs/BootLoaderSelector-Build.log.
+-
+-Os 9 módulos C do runtime UEFI (7.983 linhas / 222 definições por Clang AST)
+-permanecem byte a byte idênticos ao v2.29. Nenhuma alteração de UI, boot,
+-configuração, hardware discovery, logger, screenshot ou dependência vendorizada
+-foi realizada. A única correção funcional desta rodada é no verificador de
+-política X.509 usado pelo pipeline de Release, com regressões associadas.
+-
+-ACHADO R84-AUTH-CRITICAL-01 — criticality X.509 não era imposta
+-================================================================
+-Severidade: alta para consistência da política de assinatura; não afeta o EFI.
+-
+-Causa-raiz:
+-AuditTools/Sign-PeCoff-AdHoc.command emite explicitamente:
+-  Basic Constraints = critical, CA:FALSE
+-  Key Usage         = critical, digitalSignature
+-  Extended Key Usage= codeSigning
+-O verificador v2.29 decodificava e exigia CA:FALSE, digitalSignature e
+-codeSigning, porém ignorava o BOOLEAN `critical` das extensões X.509. Assim,
+-certificados autoassinados RSA-3072/SHA-256 que mantivessem os demais requisitos
+-mas marcassem Basic Constraints e/ou Key Usage como não críticas eram aceitos.
+-
+-Reprodução RED no baseline v2.29:
+-um certificado com Basic Constraints=CA:FALSE e Key Usage=digitalSignature,
+-ambos não críticos, mais EKU codeSigning, foi aceito por
+-verify_certificate_policy(). Resultado observado:
+-  BASELINE_ACCEPTED_NONCRITICAL_BC_AND_KU
+-
+-Correção mínima:
+-- o parser DER passa a decodificar o BOOLEAN opcional `critical` da Extension;
+-- valida BOOLEAN DER primitivo de um byte (00/FF);
+-- Basic Constraints precisa ser crítica e CA:FALSE;
+-- Key Usage precisa ser crítica e conter digitalSignature;
+-- EKU codeSigning, validade, RSA/SHA-256, self-sign criptográfico e demais
+-  controles preexistentes permanecem inalterados.
+-
+-Regressões GREEN:
+-AuditTests/Test-Authenticode-Verifier-Policy.command inclui negativos separados
+-para Basic Constraints não crítica e Key Usage não crítica. O controle positivo
+-e os negativos anteriores (sem EKU, CA:TRUE, sem digitalSignature, sem Basic
+-Constraints, sem Key Usage, certificado futuro e self-issued não self-signed)
+-continuam passando.
+-
+-PASSAGENS TÉCNICAS EXECUTADAS
+-=============================
+-1. Arquitetura/estrutura: árvore completa, manifesto, metadados, DSC/INF,
+-   scripts de build/signing, CI, EDK2/MdePkg, BaseTools e toolchain vendorizada.
+-2. Bugs/funcionalidade: 222 funções runtime inventariadas por AST; fluxos de
+-   boot/config/hardware/logger/menu/UI/screenshot revisados e exercitados.
+-3. Memória/concorrência: ASan+UBSan em Clang/GCC, IntegerSan e GCC TSan.
+-4. Performance/recursos: loops, bounds, retries, caches, alocações, eventos e
+-   lifecycle examinados; nenhuma otimização especulativa aplicada.
+-5. UI/responsividade: fast-path de autoboot, mode bounds, countdown e eventos
+-   cobertos por source review/gates/testes; nenhum novo defeito reproduzido.
+-6. Robustez/extremos: parsers, UTF-8/XML, SMBIOS, memory map, GOP, MP topology,
+-   filesystem, PE/COFF/ASN.1 e BaseTools bounds/fuzz.
+-7. Build/Release/compatibilidade: BaseTools build completo, scripts/configs,
+-   policy/bootstrap/publish e quality gate até o blocker externo de signing.
+-8. Regressão final: suítes repetidas sobre v2.30 e runtime comparado por SHA-256.
++JANELA DE EXECUÇÃO
++=================
++Janela observada desta auditoria: aproximadamente 08:38–09:00 BRT de 2026-10-10
++(~22 minutos até o congelamento das evidências). Tempos individuais de suítes e
++builds foram medidos separadamente. Não se atribuem artificialmente 20–30 minutos
++a cada passagem quando isso não ocorreu.
++
++RESUMO EXECUTIVO
++================
++A Round85 foi executada exclusivamente sobre o FULL-SOURCE v2.30/Round84 recebido
++nesta conversa. O baseline passou integridade ZIP e manifesto 3.522/3.522 antes
++de qualquer alteração, e uma cópia separada foi usada para o trabalho.
++
++Foi encontrado e reproduzido um defeito real no pipeline host de build/debug:
++Build-Debug-Full-Log.command continuava escrevendo no log canônico depois que o
++builder Release já havia liberado .BlsBuild.lock. Um Release concorrente podia
++truncar o arquivo nesse intervalo e misturar diagnósticos de execuções distintas.
++A correção mantém toda escrita do bloco Debug dentro do cleanup do builder Release
++enquanto o lock ainda pertence à mesma execução. Regressão RED->GREEN e cenário
++concorrente real confirmam a causa-raiz e o reparo.
++
++Nenhum dos 9 módulos C do runtime UEFI foi alterado. Eles permanecem byte a byte
++idênticos ao v2.30. Nenhuma refatoração estética, alteração de UI, boot, config,
++hardware discovery, logging UEFI, screenshot ou dependência vendorizada foi feita.
++
++ACHADO R85-BUILD-LOCK-01 — RACE NO LOG CANÔNICO
++================================================
++Severidade: média para integridade/proveniência de diagnóstico de Release.
++Escopo: scripts host; não altera o binário EFI/runtime.
++
++Causa-raiz v2.30:
++1. wrapper Debug chamava Build-BootLoaderSelector-Release.command;
++2. builder Release adquiria .BlsBuild.lock, escrevia o log e liberava o lock;
++3. após o retorno, wrapper Debug fazia `tee -a` no mesmo log sem lock;
++4. outro Release podia adquirir lock, truncar/inicializar o log e receber bytes
++   do Debug anterior.
++
++RED reproduzido em cópia descartável do baseline: o marcador inicial do bloco
++Debug desapareceu após truncamento pelo Release concorrente, mas bytes posteriores
++de diagnóstico ficaram anexados à nova execução, comprovando mistura de runs.
++
++Correção v2.31:
++- `append_debug_diagnostics()` passou para o builder Release;
++- `BLS_DEBUG_DIAGNOSTICS=1` solicita o bloco pelo wrapper;
++- cleanup do Release emite o bloco antes de liberar `.BlsBuild.lock`;
++- wrapper não faz mais append no log após o subprocesso;
++- teste de publish/lock inclui regressão para log byte-idêntico quando lock já
++  pertence a outra execução.
+ 
+-RESULTADOS EXECUTADOS
++GREEN final: segundo Release concorrente recebe `Build already running...`; log
++mantém um cabeçalho Release e um bloco Debug, sem truncamento/mistura.
++
++COBERTURA E PASSAGENS
+ =====================
+-- Clang ASan+UBSan: 17/17 testes x3, PASS; 13.87 s, max RSS 57.964 KiB.
+-- GCC ASan+UBSan: 17/17 testes x3, PASS; 11.21 s, max RSS 66.068 KiB.
+-- Clang Address+IntegerSan: 17/17, PASS; 6.17 s, max RSS 52.736 KiB.
+-- GCC ThreadSanitizer: 17/17, PASS; 10.18 s, max RSS 40.028 KiB.
+-- Clang ThreadSanitizer: BLOCKED no linker do runtime instalado por símbolos
+-  Blocks/libdispatch ausentes; nenhum teste de projeto chegou a executar.
+-- 9 módulos runtime: Clang/GCC syntax estrita, Clang Static Analyzer,
+-  GCC -fanalyzer e objetos -O2, todos PASS sem diagnóstico.
+-- BaseTools deep bounds/fuzz: PASS em Clang e GCC.
+-- BaseTools build completo em cópia descartável: `make -C BaseTools -j2` rc=0,
+-  285/285 testes oficiais OK; 18.92 s, max RSS 244.708 KiB.
+-- Python AST: 320 arquivos, PASS; plists: 9, PASS; YAML CI: 4 jobs, PASS;
+-  shell *.command/*.sh: 13 arquivos, `bash -n` PASS.
+-- Verificador ASN.1/PE fuzz externo: 20.000 entradas parse_node + 10.000
+-  entradas authenticode_digest_sha256, somente erros tratados, PASS.
+-- Policy regression, signer bootstrap e publish/rollback/lock: PASS.
+-- Quality gate v2.30 com build desabilitado: passou todos os gates anteriores
+-  e parou no PE/COFF signing regression por ausência de signer local.
++Foram realizadas passagens independentes de arquitetura/estrutura; bugs e
++funcionalidade; memória/concorrência; performance/recursos; UI/responsividade;
++robustez/extremos; build/Release/compatibilidade; regressão final. A quantidade
++de fixes não encerrou a investigação; após o achado de concorrência, runtime,
++BaseTools, signing, parsers, estrutura e Release gates continuaram sendo revistos.
++
++Baseline: 3.524 arquivos byte-lidos; 3.415 textos UTF-8 / 1.447.168 linhas
++percorridas automaticamente; 109 binários/não-UTF8 classificados. Runtime: 9 C,
++7.983 linhas e 222 definições por Clang AST, listadas individualmente em
++AuditReports/ROUND85-FUNCTION-MATRIX.tsv.
++
++TESTES/ANÁLISES EFETIVAMENTE EXECUTADOS
++=======================================
++- Clang ASan+UBSan: 17/17 x3 PASS; 12.22 s; max RSS 57.836 KiB.
++- GCC ASan+UBSan: 17/17 x3 PASS; 10.49 s; max RSS 66.072 KiB.
++- Clang Address+IntegerSan: 17/17 PASS; 5.17 s; max RSS 52.728 KiB.
++- GCC ThreadSanitizer: 17/17 PASS; 9.20 s; max RSS 40.064 KiB.
++- Clang TSan: BLOCKED no linker do runtime instalado por símbolos Blocks/
++  libdispatch ausentes; nenhum teste do projeto executou nessa implementação.
++- 9 módulos: Clang/GCC syntax estrita, Clang Static Analyzer, GCC -fanalyzer,
++  objetos -O2 em ambos: PASS, sem diagnósticos.
++- BaseTools deep bounds/fuzz: Clang PASS (2.59 s), GCC PASS (2.64 s).
++- BaseTools completo em cópia descartável: make rc=0, 15 host tools e suíte
++  oficial 285/285 OK; 19.34 s; max RSS 244.568 KiB.
++- Python AST 320/320; plists 9/9; YAML 2/2; shell 13/13: PASS.
++- Verificador: 20.000 entradas ASN.1 + 10.000 PE aleatórias/truncadas, 0 exceção
++  de projeto não tratada: PASS.
++- Policy X.509, bootstrap signer e publish/rollback/lock: PASS.
++- Reprodução concorrente final: PASS.
++
++ROBUSTEZ / FUNCIONALIDADE
++=========================
++BootScan/LoadImage/StartImage/UnloadImage/watchdog, config parse/save/lifecycle,
++SMBIOS/firmware tables/MP/PCI-GOP, logger rollback/rollover, menu/event/countdown,
++screenshot bounds e utilitários foram cobertos por revisão + testes aplicáveis.
++O parser de configuração executa 200.000 entradas pseudoaleatórias nas suítes,
++além de UTF-8/XML, profundidade, duplicatas e fault injection. Não apareceu novo
++defeito de runtime reproduzível que justificasse alteração.
++
++PERFORMANCE
++===========
++Loops, limites, ownership, alocações, retries, eventos, filesystem scan, buffers
++GOP e operações de log foram examinados. Nenhuma otimização foi aplicada porque
++nenhum ganho seguro e necessário foi comprovado nesta rodada. Não há medições de
++firmware/boot real neste host e, portanto, não se inventam números de performance.
++
++BUILD / RELEASE / ASSINATURA — LIMITAÇÕES REAIS
++================================================
++O host Linux possui Clang/GCC/OpenSSL, porém não possui NASM nativo,
++sbsign/sbverify, Jsign, QEMU ou OVMF. O NASM vendorizado é Mach-O e não executa
++nativamente aqui. Assim, não se declara EFI Release compilado, assinatura ad-hoc
++real do EFI final, boot OVMF/hardware, notarização ou profiling de firmware.
++Uma tentativa separada com BLS_JSIGN_AUTO_DOWNLOAD=1 foi realmente executada;
++curl retornou `Could not resolve host: github.com`, e o helper recusou seguir
++sem o Jsign 7.5 oficial pinado. Classificação: BLOCKED pelo ambiente.
++
++
++A assinatura ad-hoc PE/COFF é tratada separadamente de notarização. O builder
++canônico deve falhar fechado quando o signer/pré-requisitos estão ausentes. O
++resultado do builder sobre a árvore final congelada é registrado após regenerar
++o manifesto definitivo; nenhum EFI unsigned/stale será apresentado como Release.
++
++Resultado executado na árvore v2.31 congelada:
++- quality gate rc=1 somente ao entrar na regressão PE/COFF real por ausência de signer;
++  gates anteriores de metadata/créditos/DSE/UI/hardware/policy/Jsign/X.509/bootstrap PASS;
++- builder canônico: versão 2.31 e manifesto PASS; signer preflight rc=1 e recusa
++  explícita de Release unsigned;
++- após a recusa: Release/Build/Conf/.BlsBuild.lock ausentes; manifesto continua
++  3.525/3.525 válido, pois apenas o log mutável foi alterado.
++
++INVENTÁRIO FINAL ANTES DO CONGELAMENTO DO MANIFESTO
++==================================================
++A árvore final contém 3.527 arquivos regulares: 3.418 textos UTF-8 com
++1.448.764 linhas percorridas e 109 binários/não-UTF8; symlinks=0 e resíduos
++gerados=0. Python AST 320/320, plists 9/9 e 13 scripts shell passam sintaxe.
++Excluindo apenas o próprio manifesto e o log mutável, a cobertura imutável
++esperada é 3.525 arquivos e é conferida novamente após o freeze.
++
++PRESERVAÇÃO / ALTERAÇÕES CONSOLIDADAS
++=====================================
++Alterações funcionais justificadas:
++- Build-BootLoaderSelector-Release.command: bloco Debug executado sob o lock;
++- Build-Debug-Full-Log.command: solicita diagnóstico ao builder e não escreve
++  no log após retorno;
++- AuditTests/Test-Release-Publish-Invariants.command: regressão de lock/log.
++
++Metadados/documentação solicitados:
++- VERSION/BUILD 2.30/Round84 -> 2.31/Round85;
++- Utils.h, INF, DSC, INFO, CHANGELOG, SECURITY-NOTES e evidências Round85.
++
++Nenhuma correção pendente conhecida foi deixada fora do source final.
+ 
+-BUILD / RELEASE — LIMITAÇÕES REAIS
++LIMITES DA DECLARAÇÃO DE COBERTURA
+ ==================================
+-Este host Linux não possui NASM nativo, sbsign/sbverify, Jsign nem QEMU/OVMF.
+-O NASM vendorizado é Mach-O para macOS e não executa neste host. Portanto não
+-se declara EFI Release compilado, assinatura ad-hoc real do EFI final, boot
+-OVMF/hardware ou profiling de firmware. A integração de signing real foi
+-classificada como BLOCKED, não PASS. Builder canônico: versão/manifesto PASS;
+-rc=1 no signer preflight; Release/, Build/, Conf/ e lock ficaram ausentes.
+-
+-COBERTURA DE ÁRVORE
+-===================
+-Arquivos finais regulares: 0003524
+-Entradas imutáveis esperadas no manifesto: 0003522
+-Arquivos UTF-8/texto percorridos automaticamente: 0003407
+-Arquivos binários/não-UTF8 byte-lidos: 0000117
+-Linhas de texto percorridas automaticamente: 001318929
+-Todo arquivo regular é byte-lido durante inventário/hash. O scan automatizado
+-de todas as linhas não é apresentado como equivalente a revisão semântica
+-humana linha por linha das aproximadamente 1,4 milhão de linhas vendorizadas.
+-O runtime próprio recebe adicionalmente AST, compilação, analyzers, sanitizers
+-e revisão semântica focada. Não se declara cobertura humana que não ocorreu.
+-
+-ARQUIVOS ALTERADOS/ADICIONADOS NESTA RODADA
+-===========================================
+-AuditTools/Verify-PeCoff-Authenticode.py — correção de policy criticality.
+-AuditTests/Test-Authenticode-Verifier-Policy.command — regressões associadas.
+-BootLoaderSelectorPkg/BootLoaderSelector/Utils.h — VERSION 2.30.
+-BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf — VERSION 2.30.
+-BootLoaderSelector.dsc — PLATFORM_VERSION 2.30.
+-INFO.txt / CHANGELOG.txt / SECURITY-NOTES.txt — documentação coerente.
+-AuditReports/AUDIT-REPORT.txt — este relatório.
+-AuditReports/ROUND84-VALIDATION.txt — matriz detalhada e 222 funções.
+-AuditReports/ROUND84.diff — diff consolidado v2.29 -> v2.30.
+-AuditReports/MANIFEST.sha256 — regenerado somente após o fechamento da árvore.
+-BuildLogs/BootLoaderSelector-Build.log permanece o único log mutável deliberado.
+-
+-CONCLUSÃO
+-=========
+-Foi comprovada e corrigida uma divergência de política X.509 no pipeline de
+-Release. Nenhum defeito adicional de runtime foi reproduzido que justificasse
+-alteração do EFI, portanto o runtime foi preservado integralmente. v2.30/Round84
+-não é declarado como Release EFI 100% homologado sem signer/NASM/OVMF disponíveis.
++Todo arquivo é inventariado e lido, e textos são percorridos automaticamente;
++isso não é apresentado como revisão semântica humana de cada linha das cerca de
++1,4 milhão de linhas vendorizadas. O runtime próprio recebeu inventário AST de
++222 funções, análise semântica dos caminhos críticos, sanitizers/analyzers e
++regressões. EDK2/BaseTools/toolchain recebem integridade e as validações de
++compilação/teste/fuzz/integracão que o ambiente efetivamente permite.
++
++Detalhes completos: AuditReports/ROUND85-VALIDATION.txt
++Matriz de funções: AuditReports/ROUND85-FUNCTION-MATRIX.tsv
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND85.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/AuditReports/ROUND85-FUNCTION-MATRIX.tsv /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/AuditReports/ROUND85-FUNCTION-MATRIX.tsv
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/AuditReports/ROUND85-FUNCTION-MATRIX.tsv	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/AuditReports/ROUND85-FUNCTION-MATRIX.tsv	2026-10-10 11:50:07.051174141 +0000
+@@ -0,0 +1,223 @@
++file	function	start_line	end_line
++BootScan.c	BlsSetChildBootWatchdog	31	38
++BootScan.c	BlsRor32	51	57
++BootScan.c	BlsSha256Transform	59	133
++BootScan.c	BlsSha256	135	178
++BootScan.c	BlsDevicePathGptGuid	180	199
++BootScan.c	BlsFormatSha256Identity	201	213
++BootScan.c	BlsLocateFsHandles	224	231
++BootScan.c	BlsRegularFileExistsInRoot	233	275
++BootScan.c	BlsReadVolumeLabelFromRoot	277	308
++BootScan.c	BlsReadVolumeDevicePath	310	358
++BootScan.c	BlsChar16Lower	360	363
++BootScan.c	BlsStrContains16Insensitive	365	388
++BootScan.c	BlsUsbDevicePathNodeIsConforming	390	412
++BootScan.c	BlsDevicePathHasUsbNode	414	424
++BootScan.c	BlsVolumeIsUsb	426	439
++BootScan.c	BlsTypeFromPath	441	446
++BootScan.c	BlsDuplicateEntry	448	455
++BootScan.c	BlsPreferredCandidate	457	475
++BootScan.c	BlsFillEntry	477	500
++BootScan.c	BlsAddEntry	502	531
++BootScan.c	BlsScanBootloadersPreferred	533	621
++BootScan.c	BlsScanBootloaders	623	625
++BootScan.c	BlsBuildFileDevicePath	627	667
++BootScan.c	BlsStartBootEntryEx	669	820
++BootScan.c	BlsStartBootEntry	822	824
++Config.c	BlsConfigReadMayFallback	34	36
++Config.c	BlsMergeConfigReadCleanupStatus	38	43
++Config.c	BlsAsciiIsSpace	45	47
++Config.c	BlsSkipAsciiSpace	49	53
++Config.c	BlsConfigDefaults	55	65
++Config.c	BlsConfigMatchesEntry	67	86
++Config.c	BlsConfigRememberedEntryNeedsUpdate	88	96
++Config.c	BlsConfigRememberEntry	98	105
++Config.c	BlsReadWholeFile	107	203
++Config.c	BlsXmlCodePointIsValid	205	211
++Config.c	BlsAppendCodePoint	213	236
++Config.c	BlsDecodeUtf8CodePoint	238	295
++Config.c	BlsDecodeXmlEntity	297	377
++Config.c	BlsCountAsciiTokenInRange	379	404
++Config.c	BlsCountPlistValuesAfterKey	406	444
++Config.c	BlsExtractString	446	497
++Config.c	BlsExtractInteger	499	537
++Config.c	BlsExtractBoolean	538	608
++Config.c	BlsXmlHasKey	610	615
++Config.c	BlsConfigHasKnownKey	617	628
++Config.c	BlsXmlHasDuplicateKey	630	642
++Config.c	BlsConfigHasDuplicateKnownKey	644	655
++Config.c	BlsParseConfigDict	657	737
++Config.c	BlsFindXmlCommentClose	739	752
++Config.c	BlsSkipXmlIgnorable	754	781
++Config.c	BlsFindPlistOpen	785	824
++Config.c	BlsFindRootDictClose	826	875
++Config.c	BlsKeyRangeIsKnown	877	901
++Config.c	BlsXmlNameStart	908	912
++Config.c	BlsXmlNameChar	914	918
++Config.c	BlsXmlTagNameEquals	920	930
++Config.c	BlsFindXmlTagEnd	932	954
++Config.c	BlsStripXmlIgnorableMarkup	956	990
++Config.c	BlsValidateAndSanitizeRootDict	992	1173
++Config.c	BlsCopyValidatedPlistDict	1175	1231
++Config.c	BlsParseConfig	1233	1252
++Config.c	BlsAppendAsciiText	1255	1272
++Config.c	BlsAppendUtf8CodePoint	1274	1314
++Config.c	BlsUnicodeToUtf8XmlEscape	1316	1368
++Config.c	BlsDeleteFileIfPresent	1370	1381
++Config.c	BlsDeleteFileOnVolumeBestEffort	1383	1392
++Config.c	BlsWriteBufferToPath	1394	1435
++Config.c	BlsEnsureConfigDirectoryHierarchy	1437	1476
++Config.c	BlsSaveConfigInternal	1478	1600
++Config.c	BlsSaveConfig	1602	1604
++Config.c	BlsGetImageVolumeHandle	1607	1616
++Config.c	BlsLoadConfigSnapshot	1618	1648
++Config.c	BlsLoadConfigFromVolume	1650	1693
++Config.c	BlsLoadConfig	1695	1756
++HardwareInfo.c	BlsAsciiIsJunk	32	44
++HardwareInfo.c	BlsChecksum8IsZero	46	58
++HardwareInfo.c	BlsMemoryMapDescriptorBudgetExceeded	60	64
++HardwareInfo.c	BlsFirmwareDescriptorIsReadable	66	79
++HardwareInfo.c	BlsFirmwareMemoryMapRelease	88	92
++HardwareInfo.c	BlsFirmwareMemoryMapAcquire	94	152
++HardwareInfo.c	BlsFirmwareMappedPrefixLengthInMap	154	206
++HardwareInfo.c	BlsFirmwareRangeIsMappedInMap	208	215
++HardwareInfo.c	BlsSmbiosVersionAtLeast	218	226
++HardwareInfo.c	BlsSmbios3EntryPointIsValid	228	246
++HardwareInfo.c	BlsSmbios2EntryPointIsValid	248	288
++HardwareInfo.c	BlsSmbiosStructureFitsMaximum	290	305
++HardwareInfo.c	BlsSmbiosMarkHandleUnique	307	325
++HardwareInfo.c	BlsDecodeSmbiosProcessorCount	327	351
++HardwareInfo.c	BlsSmbiosEnabledThreadCount	359	385
++HardwareInfo.c	BlsSmbiosMemoryDeviceSizeMb	387	415
++HardwareInfo.c	BlsSmbiosExtendedSpeedIfValid	417	420
++HardwareInfo.c	BlsSmbiosMemoryDeviceSpeed	422	458
++HardwareInfo.c	BlsDecodeUtf8CodePointBounded	460	517
++HardwareInfo.c	BlsSmbiosStringToUnicode	519	590
++HardwareInfo.c	BlsBuildNameFromSmbios	592	628
++HardwareInfo.c	BlsReadCpuBrand	630	648
++HardwareInfo.c	BlsReadCpuTopologyLeaf	650	701
++HardwareInfo.c	BlsReadCpuTopologyFallback	703	751
++HardwareInfo.c	BlsCompareMpCpuLocation	758	769
++HardwareInfo.c	BlsSwapMpCpuLocation	771	781
++HardwareInfo.c	BlsSiftDownMpCpuLocations	783	802
++HardwareInfo.c	BlsSortMpCpuLocations	804	816
++HardwareInfo.c	BlsReadMpServicesTopology	818	910
++HardwareInfo.c	BlsFindConfigTableInMap	912	938
++HardwareInfo.c	BlsGetSmbiosString	941	980
++HardwareInfo.c	BlsNextSmbiosStruct	982	1000
++HardwareInfo.c	BlsMemoryTypeName	1002	1016
++HardwareInfo.c	BlsReadMemoryMapFallback	1018	1062
++HardwareInfo.c	BlsSmbiosStructureScanLimit	1064	1075
++HardwareInfo.c	BlsReadSmbios	1077	1472
++HardwareInfo.c	BlsGpuVendorName	1474	1481
++HardwareInfo.c	BlsGpuFriendlyName	1483	1510
++HardwareInfo.c	BlsDevicePathIsPrefix	1512	1529
++HardwareInfo.c	BlsFindConsoleGopDevicePath	1531	1604
++HardwareInfo.c	BlsFormatGpu	1606	1612
++HardwareInfo.c	BlsReadGpuInfo	1614	1678
++HardwareInfo.c	BlsNormalizeHardwareInfo	1680	1686
++HardwareInfo.c	BlsReadHardwareInfo	1688	1706
++Logger.c	BlsLogRestoreFileSize	19	50
++Logger.c	BlsLogSnapshotFile	52	82
++Logger.c	BlsLogRestoreSnapshot	84	101
++Logger.c	BlsLogClear	103	108
++Logger.c	BlsLogEnsureDirectory	110	123
++Logger.c	BlsLogInit	125	130
++Logger.c	BlsLogSetEnabled	132	146
++Logger.c	BlsLog	148	186
++Logger.c	BlsLogFlush	188	366
++Main.c	BlsFindRememberedEntry	27	45
++Main.c	BlsMoveEntry	47	57
++Main.c	BlsPrioritizeVolume	59	71
++Main.c	BlsUnicodeToAsciiLogField	73	90
++Main.c	BlsLogStatus	92	102
++Main.c	BlsLogBootScan	104	147
++Main.c	BlsWaitForRealKey	150	191
++Main.c	BlsTryDisableInheritedBootWatchdog	193	202
++Main.c	BlsSelectorHotkeyTimerExpired	206	209
++Main.c	BlsWaitForSelectorHotkey	211	302
++Main.c	UefiMain	304	532
++Menu.c	BlsInputKeyIsEmpty	21	24
++Menu.c	BlsFooterRow	26	34
++Menu.c	BlsFooterLineRow	36	41
++Menu.c	BlsDefaultIndex	43	50
++Menu.c	BlsSelectableCount	52	54
++Menu.c	BlsSelectionIsOptions	56	58
++Menu.c	BlsCountdownCol	60	62
++Menu.c	BlsCountdownWidth	64	66
++Menu.c	BlsClearCountdownStatus	68	70
++Menu.c	BlsDrawCountdownStatus	72	74
++Menu.c	BlsDrawHardwareField	76	122
++Menu.c	BlsCancelCountdown	124	143
++Menu.c	BlsDrawHeader	145	214
++Menu.c	BlsMenuStartRow	216	226
++Menu.c	BlsSelectDisplayHardware	228	244
++Menu.c	BlsGetEntryView	256	307
++Menu.c	BlsDrawSelectableRow	309	345
++Menu.c	BlsDrawSelectionDelta	347	376
++Menu.c	BlsDrawEntries	378	426
++Menu.c	BlsDrawFooter	428	458
++Menu.c	BlsDrawScreen	460	465
++Menu.c	BlsPanelWidth	467	475
++Menu.c	BlsTextEllipsis	477	490
++Menu.c	BlsPrintFixedRow	492	515
++Menu.c	BlsWaitForModalDismiss	518	548
++Menu.c	BlsDrawWrappedField	550	623
++Menu.c	BlsDrawHelpScreen	625	663
++Menu.c	BlsDrawEntryDetails	665	707
++Menu.c	BlsGetOptionsLayout	725	753
++Menu.c	BlsDrawOptionRow	755	792
++Menu.c	BlsDrawOptionsSelectionDelta	794	809
++Menu.c	BlsDrawOptionValueDelta	811	817
++Menu.c	BlsDrawOptionsScreen	819	878
++Menu.c	BlsCommitOptions	880	897
++Menu.c	BlsRunOptions	899	1053
++Menu.c	BlsIsTimeoutKey	1055	1057
++Menu.c	BlsConsumeSignaledCountdownTick	1059	1070
++Menu.c	BlsRunMenu	1072	1358
++Screenshot.c	BlsPutLe16	29	32
++Screenshot.c	BlsPutLe32	34	39
++Screenshot.c	BlsEnsureDirectory	41	53
++Screenshot.c	BlsFindScreenshotPath	56	106
++Screenshot.c	BlsFillBmpHeader	108	121
++Screenshot.c	BlsResolveConsoleGop	126	220
++Screenshot.c	BlsSaveScreenshot	222	377
++Ui.c	BlsUiCaptureOriginalState	29	54
++Ui.c	BlsUiLastModeStatus	57	59
++Ui.c	BlsUiDimensionsAreUsable	61	64
++Ui.c	BlsUiCanRestoreCursorPosition	66	103
++Ui.c	BlsUiRestoreOriginalState	105	164
++Ui.c	BlsUiCacheSize	166	174
++Ui.c	BlsUiCacheCurrentSize	176	204
++Ui.c	BlsUiInitReadableMode	206	433
++Ui.c	BlsUiGetSize	435	439
++Ui.c	BlsUiInvalidateSizeCache	441	447
++Ui.c	BlsUiClear	449	471
++Ui.c	BlsUiSet	473	489
++Ui.c	BlsUiPrintAt	491	529
++Ui.c	BlsUiHLine	531	564
++Ui.c	BlsUiCentered	566	576
++Ui.c	BlsUiBox	578	600
++Utils.c	BlsStrLen16Bounded	14	19
++Utils.c	BlsStrLen16	21	23
++Utils.c	BlsSafeStrCpy	25	36
++Utils.c	BlsSafeStrCat	38	47
++Utils.c	BlsStrEq	49	56
++Utils.c	BlsLocateProtocolHandlesBounded	60	138
++Utils.c	BlsAsciiLower	140	143
++Utils.c	BlsStriEqAscii	145	152
++Utils.c	BlsAsciiLenBounded	154	159
++Utils.c	BlsAsciiContains	161	179
++Utils.c	BlsAsciiToUnicode	181	192
++Utils.c	BlsTrimAscii	194	208
++Utils.c	BlsGetProtocolInterface	211	238
++Utils.c	BlsOpenVolumeRoot	240	264
++Utils.c	BlsFileOpen	266	302
++Utils.c	BlsFileGetInfoAlloc	304	358
++Utils.c	BlsFileReadExact	361	381
++Utils.c	BlsFileWriteAll	383	401
++Utils.c	BlsFileFlush	403	407
++Utils.c	BlsFileDelete	409	427
++Utils.c	BlsFileClose	429	438
++Utils.c	BlsCloseTimerEvent	440	459
++Utils.c	BlsFileCloseBestEffort	461	464
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND85.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/AuditReports/ROUND85-VALIDATION.txt /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/AuditReports/ROUND85-VALIDATION.txt
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/AuditReports/ROUND85-VALIDATION.txt	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/AuditReports/ROUND85-VALIDATION.txt	2026-10-10 12:02:55.362218215 +0000
+@@ -0,0 +1,220 @@
++BootLoaderSelector — ROUND85 VALIDATION / COVERAGE MATRIX
++========================================================
++Version/build: v2.31 / Professional Evolution Round85
++Date: 2026-10-10
++Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
++Exclusive baseline: FULL-SOURCE v2.30/Round84
++Baseline ZIP SHA-256: 0f212946537593e28e1ca905d6bfc1b9d9e8d8f3384a88e673333bacece8ae19
++
++EXECUTION WINDOW
++----------------
++Observed end-to-end audit session window: approximately 2026-10-10 08:38–09:00 BRT
++(~22 minutes at evidence freeze). Individual tools also have measured elapsed/RSS
++values below. The eight passes are not falsely reported as 20–30 minutes each.
++
++BASELINE INTEGRITY
++------------------
++ZIP `unzip -t`: PASS.
++Baseline regular files: 3,524.
++Baseline immutable manifest entries: 3,522 / 3,522, all SHA-256 PASS.
++Missing/stale manifest entries: 0 / 0.
++Manifest exclusions: AuditReports/MANIFEST.sha256 and mutable
++BuildLogs/BootLoaderSelector-Build.log only.
++No symlinks were present. The baseline was retained separately from the work tree.
++
++PROJECT-WIDE INVENTORY / READ COVERAGE
++--------------------------------------
++Baseline files byte-read: 3,524 / 3,524.
++UTF-8 text files traversed automatically: 3,415.
++UTF-8 text lines traversed: 1,447,168.
++Binary/non-UTF8 files classified: 109.
++Python source parsed by AST: 320 / 320 PASS.
++Property lists parsed: 9 / 9 PASS.
++YAML files parsed: 2 / 2 PASS.
++Shell scripts syntax-checked: 13 / 13 PASS.
++Generated residues (__pycache__, *.pyc, *.pyo, *.o, *.efi): none in source.
++Private-key markers exist only in upstream BaseTools test fixtures documented as
++non-Release credentials; no Release private key was introduced or used.
++
++PROJECT-OWNED RUNTIME COVERAGE
++------------------------------
++Runtime C modules: 9.
++Runtime C lines: 7,983.
++Function definitions located by Clang AST: 222.
++BootScan.c 25; Config.c 49; HardwareInfo.c 44; Logger.c 9; Main.c 11;
++Menu.c 38; Screenshot.c 7; Ui.c 16; Utils.c 23.
++Exact per-function line ranges: AuditReports/ROUND85-FUNCTION-MATRIX.tsv.
++All 9 runtime .c files are byte-identical to the v2.30/Round84 baseline: PASS.
++
++EIGHT INDEPENDENT PASSES
++------------------------
++1. Architecture / structure
++   Tree, DSC/INF, runtime module graph, AuditTools/AuditTests, BaseTools,
++   MdePkg, vendored toolchain, CI workflow, metadata and manifest reviewed.
++   Result: no architecture change required.
++
++2. Bugs / functionality
++   Boot discovery/start, config, hardware/SMBIOS/MP/GOP, logger, menu/UI,
++   screenshot and utility paths reviewed and exercised by host tests.
++   Result: no new reproducible EFI/runtime functional defect found.
++
++3. Memory / concurrency
++   ASan+UBSan, IntegerSan, GCC TSan, analyzers, lifecycle tests and build-lock
++   behavior examined. Found R85-BUILD-LOCK-01 in the host build pipeline.
++   Result: one real build/log race corrected; runtime unchanged.
++
++4. Performance / resource consumption
++   Bounds, allocation ownership, event loops, filesystem scans, parser limits,
++   logging rollover, GOP buffers and BaseTools host code reviewed/tested.
++   Result: no safe performance change justified; no speculative optimization.
++
++5. UI / windows / responsiveness
++   Firmware UI has no desktop window manager; mode bounds, event lifecycle,
++   countdown/starvation and remembered-autoboot behavior exercised.
++   Result: no new flicker/stutter/geometry defect reproduced.
++
++6. Robustness / extreme cases
++   Config parser includes 200,000 pseudo-random cases under sanitizer coverage;
++   UTF-8/XML/depth/duplicate/allocation-failure paths, firmware-table bounds,
++   SMBIOS/MP/filesystem/GOP tests, BaseTools fuzz, and PE/ASN.1 external fuzz run.
++   Result: PASS for executed tests.
++
++7. Build / Release / compatibility
++   Build scripts, lock/publish transaction, signer policy/bootstrap, toolchain,
++   BaseTools build/tests and canonical builder preflight checked.
++   Result: host-side gates PASS until unavailable real PE/COFF signer/native NASM.
++
++8. Regression / final validation
++   Sanitizers/analyzers/deep tests repeated on v2.31; race reproduced GREEN;
++   canonical builder and final manifest/package checks are performed after the
++   reports and manifest are frozen.
++
++R85-BUILD-LOCK-01 — CANONICAL BUILD LOG RACE — RED -> GREEN
++-----------------------------------------------------------
++Severity: medium for Release/debug diagnostic integrity; does not affect EFI code.
++
++Root cause in v2.30:
++Build-Debug-Full-Log.command invoked the canonical Release builder. That child
++owned .BlsBuild.lock and released it when returning. Only after return, the Debug
++wrapper appended system/toolchain/error diagnostics to the same canonical
++BuildLogs/BootLoaderSelector-Build.log. A second Release could acquire the lock,
++truncate/reinitialize the canonical log, and then receive bytes appended by the
++first Debug execution.
++
++Concrete RED reproduction on a disposable exact baseline copy:
++- Debug build entered its post-Release diagnostics after child lock release.
++- Concurrent Release acquired the lock and reinitialized the same log.
++- The original `=== DEBUG DIAGNOSTICS ===` marker was lost while later diagnostic
++  bytes survived under the concurrent Release log: mixed/truncated provenance.
++
++Minimal correction:
++- diagnostic generation moved into Build-BootLoaderSelector-Release.command;
++- Build-Debug-Full-Log.command requests it with BLS_DEBUG_DIAGNOSTICS=1;
++- the Release EXIT cleanup appends diagnostics before rmdir .BlsBuild.lock;
++- the Debug wrapper performs no canonical-log append after the child returns;
++- publish/lock regression checks that an already-held lock leaves the active log
++  byte-identical.
++
++Concrete GREEN reproduction on disposable v2.31 copy:
++  debug_rc=1 competitor_rc=1 release_headers=1 debug_markers=1
++  competitor_lock_reject=1
++  FINAL_RACE_REGRESSION=PASS
++The expected rc=1 is from unavailable Release prerequisites on this Linux host;
++the concurrent competitor is rejected by the lock and cannot alter the active log.
++
++FINAL v2.31 DYNAMIC TESTS
++-------------------------
++Clang ASan+UBSan: 17/17 tests x3 repetitions PASS
++  elapsed=12.22 s; max RSS=57,836 KiB.
++GCC ASan+UBSan: 17/17 x3 PASS
++  elapsed=10.49 s; max RSS=66,072 KiB.
++Clang Address+IntegerSan: 17/17 PASS
++  elapsed=5.17 s; max RSS=52,728 KiB.
++GCC ThreadSanitizer: 17/17 PASS
++  elapsed=9.20 s; max RSS=40,064 KiB.
++Clang ThreadSanitizer: BLOCKED before project tests at linker by the installed
++Swift Clang 17 TSan runtime (unresolved Blocks/libdispatch symbols including
++_Block_copy and _NSConcreteStackBlock); not classified as project failure/PASS.
++
++STATIC / OPTIMIZED-COMPILE VALIDATION
++-------------------------------------
++For each of the 9 runtime modules:
++- Clang strict -fsyntax-only: PASS.
++- Clang Static Analyzer: PASS.
++- Clang -O2 object compile: PASS.
++- GCC strict -fsyntax-only: PASS.
++- GCC -fanalyzer: PASS.
++- GCC -O2 -Wmaybe-uninitialized object compile: PASS.
++Warnings are treated as errors under the audit flags. No diagnostics emitted.
++Objects were written only to /tmp and removed.
++
++BASETOOLS / VENDORED VALIDATION
++-------------------------------
++Deep bounds/fuzz, Clang: PASS; 2.59 s; max RSS 44,400 KiB.
++Deep bounds/fuzz, GCC: PASS; 2.64 s; max RSS 33,844 KiB.
++Full BaseTools build in disposable copy: `make -C BaseTools -j2`, rc=0;
++15 host tools generated plus libraries; official suite 285/285 tests OK;
++elapsed=19.34 s; max RSS 244,568 KiB.
++No generated BaseTools build product was retained in the project source.
++Vendored cross gcc/g++/nasm are Mach-O and therefore not executable natively on
++this Linux host; pinned hashes/catalog were independently checked earlier in this round.
++
++PARSER / SIGNING / RELEASE PIPELINE TESTS
++-----------------------------------------
++External verifier robustness harness after correction of the disposable harness:
++- ASN.1 parse_node: 20,000 deterministic random inputs; 0 uncaught exceptions.
++- PE authenticode_digest_sha256: 10,000 random/truncated inputs; 0 uncaught.
++Result: PASS.
++Authenticode certificate-policy regression: PASS (9.07 s).
++Signer bootstrap regression: PASS (0.17 s).
++Release publish/rollback/lock regression: PASS (0.07 s).
++Forced concurrent build/log regression: PASS.
++
++BUILD / RELEASE LIMITATIONS
++---------------------------
++Host tools available include Clang/GCC/OpenSSL, but this Linux host does not have
++native NASM, sbsign/sbverify, Jsign, QEMU or OVMF. The bundled NASM is Mach-O.
++Accordingly, a canonical UEFI Release compile, real final PE/COFF ad-hoc signing,
++OVMF boot, physical firmware boot and firmware profiling cannot honestly be
++reported as executed. The canonical builder is required to fail closed when those
++Release prerequisites are absent; its final exact-tree result is recorded after
++manifest freeze. Ad-hoc signing is not notarization and is not represented as such.
++A separate real signer-bootstrap attempt with BLS_JSIGN_AUTO_DOWNLOAD=1 was
++executed. curl failed with `Could not resolve host: github.com`; the helper
++reported inability to download the pinned official Jsign 7.5 release.
++Classification remains BLOCKED by environment, not PASS/project failure.
++
++
++Final Release-gate evidence on the frozen v2.31 tree:
++- Run-Release-Quality-Gate.command: rc=1 only when entering the real PE/COFF
++  signing regression; all preceding metadata/credits/DSE/UI/hardware/signing
++  policy/Jsign-route/X.509/bootstrap gates passed. Classification: BLOCKED.
++- Canonical Build-BootLoaderSelector-Release.command: metadata 2.31 PASS,
++  manifest PASS, signer preflight rc=1 and explicit unsigned-Release refusal.
++- After refusal: Release absent, Build absent, Conf absent, lock absent.
++- Manifest remained 3,525/3,525 valid because the mutable build log is excluded.
++
++FINAL SOURCE INVENTORY BEFORE MANIFEST FREEZE
++---------------------------------------------
++Regular files: 3,527. UTF-8 text: 3,418; binary/non-UTF8: 109.
++UTF-8 text lines traversed: 1,448,764. Symlinks: 0. Generated residues: 0.
++Python AST: 320/320 PASS; plists: 9/9 PASS; all 13 shell scripts syntax PASS.
++With the manifest itself and mutable build log excluded, expected immutable
++manifest coverage is 3,525 files; this is independently checked after freeze.
++
++PRESERVATION
++------------
++No runtime C source changed. No UI/boot/config/hardware/logger/screenshot behavior
++was deliberately altered. No vendored dependency was modified. Changes are limited
++to the proven build-log concurrency fix, its regression, version/build metadata,
++security/history documentation, and Round85 audit evidence.
++
++COVERAGE CLAIM BOUNDARY
++-----------------------
++Every file is inventoried/byte-read/hash-covered where immutable, and every UTF-8
++text line is automatically traversed. The 222 project-owned runtime definitions
++are individually located by AST and the project-owned critical paths received
++semantic review plus executable tests. This is NOT falsely described as a human
++semantic line-by-line review of roughly 1.4 million vendored EDK2/BaseTools/
++toolchain text lines. Vendored code received integrity coverage plus applicable
++compilation, official tests, bounds/fuzz and integration checks.
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND85.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/AuditTests/Test-Release-Publish-Invariants.command /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/AuditTests/Test-Release-Publish-Invariants.command
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/AuditTests/Test-Release-Publish-Invariants.command	2026-10-09 01:22:52.000000000 +0000
++++ /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/AuditTests/Test-Release-Publish-Invariants.command	2026-10-10 11:49:31.238432594 +0000
+@@ -3,6 +3,13 @@
+ # Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
+ cd "$(dirname "$0")/.."
+ BUILDER=Build-BootLoaderSelector-Release.command
++DEBUG_WRAPPER=Build-Debug-Full-Log.command
++
++# Debug diagnostics share the canonical build log and must stay inside the
++# Release builder's lock ownership window. The wrapper itself must never append.
++grep -Fq 'BLS_DEBUG_DIAGNOSTICS=1 bash ./Build-BootLoaderSelector-Release.command' "$DEBUG_WRAPPER"
++grep -Fq 'append_debug_diagnostics "$cleanup_status"' "$BUILDER"
++! grep -Fq 'tee -a "$LOG"' "$DEBUG_WRAPPER"
+ 
+ # The signed staged release replaces the old one only after provenance is
+ # published. Previous Round71 accidentally deleted a valid Release even when
+@@ -32,6 +39,7 @@
+ mkdir -p "$TEST_ROOT/preflight/Release"
+ printf 'known good\n' > "$TEST_ROOT/preflight/Release/BootLoaderSelector.efi"
+ cp "$BUILDER" "$TEST_ROOT/preflight/$BUILDER"
++cp "$DEBUG_WRAPPER" "$TEST_ROOT/preflight/$DEBUG_WRAPPER"
+ if (cd "$TEST_ROOT/preflight" && bash "$BUILDER" >/dev/null 2>&1); then
+   echo 'Incomplete preflight fixture unexpectedly passed' >&2
+   exit 1
+@@ -55,6 +63,19 @@
+ fi
+ [ "$(cat "$TEST_ROOT/preflight/BuildLogs/BootLoaderSelector-Build.log")" = 'previous log' ]
+ [ -d "$TEST_ROOT/preflight/.BlsBuild.lock" ]
++
++# RED on v2.30: when another Release already held the lock, the Release child
++# failed immediately but the Debug wrapper still appended diagnostics into that
++# other build's log. The wrapper must now leave the active log byte-identical.
++if (cd "$TEST_ROOT/preflight" && bash "$DEBUG_WRAPPER" >/dev/null 2>&1); then
++  echo 'Debug wrapper unexpectedly succeeded while build lock was held' >&2
++  exit 1
++fi
++[ "$(cat "$TEST_ROOT/preflight/BuildLogs/BootLoaderSelector-Build.log")" = 'previous log' ] || {
++  echo 'Debug wrapper modified another build run log after lock rejection' >&2
++  exit 1
++}
++[ -d "$TEST_ROOT/preflight/.BlsBuild.lock" ]
+ rmdir "$TEST_ROOT/preflight/.BlsBuild.lock"
+ 
+ # Test the real publication function in isolation: on success the staged
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND85.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/BootLoaderSelector.dsc /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/BootLoaderSelector.dsc
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/BootLoaderSelector.dsc	2026-10-10 04:39:31.000000000 +0000
++++ /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/BootLoaderSelector.dsc	2026-10-10 11:53:32.422726538 +0000
+@@ -6,7 +6,7 @@
+ [Defines]
+   PLATFORM_NAME                  = BootLoaderSelector
+   PLATFORM_GUID                  = 3F71A792-6E03-4D84-9F1D-F3C81EC80F44
+-  PLATFORM_VERSION = 2.30
++  PLATFORM_VERSION = 2.31
+   DSC_SPECIFICATION              = 0x00010006
+   OUTPUT_DIRECTORY               = Build/BootLoaderSelector
+   SUPPORTED_ARCHITECTURES        = X64
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND85.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf	2026-10-10 04:39:31.000000000 +0000
++++ /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf	2026-10-10 11:53:32.422598208 +0000
+@@ -8,7 +8,7 @@
+   BASE_NAME                      = BootLoaderSelector
+   FILE_GUID                      = F9C8E131-0A87-4C6C-A3E4-CA03DE31F6F1
+   MODULE_TYPE                    = UEFI_APPLICATION
+-  VERSION_STRING = 2.30
++  VERSION_STRING = 2.31
+   ENTRY_POINT                    = UefiMain
+ 
+ [Sources]
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND85.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h	2026-10-10 04:39:31.000000000 +0000
++++ /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h	2026-10-10 11:53:32.422479182 +0000
+@@ -9,8 +9,8 @@
+ #include <Protocol/SimpleFileSystem.h>
+ #include <Guid/FileInfo.h>
+ 
+-#define BLS_VERSION_ASCII "2.30"
+-#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.30"
++#define BLS_VERSION_ASCII "2.31"
++#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.31"
+ 
+ #define BLS_MAX_TEXT      128
+ #define BLS_MAX_PATH      192
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND85.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/Build-BootLoaderSelector-Release.command /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/Build-BootLoaderSelector-Release.command
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/Build-BootLoaderSelector-Release.command	2026-10-09 01:22:52.000000000 +0000
++++ /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/Build-BootLoaderSelector-Release.command	2026-10-10 11:49:31.238186700 +0000
+@@ -78,6 +78,47 @@
+     \( -name '*.pyc' -o -name '*.pyo' \) -exec rm -f {} + 2>/dev/null
+ }
+ 
++log_optional_command() {
++  local command_name
++  command_name="$1"
++  shift
++  if command -v "$command_name" >/dev/null 2>&1; then
++    "$command_name" "$@" 2>&1
++  else
++    echo "$command_name: not available on this host"
++  fi
++}
++
++append_debug_diagnostics() {
++  local exit_status error_summary
++  exit_status="$1"
++  {
++    echo "=== DEBUG DIAGNOSTICS ==="
++    echo "Project: $PROJECT_ROOT"
++    echo "Log: $LOG"
++    echo "=== SYSTEM ==="
++    log_optional_command uname -a
++    log_optional_command sw_vers
++    log_optional_command xcodebuild -version
++    log_optional_command clang --version
++    log_optional_command python3 --version
++    log_optional_command make --version | head -n 1
++    echo "=== TOOLCHAIN CHECK ==="
++    ls -la "$PROJECT_ROOT/toolchain.gcc102.snb/cross/bin" 2>&1
++    file "$PROJECT_ROOT/toolchain.gcc102.snb/cross/bin/x86_64-clover-linux-gnu-gcc" 2>&1
++    file "$PROJECT_ROOT/toolchain.gcc102.snb/cross/bin/x86_64-clover-linux-gnu-g++" 2>&1
++  } | tee -a "$LOG"
++
++  echo "=== ERROR SUMMARY ===" | tee -a "$LOG"
++  error_summary="$(grep -nEi "error:|fatal error|undefined reference|(^|[[:space:]])ld:|No rule to make|cannot|failed|required native build tool not found|warning:.*error|build.py.*error" "$LOG" | tail -n 150 || true)"
++  if [ -n "$error_summary" ]; then
++    printf '%s\n' "$error_summary" | tee -a "$LOG"
++  else
++    echo "No matching errors found" | tee -a "$LOG"
++  fi
++  echo "Exit status: $exit_status" | tee -a "$LOG"
++}
++
+ if [[ "$PROJECT_ROOT" == *" "* ]]; then
+   TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/BootLoaderSelector.XXXXXX")" || exit 1
+   TMP_LINK="$TMP_DIR/workspace"
+@@ -136,6 +177,11 @@
+   if [ "$RELEASE_COMPLETE" -eq 1 ] && [ -n "$RELEASE_BACKUP" ]; then
+     rm -rf "$RELEASE_BACKUP" 2>/dev/null || true
+   fi
++  # Build-Debug-Full-Log.command requests diagnostics through this cleanup path
++  # so every write to the canonical log remains serialized by .BlsBuild.lock.
++  if [ "${BLS_DEBUG_DIAGNOSTICS:-0}" = "1" ]; then
++    append_debug_diagnostics "$cleanup_status" || true
++  fi
+   rmdir "$BUILD_LOCK" 2>/dev/null || true
+   return "$cleanup_status"
+ }
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND85.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/Build-Debug-Full-Log.command /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/Build-Debug-Full-Log.command
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/Build-Debug-Full-Log.command	2026-10-09 01:22:52.000000000 +0000
++++ /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/Build-Debug-Full-Log.command	2026-10-10 11:49:31.238289482 +0000
+@@ -26,53 +26,18 @@
+   exit 1
+ fi
+ 
+-log_optional_command() {
+-  local command_name
+-  command_name="$1"
+-  shift
+-  if command -v "$command_name" >/dev/null 2>&1; then
+-    "$command_name" "$@" 2>&1
+-  else
+-    echo "$command_name: not available on this host"
+-  fi
+-}
+-
+-# The Release builder owns/truncates the canonical compilation log. Run it
+-# first, then append optional diagnostics to that same file so the project can
+-# never accumulate a second .log artifact.
+-bash ./Build-BootLoaderSelector-Release.command
++# The canonical Release builder owns the shared lock and log. Request debug
++# diagnostics from its cleanup path so those diagnostics are appended before
++# .BlsBuild.lock is released; this prevents another build from truncating or
++# replacing the log while the Debug wrapper is still writing to it.
++BLS_DEBUG_DIAGNOSTICS=1 bash ./Build-BootLoaderSelector-Release.command
+ STATUS=$?
++
+ if [ -L "$LOG" ] || [ ! -f "$LOG" ] ||
+    [ -n "$(find "$LOG" -type f -links +1 -print -quit 2>/dev/null)" ]; then
+   echo "Refusing unsafe build log after Release builder: $LOG" >&2
+   exit 1
+ fi
+ 
+-{
+-  echo "=== DEBUG DIAGNOSTICS ==="
+-  echo "Project: $PROJECT_ROOT"
+-  echo "Log: $LOG"
+-  echo "=== SYSTEM ==="
+-  log_optional_command uname -a
+-  log_optional_command sw_vers
+-  log_optional_command xcodebuild -version
+-  log_optional_command clang --version
+-  log_optional_command python3 --version
+-  log_optional_command make --version | head -n 1
+-  echo "=== TOOLCHAIN CHECK ==="
+-  ls -la toolchain.gcc102.snb/cross/bin 2>&1
+-  file toolchain.gcc102.snb/cross/bin/x86_64-clover-linux-gnu-gcc 2>&1
+-  file toolchain.gcc102.snb/cross/bin/x86_64-clover-linux-gnu-g++ 2>&1
+-} | tee -a "$LOG"
+-
+-echo "=== ERROR SUMMARY ===" | tee -a "$LOG"
+-ERROR_SUMMARY="$(grep -nEi "error:|fatal error|undefined reference|(^|[[:space:]])ld:|No rule to make|cannot|failed|required native build tool not found|warning:.*error|build.py.*error" "$LOG" | tail -n 150 || true)"
+-if [ -n "$ERROR_SUMMARY" ]; then
+-  printf '%s\n' "$ERROR_SUMMARY" | tee -a "$LOG"
+-else
+-  echo "No matching errors found" | tee -a "$LOG"
+-fi
+-
+-echo "Exit status: $STATUS" | tee -a "$LOG"
+ open -R "$LOG" 2>/dev/null || true
+ exit "$STATUS"
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND85.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/CHANGELOG.txt /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/CHANGELOG.txt
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/CHANGELOG.txt	2026-10-10 04:39:31.000000000 +0000
++++ /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/CHANGELOG.txt	2026-10-10 11:53:52.777664868 +0000
+@@ -1,9 +1,25 @@
+ BootLoaderSelector — CHANGELOG
+ ===========================
+ 
+-Versão atual: 2.30
++Versão atual: 2.31
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+ 
++VERSÃO 2.31 — PROFESSIONAL EVOLUTION ROUND 85 — 2026-10-10
++------------------------------------------------------------
++Base exclusiva: FULL-SOURCE v2.30/Round84, ZIP SHA-256 0f212946537593e28e1ca905d6bfc1b9d9e8d8f3384a88e673333bacece8ae19.
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++Corrigida uma race condition reproduzível no log canônico de build: o wrapper
++Build-Debug-Full-Log.command aguardava o builder Release terminar (e liberar
++.BlsBuild.lock) e só então anexava diagnósticos no mesmo arquivo. Um segundo
++Release podia adquirir o lock, truncar o log e receber bytes de diagnósticos da
++execução anterior. Os diagnósticos Debug passam a ser solicitados por variável
++de ambiente e emitidos pelo cleanup do próprio builder Release antes da liberação
++do lock. Regressão executável confirma que um wrapper Debug chamado enquanto o
++lock está ocupado não modifica o log do build ativo, e uma reprodução concorrente
++forçada mantém o log íntegro. Runtime UEFI preservado byte a byte. Resultados e
++limitações: AuditReports/ROUND85-VALIDATION.txt.
++
+ VERSÃO 2.30 — PROFESSIONAL EVOLUTION ROUND 84 — 2026-10-10
+ ------------------------------------------------------------
+ Base EXCLUSIVA: FULL-SOURCE v2.29/Round83 (ZIP SHA-256 d905651b1674a414dae1deeeabfdf7d0dfc72dcc76c607321cfea2ed536d53e1).
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND85.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/INFO.txt /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/INFO.txt
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/INFO.txt	2026-10-10 04:39:31.000000000 +0000
++++ /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/INFO.txt	2026-10-10 11:53:32.423514383 +0000
+@@ -1,12 +1,28 @@
+ BootLoaderSelector — INFORMAÇÕES COMPLETAS DO PROJETO
+ =====================================================
+ 
+-Versão atual: 2.30
+-Base imediata: BootLoaderSelector v2.29 Professional Evolution Round83 (2026-10-10)
+-SHA-256 do ZIP-base recebido nesta rodada: d905651b1674a414dae1deeeabfdf7d0dfc72dcc76c607321cfea2ed536d53e1
++Versão atual: 2.31
++Base imediata: BootLoaderSelector v2.30 Professional Evolution Round84 (2026-10-10)
++SHA-256 do ZIP-base recebido nesta rodada: 0f212946537593e28e1ca905d6bfc1b9d9e8d8f3384a88e673333bacece8ae19
+ Data desta rodada: 2026-10-10
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+ 
++VERSÃO 2.31 — PROFESSIONAL EVOLUTION ROUND 85 — 2026-10-10
++------------------------------------------------------------
++Base exclusiva: FULL-SOURCE v2.30/Round84, ZIP SHA-256 0f212946537593e28e1ca905d6bfc1b9d9e8d8f3384a88e673333bacece8ae19.
++
++- Build/concorrência: os diagnósticos de Build-Debug-Full-Log.command agora são
++  emitidos pelo cleanup do builder Release enquanto .BlsBuild.lock ainda está
++  sob posse da mesma execução. O baseline permitia que um segundo Release
++  truncasse o log entre o retorno do subprocesso e o append de diagnósticos.
++- Regressão concorrente reproduz RED no v2.30 (log misturado/truncado) e GREEN
++  no v2.31; tentativa concorrente é recusada antes de tocar no log ativo.
++- Runtime UEFI preservado integralmente: nenhum dos 9 módulos C foi modificado;
++  nenhuma mudança de UI, boot, configuração, hardware, logging UEFI ou screenshot.
++- VERSION/BUILD incrementados conforme solicitado: v2.31 / Round85.
++- Cobertura, testes executados e limitações reais constam em
++  AuditReports/ROUND85-VALIDATION.txt e AuditReports/AUDIT-REPORT.txt.
++
+ VERSÃO 2.30 — PROFESSIONAL EVOLUTION ROUND 84 — 2026-10-10
+ ------------------------------------------------------------
+ Base exclusiva: FULL-SOURCE v2.29/Round83, ZIP SHA-256 d905651b1674a414dae1deeeabfdf7d0dfc72dcc76c607321cfea2ed536d53e1.
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=BootLoaderSelector-Build.log' '--exclude=ROUND85.diff' /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/SECURITY-NOTES.txt /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/SECURITY-NOTES.txt
+--- /mnt/data/bls_r84_base/BootLoaderSelector-Source-v2.30-DNMTechLabs-Professional-Evolution-Round84-2026-10-10-FULL-SOURCE/SECURITY-NOTES.txt	2026-10-10 04:39:31.000000000 +0000
++++ /mnt/data/bls_r85_work/BootLoaderSelector-Source-v2.31-DNMTechLabs-Professional-Evolution-Round85-2026-10-10-FULL-SOURCE/SECURITY-NOTES.txt	2026-10-10 11:53:52.777846948 +0000
+@@ -47,6 +47,14 @@
+ source-manifest hash, bundled-toolchain catalog hash, host/tool versions and EFI
+ artifact hashes.
+ 
++Starting with v2.31/Round85, Build-Debug-Full-Log.command never appends to the
++canonical log after the Release subprocess has relinquished .BlsBuild.lock. Debug
++diagnostics are requested from the Release builder and emitted by its EXIT cleanup
++before that lock is released. This prevents a concurrent Release from truncating
++the log between the build and diagnostics phases or receiving diagnostic bytes
++from a different build run. If another build already owns the lock, the Debug
++wrapper fails without modifying that active run's log.
++
+ UEFI image signing
+ ------------------
+ BootLoaderSelector.efi and BOOTX64.efi are UEFI PE/COFF applications. macOS

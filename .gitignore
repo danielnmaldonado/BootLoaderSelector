@@ -1,0 +1,17 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+/Build/
+/Conf/
+/Release/
+/BuildLogs/BootLoaderSelector-Build.log
+/.BlsBuild.lock/
+/.BlsReleaseStage.*/
+/.BlsReleaseBackup.*/
+/toolchain.gcc102.snb/
+/BaseTools/Source/C/bin/
+/BaseTools/Source/C/libs/
+/BaseTools/Source/C/**/*.o
+/BaseTools/Source/C/**/*.d
+/BaseTools/Source/C/VfrCompile/Pccts/antlr/antlr
+/BaseTools/Source/C/VfrCompile/Pccts/dlg/dlg

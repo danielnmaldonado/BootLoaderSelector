@@ -1,0 +1,147 @@
+BootLoaderSelector source security notes
+========================================
+
+Logger rollover durability
+--------------------------
+Starting with v2.10/Round64, the persistent debug logger treats the 128 KiB rollover
+as a destructive transaction. Immediately before truncating a valid bounded current-
+session log, it captures the previously durable bytes in a bounded temporary snapshot.
+If the truncation flush, position change, replacement write or replacement flush fails,
+the old snapshot is restored before the error is returned. A failed rollback invalidates
+the logger's file-initialized state so later code cannot assume uncertain disk contents
+are durable. The extra allocation/copy occurs only on rollover; normal startup and append
+paths are unchanged.
+
+Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
+
+The files named TestCert.pem, TestRoot.pem and TestSigningPrivateKey.pem under
+BaseTools/Source/Python are upstream EDK2 test fixtures. They are NOT release
+signing credentials and MUST NOT be used to sign production firmware or
+BootLoaderSelector releases.
+
+The release build script intentionally does not remove macOS quarantine
+attributes recursively or automatically.
+
+Before any bundled compiler/NASM executable is run, the build script verifies
+AuditReports/MANIFEST.sha256 against the exact immutable-file set and validates
+every SHA-256 listed by that manifest. It then derives the bundled-toolchain subset,
+checks that subset against its independently pinned catalog SHA-256, and verifies
+the expected SHA-256 of the critical gcc, g++ and NASM executables.
+These checks detect corruption/tampering relative to this source tree, but they are
+not an external trust anchor: a hostile party able to replace the entire archive can
+also replace its script/manifests. Publish the release ZIP SHA-256 or a detached
+signature independently when distribution authenticity is required.
+
+The immutable-source coverage intentionally excludes only the manifest itself,
+the single mutable canonical build log, local Git metadata (.git or .git/*), and
+known generated outputs: Build/Conf/Release plus BaseTools host objects,
+dependency files, archives and host binaries. Those generated outputs are removed
+before manifest coverage and tool preflight so a failed or repeated build cannot
+reuse stale release state. Symbolic links are not accepted anywhere in the
+immutable project tree. BuildLogs and BootLoaderSelector-Build.log are rejected
+when they are symbolic links or non-regular objects; the canonical log is also
+rejected when it has more than one hard link. These checks happen before Release
+or Debug diagnostics writes to the log.
+
+A successful release build writes Release/BUILD-PROVENANCE.txt containing the
+source-manifest hash, bundled-toolchain catalog hash, host/tool versions and EFI
+artifact hashes.
+
+Starting with v2.31/Round85, Build-Debug-Full-Log.command never appends to the
+canonical log after the Release subprocess has relinquished .BlsBuild.lock. Debug
+diagnostics are requested from the Release builder and emitted by its EXIT cleanup
+before that lock is released. This prevents a concurrent Release from truncating
+the log between the build and diagnostics phases or receiving diagnostic bytes
+from a different build run. If another build already owns the lock, the Debug
+wrapper fails without modifying that active run's log.
+
+UEFI image signing
+------------------
+BootLoaderSelector.efi and BOOTX64.efi are UEFI PE/COFF applications. macOS
+``codesign`` ad-hoc signatures are Mach-O metadata and do not apply to EFI images.
+Starting with v2.07/Round61 the canonical Release is fail-closed unless a PE/COFF
+signer and verifier are available and both final published EFI paths verify.
+
+AuditTools/Sign-PeCoff-AdHoc.command creates a fresh self-signed RSA-3072/SHA-256
+code-signing certificate for each Release. The private key exists only in a temporary
+0700 directory as a 0600 file and is deleted by the helper cleanup path; only the
+public certificate ``Release/BootLoaderSelector-AdHoc.pem`` is published. The EDK2
+test keys under BaseTools remain explicitly forbidden for release signing.
+
+Supported backends are ``sbsign`` + ``sbverify`` and Jsign. Jsign may be supplied as
+a command or through the external ``BLS_JSIGN_JAR`` path; it is not vendored into the
+FULL-SOURCE. Starting with v2.11/Round65, when neither backend is already available,
+the helper may bootstrap the official Jsign 7.5 all-in-one JAR into an external user
+cache. The default macOS cache is ``~/Library/Caches/DNMTechLabs/BootLoaderSelector``.
+The download URL is pinned to the upstream GitHub 7.5 release and the bytes are accepted
+only when SHA-256 equals
+``602a51c3545a6dc4fb99bd2ea7152b26d1345916d0c93ddfbd5936cb735af91c``.
+A mismatched digest, symlink/unsafe cache target, failed HTTPS transfer or unexpected
+``Jsign 7.5`` version aborts fail-closed. ``BLS_JSIGN_AUTO_DOWNLOAD=0`` disables this
+network bootstrap. The cached JAR remains external to the project manifest/Release.
+
+Jsign 7.x verification compatibility
+----------------------------------
+Starting with v2.13/Round67, Jsign 7.x verification does not compile Java source at
+Release time. The helper probes the selected Jsign backend. When native `verify` is
+unavailable specifically because the command is unknown, Jsign's stable public
+`extract --format DER` operation exports the Authenticode PKCS#7 data to a private
+workspace. AuditTools/Verify-PeCoff-Authenticode.py then validates it with Python's
+standard library and the host OpenSSL command.
+
+The compatibility verifier requires the exact published certificate, current
+certificate validity, codeSigning EKU, RSA-3072, SHA-256, expected Authenticode
+content type and messageDigest signed attributes, an independently recomputed
+PE/COFF Authenticode file digest, and a cryptographically valid CMS/RSA signature.
+Starting with v2.14/Round68, certificate validity and EKU are decoded from the
+certificate DER structure itself: both notBefore and notAfter are enforced and
+codeSigning must be present as the exact 1.3.6.1.5.5.7.3.3 EKU OID. This prevents
+subject/display text from impersonating an EKU and prevents not-yet-valid signer
+certificates from being accepted by the Jsign 7.x compatibility route.
+Starting with v2.16/Round70, the ad-hoc signer must also be cryptographically
+self-signed. Matching Subject/Issuer DNs alone is not accepted: the verifier requires
+the published certificate to verify against itself, closing the self-issued/same-DN
+but externally signed certificate case.
+Starting with v2.30/Round84, the compatibility verifier also requires Basic Constraints
+and Key Usage to be marked critical, matching the certificate profile emitted by the
+canonical signer (critical CA:FALSE and critical digitalSignature). Certificates that
+carry those policy extensions as non-critical are rejected as profile drift.
+Tampered EFI bytes or a different certificate fail closed. Native Jsign verification
+continues to be preferred when the selected Jsign version provides it. No verifier
+JAR, private signing material, or third-party Python package is vendored.
+
+Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
+
+The builder records the signer backend/version, RSA/SHA-256 algorithm,
+certificate SHA-256, verification result and private-key publication state in
+Release/BUILD-PROVENANCE.txt, then verifies both BootLoaderSelector.efi and
+BOOTX64.efi after their final filesystem publication.
+Cancellation signals HUP/INT/TERM are terminal and remove the private signing
+workspace. A build that does not reach the fully verified completion state removes
+the entire partial Release directory, and BUILD-PROVENANCE.txt is staged before its
+final publication so an I/O failure cannot be reported as BUILD OK.
+
+Starting with v2.08/Round62, the signing helper also canonicalizes the input EFI,
+signed output, public-certificate output and metadata output before any signing work.
+All four paths must be distinct. This prevents a malformed caller from publishing the
+certificate or metadata over the supposedly immutable input EFI and converts that
+case into a fail-closed error before private material or release outputs are created.
+
+Starting with v2.09/Round63, those three published outputs form one rollback-capable
+transaction. All destination bytes are staged first; existing destinations are preserved
+in same-filesystem backups; EFI/certificate/metadata replacements remain reversible until
+the final PE/COFF signature verification succeeds. Any publication error or cancellation
+restores the previous tuple (or removes newly-created targets), preventing mixed-version
+release state even when failure occurs after the first rename.
+
+This ad-hoc signature establishes cryptographic integrity/authenticity relative to
+the generated certificate; it does NOT by itself make the image trusted by arbitrary
+Secure Boot firmware. To boot with Secure Boot enforcement, enroll/trust that public
+certificate on the target platform or sign with an appropriate production key whose
+chain is already accepted by that firmware.
+
+The application itself has no internal frameworks, dylibs, helpers or plug-ins.
+Dylibs under toolchain.gcc102.snb are build-tool dependencies and are never copied
+into the EFI release payload.
+
+Credits: ©DNMTechLabs / dnmtechlabs@gmail.com

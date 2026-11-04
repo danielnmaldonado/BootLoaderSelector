@@ -1,0 +1,289 @@
+--- a/BootLoaderSelectorPkg/BootLoaderSelector/Ui.c
++++ b/BootLoaderSelectorPkg/BootLoaderSelector/Ui.c
+@@ -99,8 +99,10 @@
+ 
+ VOID BlsUiRestoreOriginalState(VOID) {
+   EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *ConOut;
++  BOOLEAN ModeRestoreFailed;
+   if (!mBlsUiOriginalSaved || gST == NULL || gST->ConOut == NULL) return;
+   ConOut = gST->ConOut;
++  ModeRestoreFailed = FALSE;
+   /* The remembered fast-boot path may capture the caller's text state and
+      never display any selector UI. If the child also returns without touching
+      the console, restoring the identical snapshot must not issue redundant
+@@ -121,7 +123,15 @@
+       ConOut->Mode->MaxMode > 0 &&
+       mBlsUiOriginalMode < ConOut->Mode->MaxMode &&
+       ConOut->Mode->Mode != mBlsUiOriginalMode && ConOut->SetMode != NULL) {
+-    (VOID)ConOut->SetMode(ConOut, (UINTN)mBlsUiOriginalMode);
++    /* A firmware error (or a false successful reply) means the entry mode
++       was not restored. Never move the cursor based on that failed change;
++       leave the actual mode/position undisturbed instead of causing a jump. */
++    EFI_STATUS ModeStatus;
++    ModeStatus = ConOut->SetMode(ConOut, (UINTN)mBlsUiOriginalMode);
++    if (ModeStatus != EFI_SUCCESS || ConOut->Mode == NULL ||
++        ConOut->Mode->Mode != mBlsUiOriginalMode) {
++      ModeRestoreFailed = TRUE;
++    }
+   }
+   if (ConOut->SetAttribute != NULL && mBlsUiOriginalAttribute >= 0 &&
+       (UINT32)mBlsUiOriginalAttribute <= BLS_TEXT_ATTRIBUTE_MASK &&
+@@ -132,7 +142,7 @@
+   /* Only query geometry/move the cursor when the captured coordinates differ.
+      A no-op move costs a firmware query and can briefly show a transient cursor
+      in a different location. Keep the cursor hidden while a real move runs. */
+-  if (ConOut->SetCursorPosition != NULL && ConOut->Mode != NULL &&
++  if (!ModeRestoreFailed && ConOut->SetCursorPosition != NULL && ConOut->Mode != NULL &&
+       (ConOut->Mode->CursorColumn != mBlsUiOriginalCursorColumn ||
+        ConOut->Mode->CursorRow != mBlsUiOriginalCursorRow) &&
+       BlsUiCanRestoreCursorPosition(ConOut)) {
+--- a/AuditTests/Host/test_ui_mode_bound.c
++++ b/AuditTests/Host/test_ui_mode_bound.c
+@@ -25,6 +25,8 @@
+ static UINTN gQueryCount;
+ static UINTN gSetModeCount;
+ static EFI_STATUS gSetModeStatus;
++static BOOLEAN gSetModeNoopOnSuccess;
++static BOOLEAN gSetModeNullModeOnSuccess;
+ static UINTN gSetAttributeCount;
+ static UINTN gSetCursorCount;
+ static UINTN gUiOperationCount;
+@@ -101,6 +103,8 @@
+   gSetModeCount++;
+   if (This == NULL || This->Mode == NULL || ModeNumber > MAX_INT32) return EFI_INVALID_PARAMETER;
+   if (gSetModeStatus != EFI_SUCCESS) return gSetModeStatus;
++  if (gSetModeNoopOnSuccess) return EFI_SUCCESS;
++  if (gSetModeNullModeOnSuccess) { This->Mode = NULL; return EFI_SUCCESS; }
+   This->Mode->Mode = (INT32)ModeNumber;
+   return EFI_SUCCESS;
+ }
+@@ -166,6 +170,8 @@
+   mBlsUiOriginalCursorVisible = TRUE;
+   mBlsUiModeStatus = EFI_SUCCESS;
+   gSetModeStatus = EFI_SUCCESS;
++  gSetModeNoopOnSuccess = FALSE;
++  gSetModeNullModeOnSuccess = FALSE;
+   gSetAttributeCount = 0U;
+   gSetCursorCount = 0U;
+   gUiOperationCount = 0U;
+@@ -523,6 +529,72 @@
+   assert(mode.CursorColumn == 12);
+   assert(mode.CursorRow == 10);
+ 
++  /* REGRESSION: with the original mode still advertised, a firmware
++     SetMode() failure must not issue a cursor move in the *other* active
++     mode. A cursor location that fits both geometries still belongs to
++     the caller's entry mode and may produce a visible jump on failure. */
++  ResetUiCache();
++  gScenario = TestModesTwoValid;
++  mode.MaxMode = 2;
++  mode.Mode = 1;
++  mode.Attribute = 7;
++  mode.CursorColumn = 12;
++  mode.CursorRow = 10;
++  mode.CursorVisible = TRUE;
++  BlsUiCaptureOriginalState();
++  mode.Mode = 0;
++  mode.CursorColumn = 0;
++  mode.CursorRow = 0;
++  gSetModeStatus = EFI_DEVICE_ERROR;
++  gSetModeCount = 0U;
++  gSetCursorCount = 0U;
++  BlsUiRestoreOriginalState();
++  assert(gSetModeCount == 1U);
++  assert(mode.Mode == 0);
++  assert(gSetCursorCount == 0U);
++  assert(mode.CursorColumn == 0 && mode.CursorRow == 0);
++  gSetModeStatus = EFI_SUCCESS;
++
++  /* Broken firmware may claim successful SetMode() without switching modes.
++     Treat a post-call mismatch like a failed restoration and avoid relayout. */
++  ResetUiCache();
++  gScenario = TestModesTwoValid;
++  mode.MaxMode = 2;
++  mode.Mode = 1;
++  mode.CursorColumn = 14;
++  mode.CursorRow = 11;
++  mode.CursorVisible = TRUE;
++  BlsUiCaptureOriginalState();
++  mode.Mode = 0;
++  mode.CursorColumn = 0;
++  mode.CursorRow = 0;
++  gSetModeNoopOnSuccess = TRUE;
++  gSetModeCount = 0U;
++  gSetCursorCount = 0U;
++  BlsUiRestoreOriginalState();
++  assert(gSetModeCount == 1U);
++  assert(mode.Mode == 0);
++  assert(gSetCursorCount == 0U);
++  assert(mode.CursorColumn == 0 && mode.CursorRow == 0);
++  gSetModeNoopOnSuccess = FALSE;
++
++  /* A broken SetMode() callback can even invalidate the published Mode
++     pointer. Never dereference it after the callback without rechecking. */
++  ResetUiCache();
++  conOut.Mode = &mode;
++  gScenario = TestModesTwoValid;
++  mode.MaxMode = 2;
++  mode.Mode = 1;
++  mode.CursorColumn = 14;
++  mode.CursorRow = 11;
++  BlsUiCaptureOriginalState();
++  mode.Mode = 0;
++  gSetModeNullModeOnSuccess = TRUE;
++  BlsUiRestoreOriginalState();
++  assert(conOut.Mode == NULL);
++  conOut.Mode = &mode;
++  gSetModeNullModeOnSuccess = FALSE;
++
+   /* Bits 7 and above are reserved by UEFI SIMPLE_TEXT_OUTPUT. Never replay
+      a malformed firmware attribute snapshot through SetAttribute(). */
+   ResetUiCache();
+--- a/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h
++++ b/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h
+@@ -9,8 +9,8 @@
+ #include <Protocol/SimpleFileSystem.h>
+ #include <Guid/FileInfo.h>
+ 
+-#define BLS_VERSION_ASCII "2.20"
+-#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.20"
++#define BLS_VERSION_ASCII "2.21"
++#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.21"
+ 
+ #define BLS_MAX_TEXT      128
+ #define BLS_MAX_PATH      192
+--- a/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf
++++ b/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf
+@@ -8,7 +8,7 @@
+   BASE_NAME                      = BootLoaderSelector
+   FILE_GUID                      = F9C8E131-0A87-4C6C-A3E4-CA03DE31F6F1
+   MODULE_TYPE                    = UEFI_APPLICATION
+-  VERSION_STRING = 2.20
++  VERSION_STRING = 2.21
+   ENTRY_POINT                    = UefiMain
+ 
+ [Sources]
+--- a/BootLoaderSelector.dsc
++++ b/BootLoaderSelector.dsc
+@@ -6,7 +6,7 @@
+ [Defines]
+   PLATFORM_NAME                  = BootLoaderSelector
+   PLATFORM_GUID                  = 3F71A792-6E03-4D84-9F1D-F3C81EC80F44
+-  PLATFORM_VERSION = 2.20
++  PLATFORM_VERSION = 2.21
+   DSC_SPECIFICATION              = 0x00010006
+   OUTPUT_DIRECTORY               = Build/BootLoaderSelector
+   SUPPORTED_ARCHITECTURES        = X64
+--- a/CHANGELOG.txt
++++ b/CHANGELOG.txt
+@@ -1,8 +1,26 @@
+ BootLoaderSelector — CHANGELOG
+ ===========================
+ 
+-Versão atual: 2.20
+-Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++Versão atual: 2.21
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++VERSÃO 2.21 — PROFESSIONAL EVOLUTION ROUND 75 — 2026-10-08
++------------------------------------------------------------
++Base exclusiva: FULL-SOURCE v2.20/Round74 (ZIP SHA-256: ad63df5e808b81f78e2e9c35b5064db1130d45fec0b8a199cebaedbd10f11e4d).
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++- UI / restauro de modo UEFI: após falha explícita de SetMode, não
++  reposicionar o cursor com coordenadas do antigo modo. Também validar
++  efetivamente a mudança de Mode após EFI_SUCCESS do firmware.
++- Preservadas a restauração de atributos/visibilidade e a política já
++  existente de restauração entre modos disponíveis e coordenadas válidas.
++- Regressão RED→GREEN de SetMode falho no host e novo cenário com firmware
++  que declara sucesso sem trocar o modo. Sem novas alocações/polling.
++- Executadas verificações estáticas e de sanitizers nos cenários de host;
++  testes de publicação, certificado, limites/fuzz e verificação de pacote.
++- Binário EFI Release assinado/boot real seguem pendentes por limitações
++  do ambiente de compilação/assinatura; nenhuma EFI sem assinatura publicada.
++- Versão/build incrementados para v2.21 / Round75; manifesto atualizado.
+ 
+ VERSÃO 2.20 — PROFESSIONAL EVOLUTION ROUND 74 — 2026-10-08
+ ------------------------------------------------------------
+--- a/INFO.txt
++++ b/INFO.txt
+@@ -1,11 +1,34 @@
+ BootLoaderSelector — INFORMAÇÕES COMPLETAS DO PROJETO
+ =====================================================
+ 
+-Versão atual: 2.20
+-Base imediata: BootLoaderSelector v2.19 Professional Evolution Round73 (2026-10-08)
+-SHA-256 do ZIP-base recebido nesta rodada: 4c05f89e90d2df9b7bcc42b44b48f744c376618a95e7bf4c8be8af9822012473
++Versão atual: 2.21
++Base imediata: BootLoaderSelector v2.20 Professional Evolution Round74 (2026-10-08)
++SHA-256 do ZIP-base recebido nesta rodada: ad63df5e808b81f78e2e9c35b5064db1130d45fec0b8a199cebaedbd10f11e4d
+ Data desta rodada: 2026-10-08
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++VERSÃO 2.21 — PROFESSIONAL EVOLUTION ROUND 75 — 2026-10-08
++------------------------------------------------------------
++Base exclusiva: FULL-SOURCE v2.20/Round74 recebido nesta conversa.
++SHA-256 do ZIP-base: ad63df5e808b81f78e2e9c35b5064db1130d45fec0b8a199cebaedbd10f11e4d
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++Correção reproduzida em Ui.c: quando SetMode() falha durante a
++restauração do modo de texto original, a rotina agora não aplica posição
++de cursor do modo antigo ao modo que permaneceu ativo. Um retorno de
++EFI_SUCCESS sem alteração efetiva de Mode também é tratado como falha;
++ponteiro Mode invalidado por firmware defeituosa é verificado.
++Modo inválido/indisponível continua seguindo o fallback anterior; a
++restauração entre modos com coordenadas válidas foi preservada.
++
++Regressões: caso RED no v2.20 (gSetCursorCount == 0 falhava, exit 134),
++GREEN no v2.21; caso adicional de firmware com SetMode falso-positivo;
++demais testes host anteriores preservados.
++
++O source foi testado localmente com compiladores/sanitizers e regressões
++de publicação/assinatura, mas isto NÃO é um Release EFI homologado.
++A geração/assinatura real depende de toolchain PE/COFF e backend de
++assinatura disponíveis em ambiente apropriado, mais teste OVMF/hardware.
+ 
+ VERSÃO 2.20 — PROFESSIONAL EVOLUTION ROUND 74 — 2026-10-08
+ ------------------------------------------------------------
+--- a/AuditReports/AUDIT-REPORT.txt
++++ b/AuditReports/AUDIT-REPORT.txt
+@@ -1,3 +1,39 @@
++BootLoaderSelector v2.21 — Professional Evolution Round75
++Data: 2026-10-08
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++Origem exclusiva: FULL-SOURCE v2.20/Round74
++SHA-256 do ZIP-base confirmado: ad63df5e808b81f78e2e9c35b5064db1130d45fec0b8a199cebaedbd10f11e4d
++
++CORREÇÃO REPRODUZIDA
++--------------------
++UI.RESTORE-SETMODE-FAILURE: Quando uma console UEFI muda de modo e
++SetMode() falha ao restaurar o modo original, o source v2.20 tentava
++SetCursorPosition() mesmo no modo ainda ativo. O teste reproduziu a
++chamada indevida (assert gSetCursorCount == 0, exit 134). A v2.21
++protege o cursor se a tentativa de restaurar o modo falhar, inclusive
++quando firmware afirma EFI_SUCCESS sem atualizar ConOut->Mode->Mode.
++O acesso pós-callback revalida ponteiro Mode antes de desreferenciar.
++Nenhum recurso existente foi removido. O comportamento entre modos
++quando o original está indisponível e as coordenadas são válidas
++permanece como anteriormente.
++
++VALIDAÇÃO / LIMITES
++-------------------
++- Testes host Clang/GCC ASan+UBSan x2: PASS (17 testes por passagem).
++- Teste host Clang IntegerSan: PASS (17 casos).
++- Teste host GCC ThreadSanitizer: PASS (17 casos).
++- Testes host realmente compilados com -O2 em Clang e GCC x2: PASS.
++- BaseTools fuzz/limites em Clang e GCC: PASS.
++- Análise estática/sintática de 9 módulos C com Clang/GCC: PASS.
++- Política Authenticode/bootstrap e publicação/rollback/lock: PASS.
++- Release assinado real, OVMF, boot físico, CPU/GPU/RAM/energia: NÃO TESTADOS.
++  Compilação/assinatura PE/COFF requer assinador e ferramentas apropriadas.
++- Nenhuma declaração de homologação integral ou ausência universal de bugs.
++
++========================================================================
++HISTÓRICO: RELATÓRIO ORIGINAL DA ROUND74 (preservado integralmente)
++========================================================================
++
+ BootLoaderSelector v2.20 — Professional Evolution Round74
+ Data: 2026-10-08
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com

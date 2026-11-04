@@ -1,0 +1,642 @@
+--- a/.github/workflows/uefi-ci.yml
++++ b/.github/workflows/uefi-ci.yml
+@@ -184,7 +184,19 @@
+           SMOKE_CHILD="$(find Build/BootLoaderSelector/RELEASE_GCC53/X64 -name 'SmokeChild.efi' -print -quit)"
+           test -n "$SMOKE_CHILD"
+           test -s "$SMOKE_CHILD"
+-          cp "$SMOKE_CHILD" Release/SmokeChild.efi
++          # The smoke child is also a UEFI executable shipped in this CI
++          # artifact. Sign and independently verify it instead of publishing
++          # an unsigned inner component next to the signed selector.
++          BLS_VERSION="$(sed -n 's/^#define BLS_VERSION_ASCII "\([^"]*\)"/\1/p' BootLoaderSelectorPkg/BootLoaderSelector/Utils.h)"
++          test -n "$BLS_VERSION"
++          AuditTools/Sign-PeCoff-AdHoc.command sign \
++            "$SMOKE_CHILD" Release/SmokeChild.efi \
++            Release/SmokeChild-AdHoc.pem "$BLS_VERSION" \
++            Release/SmokeChild-SIGNING.txt
++          AuditTools/Sign-PeCoff-AdHoc.command verify \
++            Release/SmokeChild.efi Release/SmokeChild-AdHoc.pem
++          grep -Fx 'Signature verification: PASS' Release/SmokeChild-SIGNING.txt
++          grep -Fx 'Private key published: no' Release/SmokeChild-SIGNING.txt
+           file Release/SmokeChild.efi | grep -E 'PE32\+.*EFI.*application.*x86-64'
+           shasum -a 256 Release/BootLoaderSelector.efi Release/BOOTX64.efi Release/SmokeChild.efi
+       - uses: actions/upload-artifact@v4
+@@ -196,6 +208,8 @@
+             Release/BUILD-PROVENANCE.txt
+             Release/BootLoaderSelector-AdHoc.pem
+             Release/SmokeChild.efi
++            Release/SmokeChild-AdHoc.pem
++            Release/SmokeChild-SIGNING.txt
+ 
+   ovmf-smoke:
+     needs: macos-release
+--- a/AuditReports/AUDIT-REPORT.txt
++++ b/AuditReports/AUDIT-REPORT.txt
+@@ -1,3 +1,72 @@
++BootLoaderSelector v2.18 — Professional Evolution Round72
++Data: 2026-10-08
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++Origem exclusiva: v2.17/Round71 FULL-SOURCE
++SHA-256 do arquivo ZIP recebido: 294b3d041f0adbd8b6e8d307a542fb86c9cb3ed938a3d3b2a1cfe1e08f54889c
++
++ESTADO DOS ACHADOS E EVIDÊNCIAS
++--------------------------------
++1. UI.CONSOLE-MODE / reprodução RED e correção GREEN:
++   BlsUiInitReadableMode() descartava console atual de 120x40 apenas porque
++   excedia 100x35, mesmo sendo legível e válido. O firmware podia escolher
++   100x30 e gerar reposicionamento/salto/flicker na abertura. A rotina mantém
++   agora qualquer modo atual legível com limites seguros de dimensionalidade;
++   a regressão Host/test_ui_mode_bound.c confirma ausência de SetMode.
++
++2. RELEASE.DATA-LOSS / reprodução RED e correção GREEN:
++   Build-BootLoaderSelector-Release.command removia Release/ logo no início e
++   seu trap o apagava também após erro de preflight. Em execução isolada uma
++   release anterior válida foi destruída. A construção agora escreve todas as
++   saídas EFI, certificado e proveniência em staging privado no mesmo volume;
++   só publica após verificação, guardando a anterior para rollback. Regressões
++   verificam falha de preflight, concorrência e rollback com falha injetada.
++
++3. CI.SIGNING:
++   O workflow macOS carregava SmokeChild.efi unsigned ao lado das imagens
++   assinadas. Agora assina, verifica e inclui PEM público/relatório de assinatura
++   da EFI auxiliar. A mudança foi validada estaticamente (YAML parse), mas sua
++   execução de assinatura requer runner macOS/assinador disponível.
++
++VALIDAÇÃO EFETIVAMENTE EXECUTADA NESTE AMBIENTE
++------------------------------------------------
++- Testes runtime Clang ASan+LeakSanitizer+UBSan: 17 casos x 3 passagens PASS.
++- Testes runtime GCC ASan+UBSan: 17 casos PASS.
++- Testes runtime Clang AddressSanitizer+IntegerSan: 17 casos PASS.
++- Testes runtime GCC ThreadSanitizer: 17 casos PASS.
++- Deep bounds / fuzz BaseTools (Clang): PASS. Logs contêm mensagens de
++  entradas malformadas rejeitadas intencionalmente.
++- Todos os 9 módulos C: sintaxe/warnings estritos com Clang e GCC (-Werror),
++  Clang Static Analyzer e GCC -fanalyzer: PASS.
++- Publicação, rollback e lock: testes executáveis com cenários isolados PASS.
++- Workflow GitHub Actions: sintaxe YAML analisada sem erro.
++- Manifesto SHA-256 e cobertura de arquivos: PASS; preflight Release reconhece
++  versionamento 2.18 e recusa apenas signer ausente, sem deixar Release parcial.
++
++NÃO VALIDADO / BLOQUEADORES REAIS
++---------------------------------
++- Imagens EFI Release, assinatura PE/COFF ad-hoc e boot QEMU/OVMF: NÃO
++  executados. Não há ferramentas nativas suficientes (NASM/assinador PE-COFF)
++  neste contêiner; o bootstrap pinado do Jsign 7.5 não encontra DNS/rede.
++- Performance de RAM/CPU/GPU/I/O/energia em firmware físico, variações de
++  GOP/console e duração prolongada: não mensuradas neste ambiente.
++- Compilação final Release em firmware real e Debug-vs-Release: dependem de
++  CI/host equipado; o builder preserva checagens e falha fechado.
++- Assinatura ad-hoc não implica confiança do firmware Secure Boot: é
++  necessária aprovação/enrollment adequado da chave/certificado.
++
++CHANGE CONTROL
++--------------
++Alterações runtime: apenas Ui.c para regressão de geometry e Utils.h versão.
++Build: staging+rollback+lock no builder; CI assinando o filho UEFI.
++Testes: UI console e novo teste de publicação/rollback/concorrência.
++Docs: INFO, CHANGELOG, este relatório e diff desta rodada.
++EDK2/dependências vendorizadas, demais recursos e identidade visual inalterados.
++Versão v2.18 / Round72; ©DNMTechLabs / dnmtechlabs@gmail.com.
++
++========================================================================
++HISTÓRICO: RELATÓRIO ORIGINAL DA ROUND71 (preservado integralmente)
++========================================================================
++
+ BootLoaderSelector v2.17 — Professional Evolution Round 71
+ Audit/fix date: 2026-10-05
+ Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
+--- a/AuditTests/Host/test_ui_mode_bound.c
++++ b/AuditTests/Host/test_ui_mode_bound.c
+@@ -18,7 +18,8 @@
+   TestModesHugeOnly,
+   TestModesHugeThenValid,
+   TestModesCurrentValid,
+-  TestModesTwoValid
++  TestModesTwoValid,
++  TestModesCurrentWide
+ } TEST_MODE_SCENARIO;
+ 
+ static UINTN gQueryCount;
+@@ -53,6 +54,18 @@
+     *Columns = 100;
+     *Rows = 30;
+     return EFI_SUCCESS;
++  }
++  if (gScenario == TestModesCurrentWide) {
++    if (ModeNumber == 0) {
++      *Columns = 120;
++      *Rows = 40;
++      return EFI_SUCCESS;
++    }
++    if (ModeNumber == 1) {
++      *Columns = 100;
++      *Rows = 30;
++      return EFI_SUCCESS;
++    }
+   }
+   if (gScenario == TestModesTwoValid) {
+     if (ModeNumber == 0) {
+@@ -270,6 +283,23 @@
+   assert(cols == 100U && rows == 30U);
+   assert(mode.CursorVisible == FALSE);
+ 
++  /* REGRESSION: a readable current firmware console (120x40) must not
++     switch to 100x30 while opening the menu. That SetMode causes a visible
++     jump/flicker and an unnecessary full firmware text-mode reinitialization. */
++  gScenario = TestModesCurrentWide;
++  mode.MaxMode = 2;
++  mode.Mode = 0;
++  mode.CursorVisible = TRUE;
++  gQueryCount = 0U;
++  gSetModeCount = 0U;
++  ResetUiCache();
++  BlsUiInitReadableMode();
++  BlsUiGetSize(&cols, &rows);
++  assert(gQueryCount == 1U);
++  assert(gSetModeCount == 0U);
++  assert(mode.Mode == 0);
++  assert(cols == 120U && rows == 40U);
++
+   gScenario = TestModesHugeOnly;
+   mode.MaxMode = 1;
+   mode.Mode = 0;
+--- a/AuditTests/Test-Release-Publish-Invariants.command
++++ b/AuditTests/Test-Release-Publish-Invariants.command
+@@ -4,40 +4,109 @@
+ cd "$(dirname "$0")/.."
+ BUILDER=Build-BootLoaderSelector-Release.command
+ 
+-# Failed/cancelled Release runs must not leave a partially publishable directory.
+-grep -Fq 'RELEASE_COMPLETE=0' "$BUILDER" || {
+-  echo 'Release completion state invariant is missing' >&2
+-  exit 1
+-}
+-grep -Fq 'if [ "$RELEASE_COMPLETE" -ne 1 ]; then' "$BUILDER" || {
+-  echo 'Release failure cleanup invariant is missing' >&2
+-  exit 1
+-}
+-grep -Fq 'rm -rf "$PROJECT_ROOT/Release"' "$BUILDER" || {
+-  echo 'Release failure cleanup does not remove partial output' >&2
++# The signed staged release replaces the old one only after provenance is
++# published. Previous Round71 accidentally deleted a valid Release even when
++# an early metadata check aborted before a new image was compiled.
++grep -Fq 'RELEASE_COMPLETE=0' "$BUILDER"
++grep -Fq 'RELEASE_STAGE=' "$BUILDER"
++grep -Fq 'publish_verified_release' "$BUILDER"
++grep -Fq 'if ! publish_verified_release; then' "$BUILDER"
++! grep -Fq 'rm -rf Conf Build Release ' "$BUILDER"
++grep -Fq 'PROVENANCE_TMP=' "$BUILDER"
++grep -Fq 'Unable to write release provenance' "$BUILDER"
++grep -Fq 'Unable to publish release provenance' "$BUILDER"
++
++promote_line="$(grep -n -m1 'if ! publish_verified_release; then' "$BUILDER" | cut -d: -f1)"
++provenance_line="$(grep -n -m1 'mv -f "$PROVENANCE_TMP" "$RELEASE_STAGE/BUILD-PROVENANCE.txt"' "$BUILDER" | cut -d: -f1)"
++[ -n "$promote_line" ] && [ -n "$provenance_line" ] && [ "$promote_line" -gt "$provenance_line" ] || {
++  echo 'Release can be published before durable provenance' >&2
+   exit 1
+ }
+ 
+-# Provenance must be staged and its write/publish errors must feed STATUS before the
+-# release is marked complete. This is intentionally structural because the host
+-# regression environment cannot force an EDK2 post-link disk fault portably.
+-grep -Fq 'PROVENANCE_TMP=' "$BUILDER" || {
+-  echo 'Staged provenance invariant is missing' >&2
++TEST_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/bls-publish-regression.XXXXXX")"
++trap 'rm -rf "$TEST_ROOT"' EXIT
++
++# Executable RED->GREEN regression: a failed preflight must not touch an
++# existing fully published release. Use a minimal isolated fixture and force
++# the builder to fail on missing version metadata before invoking build tools.
++mkdir -p "$TEST_ROOT/preflight/Release"
++printf 'known good\n' > "$TEST_ROOT/preflight/Release/BootLoaderSelector.efi"
++cp "$BUILDER" "$TEST_ROOT/preflight/$BUILDER"
++if (cd "$TEST_ROOT/preflight" && bash "$BUILDER" >/dev/null 2>&1); then
++  echo 'Incomplete preflight fixture unexpectedly passed' >&2
++  exit 1
++fi
++[ "$(cat "$TEST_ROOT/preflight/Release/BootLoaderSelector.efi")" = 'known good' ] || {
++  echo 'Failed build destroyed the previous Release' >&2
+   exit 1
+ }
+-grep -Fq 'Unable to write release provenance' "$BUILDER" || {
+-  echo 'Provenance write failure is not fail-closed' >&2
+-  exit 1
+-}
+-grep -Fq 'Unable to publish release provenance' "$BUILDER" || {
+-  echo 'Provenance publish failure is not fail-closed' >&2
+-  exit 1
+-}
+-complete_line="$(grep -n -m1 'RELEASE_COMPLETE=1' "$BUILDER" | cut -d: -f1 || true)"
+-provenance_line="$(grep -n -m1 'BUILD-PROVENANCE.txt' "$BUILDER" | tail -1 | cut -d: -f1 || true)"
+-[ -n "$complete_line" ] && [ -n "$provenance_line" ] && [ "$complete_line" -gt "$provenance_line" ] || {
+-  echo 'Release is marked complete before provenance publication' >&2
++[ ! -e "$TEST_ROOT/preflight/.BlsBuild.lock" ] || {
++  echo 'Build left a stale lock after preflight failure' >&2
+   exit 1
+ }
+ 
+-echo 'Release publish/failure invariants: PASS'
++# Concurrent invocation must reject the existing exclusive lock before
++# overwriting its log or deleting build trees.
++mkdir "$TEST_ROOT/preflight/.BlsBuild.lock"
++printf 'previous log\n' > "$TEST_ROOT/preflight/BuildLogs/BootLoaderSelector-Build.log"
++if (cd "$TEST_ROOT/preflight" && bash "$BUILDER" >/dev/null 2>&1); then
++  echo 'Concurrent/stale build lock was ignored' >&2
++  exit 1
++fi
++[ "$(cat "$TEST_ROOT/preflight/BuildLogs/BootLoaderSelector-Build.log")" = 'previous log' ]
++[ -d "$TEST_ROOT/preflight/.BlsBuild.lock" ]
++rmdir "$TEST_ROOT/preflight/.BlsBuild.lock"
++
++# Test the real publication function in isolation: on success the staged
++# files replace the old files, without mixing paths or publishing stale data.
++(
++  source <(sed -n '/^publish_verified_release() {/,/^}/p' "$BUILDER")
++  PROJECT_ROOT="$TEST_ROOT/publish"
++  LOG="$TEST_ROOT/publish.log"
++  RELEASE_BACKUP=""
++  RELEASE_COMPLETE=0
++  RELEASE_PUBLISHED=0
++  mkdir -p "$PROJECT_ROOT/Release"
++  printf 'old\n' > "$PROJECT_ROOT/Release/BootLoaderSelector.efi"
++  RELEASE_STAGE="$(mktemp -d "$PROJECT_ROOT/.BlsReleaseStage.XXXXXX")"
++  printf 'new\n' > "$RELEASE_STAGE/BootLoaderSelector.efi"
++  publish_verified_release
++  [ "$RELEASE_COMPLETE" -eq 1 ]
++  [ "$RELEASE_PUBLISHED" -eq 1 ]
++  [ -z "$RELEASE_STAGE" ]
++  [ "$(cat "$PROJECT_ROOT/Release/BootLoaderSelector.efi")" = 'new' ]
++  [ "$(cat "$RELEASE_BACKUP/BootLoaderSelector.efi")" = 'old' ]
++)
++
++# Inject failure specifically after moving the previous release aside. The
++# actual cleanup function must restore that release and discard staging.
++(
++  source <(sed -n '/^publish_verified_release() {/,/^}/p' "$BUILDER")
++  source <(sed -n '/^cleanup() {/,/^}/p' "$BUILDER")
++  clean_basetools_python_cache() { :; }
++  PROJECT_ROOT="$TEST_ROOT/rollback"
++  LOG="$TEST_ROOT/rollback.log"
++  TMP_DIR="" NORMALIZE_DIR="" NATIVE_TOOL_DIR="" TOOLCHAIN_VERIFY_MANIFEST=""
++  PROJECT_FILE_LIST="" MANIFEST_FILE_LIST="" MANIFEST_COVERAGE_DIFF=""
++  PROVENANCE_TMP="" BUILD_LOCK="$PROJECT_ROOT/.BlsBuild.lock"
++  RELEASE_BACKUP="" RELEASE_COMPLETE=0 RELEASE_PUBLISHED=0
++  mkdir -p "$PROJECT_ROOT/Release" "$BUILD_LOCK"
++  printf 'last good\n' > "$PROJECT_ROOT/Release/BootLoaderSelector.efi"
++  RELEASE_STAGE="$(mktemp -d "$PROJECT_ROOT/.BlsReleaseStage.XXXXXX")"
++  printf 'unpublished\n' > "$RELEASE_STAGE/BootLoaderSelector.efi"
++  mv() {
++    if [ "$1" = "$RELEASE_STAGE" ]; then return 1; fi
++    command mv "$@"
++  }
++  if publish_verified_release >/dev/null 2>&1; then
++    echo 'Injected publish failure unexpectedly passed' >&2
++    exit 1
++  fi
++  unset -f mv
++  cleanup
++  [ "$(cat "$PROJECT_ROOT/Release/BootLoaderSelector.efi")" = 'last good' ]
++  [ ! -e "$BUILD_LOCK" ]
++  [ ! -e "$RELEASE_STAGE" ]
++)
++
++echo 'Release publish/rollback/lock regressions: PASS'
+--- a/BootLoaderSelector.dsc
++++ b/BootLoaderSelector.dsc
+@@ -6,7 +6,7 @@
+ [Defines]
+   PLATFORM_NAME                  = BootLoaderSelector
+   PLATFORM_GUID                  = 3F71A792-6E03-4D84-9F1D-F3C81EC80F44
+-  PLATFORM_VERSION = 2.17
++  PLATFORM_VERSION = 2.18
+   DSC_SPECIFICATION              = 0x00010006
+   OUTPUT_DIRECTORY               = Build/BootLoaderSelector
+   SUPPORTED_ARCHITECTURES        = X64
+--- a/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf
++++ b/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf
+@@ -8,7 +8,7 @@
+   BASE_NAME                      = BootLoaderSelector
+   FILE_GUID                      = F9C8E131-0A87-4C6C-A3E4-CA03DE31F6F1
+   MODULE_TYPE                    = UEFI_APPLICATION
+-  VERSION_STRING = 2.17
++  VERSION_STRING = 2.18
+   ENTRY_POINT                    = UefiMain
+ 
+ [Sources]
+--- a/BootLoaderSelectorPkg/BootLoaderSelector/Ui.c
++++ b/BootLoaderSelectorPkg/BootLoaderSelector/Ui.c
+@@ -223,7 +223,12 @@
+     CurrentQuerySucceeded = TRUE;
+     if (BlsUiDimensionsAreUsable(CurrentCols, CurrentRows)) {
+       CurrentDimensionsUsable = TRUE;
+-      if (CurrentCols >= 80 && CurrentRows >= 20 && CurrentCols <= 100 && CurrentRows <= 35) {
++      /* A readable current mode must remain active: switching from e.g.
++         120x40 to a preferred 100x30 unnecessarily resizes the firmware
++         console on first draw and causes a visible flash/reflow. Only switch
++         when the current geometry cannot accommodate the minimum UI. The
++         existing BlsUiDimensionsAreUsable() bounds still reject hostile sizes. */
++      if (CurrentCols >= 80 && CurrentRows >= 20) {
+         if (gST->ConOut->EnableCursor != NULL && gST->ConOut->Mode->CursorVisible) {
+           (VOID)gST->ConOut->EnableCursor(gST->ConOut, FALSE);
+         }
+--- a/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h
++++ b/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h
+@@ -9,8 +9,8 @@
+ #include <Protocol/SimpleFileSystem.h>
+ #include <Guid/FileInfo.h>
+ 
+-#define BLS_VERSION_ASCII "2.17"
+-#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.17"
++#define BLS_VERSION_ASCII "2.18"
++#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.18"
+ 
+ #define BLS_MAX_TEXT      128
+ #define BLS_MAX_PATH      192
+--- a/Build-BootLoaderSelector-Release.command
++++ b/Build-BootLoaderSelector-Release.command
+@@ -6,6 +6,13 @@
+   exit 1
+ fi
+ PROJECT_ROOT="$PWD"
++# Serialize all writes to the shared EDK2 build tree and canonical log.
++BUILD_LOCK="$PROJECT_ROOT/.BlsBuild.lock"
++if ! mkdir "$BUILD_LOCK" 2>/dev/null; then
++  echo "Build already running or stale lock requires inspection: $BUILD_LOCK" >&2
++  exit 1
++fi
++trap 'rmdir "$BUILD_LOCK" 2>/dev/null || true' EXIT
+ LOG_DIR="$PROJECT_ROOT/BuildLogs"
+ if [ -L "$LOG_DIR" ] || { [ -e "$LOG_DIR" ] && [ ! -d "$LOG_DIR" ]; }; then
+   echo "Refusing unsafe build-log directory: $LOG_DIR" >&2
+@@ -53,6 +60,9 @@
+ ADHOC_CERT_SHA256=""
+ PROVENANCE_TMP=""
+ RELEASE_COMPLETE=0
++RELEASE_STAGE=""
++RELEASE_BACKUP=""
++RELEASE_PUBLISHED=0
+ 
+ # BaseTools invokes Python during host-tool builds and may leave __pycache__/pyc
+ # files inside the source tree. Those files are generated state, not release
+@@ -107,14 +117,56 @@
+   if [ -n "$PROVENANCE_TMP" ]; then
+     rm -f "$PROVENANCE_TMP" 2>/dev/null || true
+   fi
+-  # A failed or cancelled build must never leave a directory that could be
+-  # mistaken for a complete Release. Successful output is preserved only after
+-  # signed payloads and provenance have all been validated and published.
+-  if [ "$RELEASE_COMPLETE" -ne 1 ]; then
+-    rm -rf "$PROJECT_ROOT/Release" 2>/dev/null || true
+-  fi
++  # Never delete an already-published Release after a failed preflight, compile
++  # or signing operation. Only the new, private staging directory is disposable.
++  if [ "$RELEASE_COMPLETE" -ne 1 ] && [ -n "$RELEASE_BACKUP" ] && [ -d "$RELEASE_BACKUP" ]; then
++    # A failure between the two directory renames must restore the last known
++    # good release, including if the staged tree was moved before completion.
++    if [ "$RELEASE_PUBLISHED" -eq 1 ] && [ -d "$PROJECT_ROOT/Release" ]; then
++      rm -rf "$PROJECT_ROOT/Release" 2>/dev/null || true
++    fi
++    if [ ! -e "$PROJECT_ROOT/Release" ] && [ ! -L "$PROJECT_ROOT/Release" ]; then
++      mv "$RELEASE_BACKUP" "$PROJECT_ROOT/Release" 2>/dev/null ||
++        echo "WARNING: previous release is preserved at $RELEASE_BACKUP" >&2
++    fi
++  fi
++  if [ -n "$RELEASE_STAGE" ] && [ -d "$RELEASE_STAGE" ]; then
++    rm -rf "$RELEASE_STAGE" 2>/dev/null || true
++  fi
++  if [ "$RELEASE_COMPLETE" -eq 1 ] && [ -n "$RELEASE_BACKUP" ]; then
++    rm -rf "$RELEASE_BACKUP" 2>/dev/null || true
++  fi
++  rmdir "$BUILD_LOCK" 2>/dev/null || true
+   return "$cleanup_status"
+ }
++# Final publication is a directory replacement. It is attempted only after
++# both signed images, the public certificate and provenance have all passed.
++# The old Release is retained for rollback throughout the publication window.
++publish_verified_release() {
++  if [ -z "$RELEASE_STAGE" ] || [ ! -d "$RELEASE_STAGE" ] ||
++     [ -L "$PROJECT_ROOT/Release" ] ||
++     { [ -e "$PROJECT_ROOT/Release" ] && [ ! -d "$PROJECT_ROOT/Release" ]; }; then
++    echo "Unsafe or missing Release publishing location" | tee -a "$LOG"
++    return 1
++  fi
++  if [ -d "$PROJECT_ROOT/Release" ]; then
++    RELEASE_BACKUP="$(mktemp -d "$PROJECT_ROOT/.BlsReleaseBackup.XXXXXX")" || return 1
++    rmdir "$RELEASE_BACKUP" || return 1
++    if ! mv "$PROJECT_ROOT/Release" "$RELEASE_BACKUP"; then
++      echo "Unable to preserve previous Release" | tee -a "$LOG"
++      return 1
++    fi
++  fi
++  if ! mv "$RELEASE_STAGE" "$PROJECT_ROOT/Release"; then
++    echo "Unable to publish staged Release" | tee -a "$LOG"
++    return 1
++  fi
++  RELEASE_PUBLISHED=1
++  RELEASE_STAGE=""
++  RELEASE_COMPLETE=1
++  return 0
++}
++
+ trap cleanup EXIT
+ 
+ cd "$BUILD_ROOT" || exit 1
+@@ -251,7 +303,7 @@
+   echo "Unable to remove stale BaseTools Python caches" | tee -a "$LOG"
+   exit 1
+ fi
+-if ! rm -rf Conf Build Release BaseTools/Source/C/bin BaseTools/Source/C/libs; then
++if ! rm -rf Conf Build BaseTools/Source/C/bin BaseTools/Source/C/libs; then
+   echo "Unable to remove previous generated outputs" | tee -a "$LOG"
+   exit 1
+ fi
+@@ -455,10 +507,13 @@
+   exit 1
+ fi
+ 
+-if ! mkdir -p Conf Release; then
++if ! mkdir -p Conf; then
+   echo "Unable to create build output directories" | tee -a "$LOG"
+   exit 1
+ fi
++# Stage every EFI payload, certificate and provenance file privately, on the
++# same filesystem as Release, so errors cannot destroy a previous good build.
++RELEASE_STAGE="$(mktemp -d "$PROJECT_ROOT/.BlsReleaseStage.XXXXXX")" || exit 1
+ 
+ source ./edksetup.sh > >(tee -a "$LOG") 2>&1
+ STATUS=$?
+@@ -503,7 +558,7 @@
+     fi
+     NORMALIZE_DIR="$(mktemp -d "${TMPDIR:-/tmp}/BootLoaderSelector.Normalize.XXXXXX")" || STATUS=1
+     SIGNING_METADATA="$NORMALIZE_DIR/signing-metadata.txt"
+-    ADHOC_CERT="$PROJECT_ROOT/Release/BootLoaderSelector-AdHoc.pem"
++    ADHOC_CERT="$RELEASE_STAGE/BootLoaderSelector-AdHoc.pem"
+     if [ "$STATUS" -ne 0 ] || [ ! -s "$DLL_PATH" ]; then
+       echo "Unable to locate release linker image for normalization" | tee -a "$LOG"
+       STATUS=1
+@@ -520,22 +575,22 @@
+       STATUS=1
+     elif ! run_signing_helper_logged sign \
+               "$NORMALIZE_DIR/BootLoaderSelector.efi" \
+-              "$PROJECT_ROOT/Release/BootLoaderSelector.efi" \
++              "$RELEASE_STAGE/BootLoaderSelector.efi" \
+               "$ADHOC_CERT" \
+               "$RELEASE_VERSION" \
+               "$SIGNING_METADATA"; then
+       echo "Release PE/COFF ad-hoc signing failed" | tee -a "$LOG"
+       STATUS=1
+-    elif ! cp -f "$PROJECT_ROOT/Release/BootLoaderSelector.efi" "$PROJECT_ROOT/Release/BOOTX64.efi"; then
++    elif ! cp -f "$RELEASE_STAGE/BootLoaderSelector.efi" "$RELEASE_STAGE/BOOTX64.efi"; then
+       echo "Signed BOOTX64.EFI copy failed" | tee -a "$LOG"
+       STATUS=1
+-    elif ! run_signing_helper_logged verify "$PROJECT_ROOT/Release/BootLoaderSelector.efi" "$ADHOC_CERT" ||
+-         ! run_signing_helper_logged verify "$PROJECT_ROOT/Release/BOOTX64.efi" "$ADHOC_CERT"; then
++    elif ! run_signing_helper_logged verify "$RELEASE_STAGE/BootLoaderSelector.efi" "$ADHOC_CERT" ||
++         ! run_signing_helper_logged verify "$RELEASE_STAGE/BOOTX64.efi" "$ADHOC_CERT"; then
+       echo "Published Release signature verification failed" | tee -a "$LOG"
+       STATUS=1
+-    elif [ -s "$PROJECT_ROOT/Release/BootLoaderSelector.efi" ] &&
+-         [ -s "$PROJECT_ROOT/Release/BOOTX64.efi" ] && [ -s "$ADHOC_CERT" ] && [ -s "$SIGNING_METADATA" ]; then
+-      EFI_FILE_INFO="$(file "$PROJECT_ROOT/Release/BootLoaderSelector.efi" 2>/dev/null || true)"
++    elif [ -s "$RELEASE_STAGE/BootLoaderSelector.efi" ] &&
++         [ -s "$RELEASE_STAGE/BOOTX64.efi" ] && [ -s "$ADHOC_CERT" ] && [ -s "$SIGNING_METADATA" ]; then
++      EFI_FILE_INFO="$(file "$RELEASE_STAGE/BootLoaderSelector.efi" 2>/dev/null || true)"
+       SIGNER_BACKEND="$(sed -n 's/^Signer backend: //p' "$SIGNING_METADATA" | head -1)"
+       SIGNER_VERSION="$(sed -n 's/^Signer version: //p' "$SIGNING_METADATA" | head -1)"
+       SIGNATURE_ALGORITHM="$(sed -n 's/^Signature algorithm: //p' "$SIGNING_METADATA" | head -1)"
+@@ -544,7 +599,7 @@
+       if [[ "$EFI_FILE_INFO" != *"PE32+"* || "$EFI_FILE_INFO" != *"EFI"* || "$EFI_FILE_INFO" != *"x86-64"* ]]; then
+         echo "Release image format validation failed: $EFI_FILE_INFO" | tee -a "$LOG"
+         STATUS=1
+-      elif ! cmp -s "$PROJECT_ROOT/Release/BootLoaderSelector.efi" "$PROJECT_ROOT/Release/BOOTX64.efi"; then
++      elif ! cmp -s "$RELEASE_STAGE/BootLoaderSelector.efi" "$RELEASE_STAGE/BOOTX64.efi"; then
+         echo "Release EFI copies are not byte-identical" | tee -a "$LOG"
+         STATUS=1
+       elif [ -z "$SIGNER_BACKEND" ] || [ -z "$SIGNER_VERSION" ] || [ "$SIGNATURE_ALGORITHM" != "SHA-256 with RSA-3072" ] ||
+@@ -561,11 +616,11 @@
+       echo "Signed Release artifacts are incomplete" | tee -a "$LOG"
+       STATUS=1
+     fi
+-    if [ "$STATUS" -eq 0 ] && [ -s "$PROJECT_ROOT/Release/BootLoaderSelector.efi" ] && [ -s "$PROJECT_ROOT/Release/BOOTX64.efi" ]; then
+-      chmod 644 "$PROJECT_ROOT/Release/BootLoaderSelector.efi" "$PROJECT_ROOT/Release/BOOTX64.efi" "$ADHOC_CERT" 2>/dev/null || true
+-      EFI_SHA256="$(hash_file "$PROJECT_ROOT/Release/BootLoaderSelector.efi")"
+-      BOOTX64_SHA256="$(hash_file "$PROJECT_ROOT/Release/BOOTX64.efi")"
+-      PROVENANCE_TMP="$(mktemp "$PROJECT_ROOT/Release/.BUILD-PROVENANCE.XXXXXX")" || STATUS=1
++    if [ "$STATUS" -eq 0 ] && [ -s "$RELEASE_STAGE/BootLoaderSelector.efi" ] && [ -s "$RELEASE_STAGE/BOOTX64.efi" ]; then
++      chmod 644 "$RELEASE_STAGE/BootLoaderSelector.efi" "$RELEASE_STAGE/BOOTX64.efi" "$ADHOC_CERT" 2>/dev/null || true
++      EFI_SHA256="$(hash_file "$RELEASE_STAGE/BootLoaderSelector.efi")"
++      BOOTX64_SHA256="$(hash_file "$RELEASE_STAGE/BOOTX64.efi")"
++      PROVENANCE_TMP="$(mktemp "$RELEASE_STAGE/.BUILD-PROVENANCE.XXXXXX")" || STATUS=1
+       if [ "$STATUS" -ne 0 ]; then
+         echo "Unable to stage release provenance" | tee -a "$LOG"
+       elif ! {
+@@ -603,17 +658,23 @@
+         echo "Unable to write release provenance" | tee -a "$LOG"
+         STATUS=1
+       elif ! chmod 644 "$PROVENANCE_TMP" ||
+-           ! mv -f "$PROVENANCE_TMP" "$PROJECT_ROOT/Release/BUILD-PROVENANCE.txt"; then
++           ! mv -f "$PROVENANCE_TMP" "$RELEASE_STAGE/BUILD-PROVENANCE.txt"; then
+         echo "Unable to publish release provenance" | tee -a "$LOG"
+         STATUS=1
+       else
+         PROVENANCE_TMP=""
+-        RELEASE_COMPLETE=1
+-        echo "BUILD OK" | tee -a "$LOG"
+-        echo "Output: $PROJECT_ROOT/Release/BootLoaderSelector.efi" | tee -a "$LOG"
+-        echo "Output: $PROJECT_ROOT/Release/BOOTX64.efi" | tee -a "$LOG"
+-        echo "Ad-hoc certificate: $ADHOC_CERT" | tee -a "$LOG"
+-        echo "Signature verification: PASS" | tee -a "$LOG"
++        if ! publish_verified_release; then
++          echo "Verified Release staging could not be published" | tee -a "$LOG"
++          STATUS=1
++        else
++          echo "BUILD OK" | tee -a "$LOG"
++        fi
++        if [ "$STATUS" -eq 0 ]; then
++          echo "Output: $PROJECT_ROOT/Release/BootLoaderSelector.efi" | tee -a "$LOG"
++          echo "Output: $PROJECT_ROOT/Release/BOOTX64.efi" | tee -a "$LOG"
++          echo "Ad-hoc certificate: $PROJECT_ROOT/Release/BootLoaderSelector-AdHoc.pem" | tee -a "$LOG"
++          echo "Signature verification: PASS" | tee -a "$LOG"
++        fi
+       fi
+     elif [ "$STATUS" -eq 0 ]; then
+       echo "Release copy/signing failed" | tee -a "$LOG"
+--- a/CHANGELOG.txt
++++ b/CHANGELOG.txt
+@@ -1,7 +1,29 @@
+ BootLoaderSelector — CHANGELOG
+ ===========================
+ 
+-Versão atual: 2.17
++Versão atual: 2.18
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++VERSÃO 2.18 — PROFESSIONAL EVOLUTION ROUND 72 — 2026-10-08
++------------------------------------------------------------
++Base exclusiva: v2.17/Round71 FULL-SOURCE
++SHA-256 do ZIP-base: 294b3d041f0adbd8b6e8d307a542fb86c9cb3ed938a3d3b2a1cfe1e08f54889c
++
++- UI / performance: eliminada alteração redundante de modo de console UEFI ao
++  abrir com resolução atual legível (regressão reproduzida: 120×40 → 100×30);
++- publicação do Release em diretório temporário na mesma unidade e com
++  rollback seguro; falha de build/signature/preflight não descarta release válido;
++- lock exclusivo de invocações de build Release, antes da escrita do log;
++- SmokeChild.efi em CI macOS passa a receber assinatura ad-hoc verificada,
++  certificado público e relatório de assinatura, antes do upload para smoke;
++- testes RED→GREEN, ASan/LSan/UBSan, IntegerSan, GCC TSan, verificações de
++  limites/fuzz do BaseTools, warnings estritos e analisadores GCC/Clang;
++- versão/build incrementados para v2.18/Round72.
++
++Limitação documentada: a toolchain/signature/boot EFI real dependem de host
++com NASM e assinador PE/COFF disponíveis. Sem signer local ou download de
++Jsign 7.5, o build canônico termina em preflight fail-closed; nenhum EFI
++não assinado é apresentado como Release.
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+ 
+ VERSÃO 2.17 — PROFESSIONAL EVOLUTION ROUND 71 — 2026-10-05
+--- a/INFO.txt
++++ b/INFO.txt
+@@ -1,10 +1,39 @@
+ BootLoaderSelector — INFORMAÇÕES COMPLETAS DO PROJETO
+ =====================================================
+ 
+-Versão atual: 2.17
+-Base imediata: BootLoaderSelector v2.16 Professional Evolution Round70 (2026-10-04)
+-SHA-256 do ZIP-base recebido nesta rodada: b0fc6f5c794592f614ec64fd72320e529eb72315388cf033bb07f8f8939751f9
+-Data desta rodada: 2026-10-05
++Versão atual: 2.18
++Base imediata: BootLoaderSelector v2.17 Professional Evolution Round71 (2026-10-05)
++SHA-256 do ZIP-base recebido nesta rodada: 294b3d041f0adbd8b6e8d307a542fb86c9cb3ed938a3d3b2a1cfe1e08f54889c
++Data desta rodada: 2026-10-08
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++VERSÃO 2.18 — PROFESSIONAL EVOLUTION ROUND 72 — 2026-10-08
++------------------------------------------------------------
++Base exclusiva: FULL-SOURCE v2.17/Round71 recebido nesta conversa.
++SHA-256 do ZIP-base: 294b3d041f0adbd8b6e8d307a542fb86c9cb3ed938a3d3b2a1cfe1e08f54889c
++
++Correções comprovadas:
++- console UEFI: preservar modo atual legível, inclusive 120×40, sem trocar
++  desnecessariamente para 100×30 e provocar salto/flicker na abertura;
++- builder: não apagar Release válido diante de falha de preflight/build/sign;
++  gerar o Release em staging, verificar assinatura e proveniência antes da
++  publicação, e restaurar o Release anterior se a publicação falhar;
++- lock de build exclusivo para bloquear chamadas Release concorrentes antes
++  de alterar o log compartilhado;
++- workflow macOS: assinar e verificar também SmokeChild.efi (aplicação UEFI
++  usada no smoke test), incluindo certificado público e metadados de assinatura.
++
++Regressões executáveis RED→GREEN: UI do console 120×40, retenção de Release
++anterior, lock concorrente, publicação completa e rollback com falha injetada.
++Testes de host: ASan/LeakSanitizer/UBSan com Clang e GCC, IntegerSan com
++Clang, ThreadSanitizer com GCC, testes de limites/fuzz do BaseTools e
++analisadores estáticos de GCC e Clang, sem falha nos testes executados.
++
++Limite da validação: este host Linux não dispõe de NASM nativo/PE-COFF
++signer verificável e não consegue baixar o Jsign 7.5 pinado (sem DNS).
++A geração/assinatura EFI real e o boot QEMU/OVMF não foram executados;
++o pipeline continua falhando fechado e não entrega EFI sem assinatura.
++Não há alegação de Release binário homologado neste ambiente.
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+ 
+ VERSÃO 2.17 — PROFESSIONAL EVOLUTION ROUND 71 — 2026-10-05

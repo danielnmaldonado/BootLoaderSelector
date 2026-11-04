@@ -1,0 +1,335 @@
+--- v2.21/AuditReports/AUDIT-REPORT.txt
++++ v2.22/AuditReports/AUDIT-REPORT.txt
+@@ -1,3 +1,47 @@
++BootLoaderSelector v2.22 — Professional Evolution Round76
++Data: 2026-10-08
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++Origem EXCLUSIVA: FULL-SOURCE v2.21/Round75
++SHA-256 ZIP-base: 7a9f101b7e50993f23ab1dc34d41f62f96f6bb73bfb4c814b8fd64d0e9b7894c
++
++FALHAS REPRODUZIDAS E CORRIGIDAS
++--------------------------------
++1. UI.INIT-SETMODE-FALSE-SUCCESS: SetMode() devolvia EFI_SUCCESS sem
++   mudar o modo. A rotina de menu aceitava o retorno como prova de nova
++   geometria, cacheando 100x30 embora a console não tivesse mudado.
++   RED: teste v2.21 com BlsUiLastModeStatus() == EFI_DEVICE_ERROR falhou
++   (exit 134). GREEN: status passa a EFI_DEVICE_ERROR e o tamanho só muda
++   após confirmação do modo efetivamente ativo.
++2. UI.INIT-SETMODE-INVALID-MODE-POINTER: um callback que invalidasse
++   ConOut->Mode podia fazer o acesso final a Mode->CursorVisible causar
++   acesso inválido. Agora o ponteiro é revalidado; fallback conservador.
++3. REGRESSÃO ADICIONAL: modo 60x15 declarado válido, mas pequeno, e troca
++   para 100x30 recusada silenciosamente. O menu não passa a anunciar
++   dimensões 100x30: preserva as 60x15 verificadas; callback nulo cobre
++   o outro caminho extremo. Sem novas alocações, timers ou polling.
++
++VALIDAÇÃO E LIMITAÇÕES
++---------------------
++- Fonte inicial ZIP e manifesto SHA-256 verificados.
++- Clang 17 testes host x3 e GCC x2 ASan/UBSan: PASS.
++- Clang Address/IntegerSan 17 testes: PASS.
++- GCC ThreadSanitizer: testes individuais passaram; parser fuzz (200 mil
++  iterações) precisou de tempo adicional. A suíte inteira sob timeout
++  restrito não pôde ser considerada aprovada naquele comando.
++- BaseTools bounds/fuzz Clang e GCC: PASS.
++- Clang/GCC -Werror: 9 módulos C PASS, analisadores estáticos PASS.
++- Políticas de certificado, signer mock e publicação/rollback: PASS.
++- Runtime EFI, assinatura ad-hoc real, firmware QEMU/OVMF, profiling em
++  hardware: NÃO TESTADOS / impedidos pela toolchain assinadora ausente.
++- Preflight do builder v2.22: detecta metadados consistentes, recusa signer
++  indisponível (exit 1), preserva estado sem Release/staging/lock residual.
++- Não foram realizadas rodadas cronometradas de 30 minutos.
++- Código de runtime modificado SOMENTE em Ui.c, sem recursos removidos.
++
++========================================================================
++HISTÓRICO: RELATÓRIO ORIGINAL ROUND75 (preservado integralmente)
++========================================================================
++
+ BootLoaderSelector v2.21 — Professional Evolution Round75
+ Data: 2026-10-08
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+--- v2.21/AuditReports/MANIFEST.sha256
++++ v2.22/AuditReports/MANIFEST.sha256
+@@ -1,5 +1,5 @@
+ a3c4e2f9b3cfaa5f82cb4874ac1268a943fcf396fb92ec6a92e8c4901998e43d  ./.github/workflows/uefi-ci.yml
+-1968934e08352858619131ecc93979c9c056b5befc7730735ea402a9cc210ff6  ./AuditReports/AUDIT-REPORT.txt
++6ba1306fff6307c885b3f16df5beaaf5108152f7a3139c3c13a3c4943feb4163  ./AuditReports/AUDIT-REPORT.txt
+ 87085af82112c9da717301c8aa3a1a3f44a2a6f206ddb99c5c6e55e3eb4affe0  ./AuditReports/ROUND67.diff
+ e5864dcbcc5066e33c421de7a32c5f46c3755caf1a957263c3951be4ec23e6cd  ./AuditReports/ROUND68.diff
+ 61be0882fd388f76c1f0e385c6fbd87c3bbbe0313f775260660181773adf5b41  ./AuditReports/ROUND69.diff
+@@ -11,6 +11,8 @@
+ 086a78887624d47b4e541d83f853084123601d190344e25565e1647e587441a8  ./AuditReports/ROUND74.diff
+ f5cb9332a823c6fedc5220838b2d95907df559b325d8ec7c5f4e962ae9751e1f  ./AuditReports/ROUND75-VALIDATION.txt
+ bc82363cf585fc57fa93e77776b919828fc4d4ac8034d760776f4adaf5abc500  ./AuditReports/ROUND75.diff
++0ac4d69c786daa2ada9944c8bee232ed5b4807c644b770b6f370010af2422c35  ./AuditReports/ROUND76-VALIDATION.txt
++c3b44c5e884478d6488729bac7799b41e17c6105dc5e9d9f75c59120ec84c59a  ./AuditReports/ROUND76.diff
+ 0a531d9914d69a1679c1a24965db0d33362eb00593fc23ac02a3b06797de1e2b  ./AuditTests/Host/test_base_tools_fv_bounds.c
+ 6aca146534a12a69d4c88c654256cf0936e59137bb531800f0395873a0b20c08  ./AuditTests/Host/test_boot_image_lifecycle.c
+ 552f436e6948f23ced07f862934c81d6f81f2ded9b7e7f97ea25a96b5c07836f  ./AuditTests/Host/test_bootscan_policy.c
+@@ -27,7 +29,7 @@
+ 16b231c5c744a8766223bbd2edd4fb5ced40b8d683118046670053428b8e83d4  ./AuditTests/Host/test_protocol_access_contracts.c
+ 60c629cadd96a02e12e2b7b00c52bc0ea051f607201da5aa0cf8cd7815052cb2  ./AuditTests/Host/test_remembered_autoboot_integrity.c
+ d331378757c4c713decb59095c64c98e2cfc1f788b5b10e8ba7a2d76847282d2  ./AuditTests/Host/test_screenshot_bounds.c
+-dd67db799b675a49ae160d6338337b32b9f8fc7cc053e69e06c53b86c59a4cdf  ./AuditTests/Host/test_ui_mode_bound.c
++8488ab45d53a14cf6d16456f7044e06c1b8215b7af77a94b5c8ef66167f16912  ./AuditTests/Host/test_ui_mode_bound.c
+ 7ccf2e7df56dd933ba0f6696cf60b9316716a7235a234f1ac66000a43fc83fe7  ./AuditTests/Host/test_volinfo_section_bounds.c
+ 5fcae4a3a41bb7e0cb0a3485a5146ec8de87a505a0850c98ab72a5081c034782  ./AuditTests/Host/test_watchdog_lifecycle.c
+ b3f501ae6e68c96da72087d2ceb817bdb0c536c571257937aa8d17e83da0458a  ./AuditTests/Run-Audit-Tests.command
+@@ -916,8 +918,8 @@
+ 7b6d9394f577c9cb32b5770fb90f724180feec3db6466d5863bb30b1e51bf29a  ./BaseTools/get_vsvars.bat
+ 0df317da9c7a0b38c9420d3f689933cb70bea976a0796b29f3fe8170a9e5de82  ./BaseTools/set_vsprefix_envs.bat
+ 30719b16841c64106b0af48a34dd80077bf73b5bab75264f0bc41470c8489b9f  ./BaseTools/toolsetup.bat
+-8f660e95680d1878bc5add6a8553753923c2e475e7153621a556a4c1998b9beb  ./BootLoaderSelector.dsc
+-93bf819c71df0c0cae349aed6a58297a64cd424e88d3251e757bb1a29119ee79  ./BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf
++54f09c1069870feb6f902c9eb385095ca72d754c0af1b105126f7f024fdde271  ./BootLoaderSelector.dsc
++4410c2f41029fd6ef4971e329b9993991312585e3f9683899e30a850db437bdf  ./BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf
+ 9ca61a690918d8a307ce100bb9b24649887fcba0ea8c3077851dc3237947c45a  ./BootLoaderSelectorPkg/BootLoaderSelector/BootScan.c
+ 685f70a777549fe4b54314167693a0a328552f0f3beab5fbfebe144a80c90ea4  ./BootLoaderSelectorPkg/BootLoaderSelector/BootScan.h
+ 4c5f87e182488899c2b1919a286eeb8402373f46e3c0f21c09fcc73a4863cae3  ./BootLoaderSelectorPkg/BootLoaderSelector/Config.c
+@@ -931,17 +933,17 @@
+ d08e24b47c71c8f66bbe586e117b9bdc269aa127f04c00f1e4189b70a95b0bad  ./BootLoaderSelectorPkg/BootLoaderSelector/Menu.h
+ 1d7d9bf70444951113170289b3ad22f68cc110e4bec8695e367bef6c3647b5a6  ./BootLoaderSelectorPkg/BootLoaderSelector/Screenshot.c
+ 8c64fa1800a441da27ad66ac0ac9c6454cb743fc3245f6a1fde558452f8dc57d  ./BootLoaderSelectorPkg/BootLoaderSelector/Screenshot.h
+-c307a304a6621c2a200fb67daeef129d9181da62c81bd2b2c553a488df983ff8  ./BootLoaderSelectorPkg/BootLoaderSelector/Ui.c
++00987498d7e0f6a7a67a6704d35f94f7e0dd0570ad8280959111ddac87732ef9  ./BootLoaderSelectorPkg/BootLoaderSelector/Ui.c
+ b20d3e6435d5eb59f838f32ce6808c9cc199db31de84632e7af9d42df8d08245  ./BootLoaderSelectorPkg/BootLoaderSelector/Ui.h
+ 946381144e4f560bdc95f2701235821ac37f949176bb245daabf54f339f7932a  ./BootLoaderSelectorPkg/BootLoaderSelector/Utils.c
+-8d048d6349cdc5419e22c12e024f1297bcd2b9e5a1cf43fb15cfb001691422c2  ./BootLoaderSelectorPkg/BootLoaderSelector/Utils.h
++07579a29e0d1c1697ab19f7b374946fa85d25aecb746e82f6401860aa3c8cfca  ./BootLoaderSelectorPkg/BootLoaderSelector/Utils.h
+ 8c88b36d3167c462303aaa99dd90978351f80036088c926f10b6399179055af4  ./BootScan.plist
+ 64d4556794b1a37780089d45f77278bf1f21b1ca94b72f41e6e9048745756d72  ./Build-BootLoaderSelector-Release.command
+ fe1bd122786cfa110384b9d051c261f295bde046e5fde5ed7fedb96326c61398  ./Build-Debug-Full-Log.command
+-301029488b55542da99fa670d24bc91c39db71c6b0fcb08df0568f4138594a4c  ./CHANGELOG.txt
++370a977fa854cb60e525c5c9d1122dfaaaadc8298872efb5b1fbd412b3de114e  ./CHANGELOG.txt
+ 8c88b36d3167c462303aaa99dd90978351f80036088c926f10b6399179055af4  ./Config.plist
+ 8c88b36d3167c462303aaa99dd90978351f80036088c926f10b6399179055af4  ./HardwareInfo.plist
+-83f3f1112f8b717e85c9e1a1ba56942bb4ac90cb2b204cf7fa042b178d4bbf47  ./INFO.txt
++7ae5a972380f2fcdebb0a4e0e7bce99c1075bfcacc33c95f28ac00a42b6f5a4e  ./INFO.txt
+ 8c88b36d3167c462303aaa99dd90978351f80036088c926f10b6399179055af4  ./Logger.plist
+ 8c88b36d3167c462303aaa99dd90978351f80036088c926f10b6399179055af4  ./Main.plist
+ 6ced19e344176e2c68fc00f0f16ac52d5d5162e76bf65412e15d1bc0662d8a2c  ./MdePkg/Include/Base.h
+--- v2.21/AuditTests/Host/test_ui_mode_bound.c
++++ v2.22/AuditTests/Host/test_ui_mode_bound.c
+@@ -17,6 +17,7 @@
+   TestModesUnsupported,
+   TestModesHugeOnly,
+   TestModesHugeThenValid,
++  TestModesSmallThenValid,
+   TestModesCurrentValid,
+   TestModesTwoValid,
+   TestModesCurrentWide
+@@ -61,6 +62,18 @@
+     if (ModeNumber == 0) {
+       *Columns = 120;
+       *Rows = 40;
++      return EFI_SUCCESS;
++    }
++    if (ModeNumber == 1) {
++      *Columns = 100;
++      *Rows = 30;
++      return EFI_SUCCESS;
++    }
++  }
++  if (gScenario == TestModesSmallThenValid) {
++    if (ModeNumber == 0) {
++      *Columns = 60;
++      *Rows = 15;
+       return EFI_SUCCESS;
+     }
+     if (ModeNumber == 1) {
+@@ -388,6 +401,59 @@
+   assert(mode.Mode == 0);
+   assert(cols == 80U && rows == 25U);
+ 
++  /* A false-success SetMode() reply during menu initialization must never
++     advertise the requested geometry when firmware kept the old mode. */
++  ResetUiCache();
++  conOut.Mode = &mode;
++  gScenario = TestModesHugeThenValid;
++  mode.MaxMode = 2;
++  mode.Mode = 0;
++  mode.CursorVisible = TRUE;
++  gSetModeNoopOnSuccess = TRUE;
++  gSetModeCount = 0U;
++  BlsUiInitReadableMode();
++  BlsUiGetSize(&cols, &rows);
++  assert(gSetModeCount == 1U);
++  assert(mode.Mode == 0);
++  assert(BlsUiLastModeStatus() == EFI_DEVICE_ERROR);
++  assert(cols == 80U && rows == 25U);
++  gSetModeNoopOnSuccess = FALSE;
++
++  /* If the old mode was valid but too small, a false SetMode success must
++     retain its actual geometry rather than caching the selected larger one. */
++  ResetUiCache();
++  conOut.Mode = &mode;
++  gScenario = TestModesSmallThenValid;
++  mode.MaxMode = 2;
++  mode.Mode = 0;
++  mode.CursorVisible = TRUE;
++  gSetModeNoopOnSuccess = TRUE;
++  BlsUiInitReadableMode();
++  BlsUiGetSize(&cols, &rows);
++  assert(BlsUiLastModeStatus() == EFI_DEVICE_ERROR);
++  assert(mode.Mode == 0);
++  assert(cols == 60U && rows == 15U);
++  gSetModeNoopOnSuccess = FALSE;
++
++  /* Firmware can invalidate Mode even after returning EFI_SUCCESS. The
++     visible-menu path must survive that as the restoration path already does. */
++  ResetUiCache();
++  conOut.Mode = &mode;
++  gScenario = TestModesHugeThenValid;
++  mode.MaxMode = 2;
++  mode.Mode = 0;
++  mode.CursorVisible = TRUE;
++  gSetModeNullModeOnSuccess = TRUE;
++  gSetModeCount = 0U;
++  BlsUiInitReadableMode();
++  BlsUiGetSize(&cols, &rows);
++  assert(gSetModeCount == 1U);
++  assert(conOut.Mode == NULL);
++  assert(BlsUiLastModeStatus() == EFI_DEVICE_ERROR);
++  assert(cols == 80U && rows == 25U);
++  conOut.Mode = &mode;
++  gSetModeNullModeOnSuccess = FALSE;
++
+   /* A partial text-output implementation without QueryMode() must still have
+      its caller-visible state snapshotted/restored, and fallback dimensions
+      must be cached without repeated firmware queries. */
+--- v2.21/BootLoaderSelector.dsc
++++ v2.22/BootLoaderSelector.dsc
+@@ -6,7 +6,7 @@
+ [Defines]
+   PLATFORM_NAME                  = BootLoaderSelector
+   PLATFORM_GUID                  = 3F71A792-6E03-4D84-9F1D-F3C81EC80F44
+-  PLATFORM_VERSION = 2.21
++  PLATFORM_VERSION = 2.22
+   DSC_SPECIFICATION              = 0x00010006
+   OUTPUT_DIRECTORY               = Build/BootLoaderSelector
+   SUPPORTED_ARCHITECTURES        = X64
+--- v2.21/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf
++++ v2.22/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf
+@@ -8,7 +8,7 @@
+   BASE_NAME                      = BootLoaderSelector
+   FILE_GUID                      = F9C8E131-0A87-4C6C-A3E4-CA03DE31F6F1
+   MODULE_TYPE                    = UEFI_APPLICATION
+-  VERSION_STRING = 2.21
++  VERSION_STRING = 2.22
+   ENTRY_POINT                    = UefiMain
+ 
+ [Sources]
+--- v2.21/BootLoaderSelectorPkg/BootLoaderSelector/Ui.c
++++ v2.22/BootLoaderSelectorPkg/BootLoaderSelector/Ui.c
+@@ -334,9 +334,18 @@
+   if (BestModeFound && (!CurrentModeValid || BestMode != CurrentMode)) {
+     if (gST->ConOut->SetMode != NULL) {
+       mBlsUiModeStatus = gST->ConOut->SetMode(gST->ConOut, BestMode);
++      /* Do not trust a success code until firmware publishes the requested
++         mode. Otherwise menu geometry can be cached for an inactive console;
++         a broken callback may also invalidate the Mode pointer entirely. */
++      if (mBlsUiModeStatus == EFI_SUCCESS &&
++          (gST->ConOut->Mode == NULL ||
++           gST->ConOut->Mode->Mode != (INT32)BestMode)) {
++        mBlsUiModeStatus = EFI_DEVICE_ERROR;
++      }
+       if (mBlsUiModeStatus == EFI_SUCCESS) {
+         BlsUiCacheSize(BestCols, BestRows);
+-      } else if (CurrentDimensionsUsable) {
++      } else if (CurrentDimensionsUsable && gST->ConOut->Mode != NULL &&
++                 gST->ConOut->Mode->Mode == (INT32)CurrentMode) {
+         BlsUiCacheSize(CurrentCols, CurrentRows);
+       } else {
+         BlsUiCacheSize(80, 25);
+@@ -354,7 +363,8 @@
+     BlsUiCacheSize(80, 25);
+   }
+ 
+-  if (gST->ConOut->EnableCursor != NULL && gST->ConOut->Mode->CursorVisible) {
++  if (gST->ConOut->Mode != NULL && gST->ConOut->EnableCursor != NULL &&
++      gST->ConOut->Mode->CursorVisible) {
+     (VOID)gST->ConOut->EnableCursor(gST->ConOut, FALSE);
+   }
+ }
+--- v2.21/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h
++++ v2.22/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h
+@@ -9,8 +9,8 @@
+ #include <Protocol/SimpleFileSystem.h>
+ #include <Guid/FileInfo.h>
+ 
+-#define BLS_VERSION_ASCII "2.21"
+-#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.21"
++#define BLS_VERSION_ASCII "2.22"
++#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.22"
+ 
+ #define BLS_MAX_TEXT      128
+ #define BLS_MAX_PATH      192
+--- v2.21/CHANGELOG.txt
++++ v2.22/CHANGELOG.txt
+@@ -1,8 +1,26 @@
+ BootLoaderSelector — CHANGELOG
+ ===========================
+ 
+-Versão atual: 2.21
+-Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++Versão atual: 2.22
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++VERSÃO 2.22 — PROFESSIONAL EVOLUTION ROUND 76 — 2026-10-08
++------------------------------------------------------------
++Base exclusiva: FULL-SOURCE v2.21/Round75 (ZIP SHA-256: 7a9f101b7e50993f23ab1dc34d41f62f96f6bb73bfb4c814b8fd64d0e9b7894c).
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++- UI / menu inicial: confirmação do modo realmente ativo após SetMode():
++  false success passa a EFI_DEVICE_ERROR e não deixa tamanho de menu
++  inconsistente com a console.
++- UI / modo de console: verificação de ConOut->Mode antes do acesso final
++  à visibilidade do cursor, evitando crash se callback inválido zerar Mode.
++- Geometria legível anterior mantida em falhas quando o modo ainda é o
++  previamente consultado; caso contrário fallback conservador já existente.
++- Testes RED→GREEN para sucesso falso, ponteiro nulo e console 60×15.
++- Execuções em host: Clang/GCC ASan+UBSan, IntegerSan, ThreadSanitizer,
++  fuzz BaseTools, análises estáticas e regressões do pipeline.
++- Versionamento incrementado para v2.22 / Round76. Nada removido.
++- Binário EFI Release assinado e hardware/OVMF: NÃO VALIDADO neste host.
+ 
+ VERSÃO 2.21 — PROFESSIONAL EVOLUTION ROUND 75 — 2026-10-08
+ ------------------------------------------------------------
+--- v2.21/INFO.txt
++++ v2.22/INFO.txt
+@@ -1,11 +1,32 @@
+ BootLoaderSelector — INFORMAÇÕES COMPLETAS DO PROJETO
+ =====================================================
+ 
+-Versão atual: 2.21
+-Base imediata: BootLoaderSelector v2.20 Professional Evolution Round74 (2026-10-08)
+-SHA-256 do ZIP-base recebido nesta rodada: ad63df5e808b81f78e2e9c35b5064db1130d45fec0b8a199cebaedbd10f11e4d
++Versão atual: 2.22
++Base imediata: BootLoaderSelector v2.21 Professional Evolution Round75 (2026-10-08)
++SHA-256 do ZIP-base recebido nesta rodada: 7a9f101b7e50993f23ab1dc34d41f62f96f6bb73bfb4c814b8fd64d0e9b7894c
+ Data desta rodada: 2026-10-08
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++VERSÃO 2.22 — PROFESSIONAL EVOLUTION ROUND 76 — 2026-10-08
++------------------------------------------------------------
++Base exclusiva: FULL-SOURCE v2.21/Round75 recebido nesta conversa.
++SHA-256 do ZIP-base: 7a9f101b7e50993f23ab1dc34d41f62f96f6bb73bfb4c814b8fd64d0e9b7894c
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++Correção reproduzida em Ui.c / BlsUiInitReadableMode: firmware que
++retorna EFI_SUCCESS sem trocar efetivamente o modo não pode induzir cache
++de geometria do modo solicitado; o erro passa a ser EFI_DEVICE_ERROR e a
++geometria real é preservada quando comprovadamente disponível. Callback
++SetMode que torna ConOut->Mode NULL também não pode causar dereferência
++inválida ao tentar atualizar a visibilidade do cursor no fim da função.
++
++Reproduções e regressões: RED do v2.21 em test_ui_mode_bound.c (falha na
++asserção de BlsUiLastModeStatus), GREEN no v2.22, incluindo o caso 60×15
++com tentativa frustrada de troca para 100×30 e ponteiro Mode anulado.
++
++Testes de host e pipelines de integridade conforme AuditReports/
++ROUND76-VALIDATION.txt. Release EFI assinado, boot real e métricas físicas
++continuam não homologados neste host Linux sem signer/macOS/OVMF.
+ 
+ VERSÃO 2.21 — PROFESSIONAL EVOLUTION ROUND 75 — 2026-10-08
+ ------------------------------------------------------------

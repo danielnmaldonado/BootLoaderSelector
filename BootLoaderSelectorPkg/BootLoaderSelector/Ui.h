@@ -1,0 +1,32 @@
+/** @file
+  BootLoaderSelector UI helpers.
+  Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
+**/
+#ifndef BOOTLOADER_SELECTOR_UI_H
+#define BOOTLOADER_SELECTOR_UI_H
+
+#include <Uefi.h>
+
+#define BLS_ATTR_BG        (EFI_WHITE | EFI_BACKGROUND_BLACK)
+#define BLS_ATTR_MUTED     (EFI_LIGHTGRAY | EFI_BACKGROUND_BLACK)
+#define BLS_ATTR_TITLE     (EFI_CYAN | EFI_BACKGROUND_BLACK)
+#define BLS_ATTR_ACCENT    (EFI_LIGHTCYAN | EFI_BACKGROUND_BLACK)
+#define BLS_ATTR_SELECT    (EFI_BLACK | EFI_BACKGROUND_LIGHTGRAY)
+#define BLS_ATTR_USB_SELECT (EFI_BLACK | EFI_BACKGROUND_BROWN)
+#define BLS_ATTR_WARN      (EFI_YELLOW | EFI_BACKGROUND_BLACK)
+#define BLS_ATTR_ERROR     (EFI_LIGHTRED | EFI_BACKGROUND_BLACK)
+
+VOID BlsUiClear(VOID);
+VOID BlsUiSet(IN UINTN Col, IN UINTN Row, IN UINTN Attr);
+VOID BlsUiPrintAt(IN UINTN Col, IN UINTN Row, IN UINTN Attr, IN CONST CHAR16 *Format, ...);
+VOID BlsUiHLine(IN UINTN Col, IN UINTN Row, IN UINTN Width, IN UINTN Attr, IN CHAR16 Ch);
+VOID BlsUiCentered(IN UINTN Row, IN UINTN Attr, IN CONST CHAR16 *Text);
+VOID BlsUiBox(IN UINTN Col, IN UINTN Row, IN UINTN Width, IN UINTN Height, IN UINTN Attr);
+VOID BlsUiGetSize(OUT UINTN *Cols, OUT UINTN *Rows);
+VOID BlsUiInvalidateSizeCache(VOID);
+VOID BlsUiCaptureOriginalState(VOID);
+VOID BlsUiInitReadableMode(VOID);
+VOID BlsUiRestoreOriginalState(VOID);
+EFI_STATUS BlsUiLastModeStatus(VOID);
+
+#endif

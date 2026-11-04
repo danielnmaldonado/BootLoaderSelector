@@ -1,0 +1,754 @@
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt
+--- /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt	2026-10-05 01:46:34.000000000 +0000
++++ /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/AuditReports/AUDIT-REPORT.txt	2026-10-05 02:22:27.542785737 +0000
+@@ -1,67 +1,108 @@
+-BootLoaderSelector v2.15 — Professional Evolution Round 69
++BootLoaderSelector v2.16 — Professional Evolution Round 70
+ Audit/fix date: 2026-10-04
+ Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
+-Base: v2.14/Round68 FULL-SOURCE
+-Base ZIP SHA-256: a6f3904025918e128a654a4f5c9fcae60470b51318bfbc7ebd68b2666c856305
++Base: v2.15/Round69 FULL-SOURCE
++Base ZIP SHA-256: 00d65d337330f87bbb59bc93442e0dce0fd554e75c1f9210be9bff8a6706bbef
+ 
+ ESCOPO E METODOLOGIA
+ --------------------
+-Foi auditado o FULL-SOURCE v2.14/Round68 mais recente, preservando dependências
+-vendorizadas e evitando alterações sem reprodução. A revisão combinou regressão
+-RED→GREEN, ASan/LeakSanitizer/UBSan/IntegerSan/TSan, fuzz/bounds do BaseTools,
+-Clang Static Analyzer, GCC -fanalyzer, warnings estritos, revisão de ownership e
+-lifecycle, geometria/UI, protocolos UEFI, device paths, config, logger, GOP/screenshot,
+-pipeline de assinatura e publicação transacional.
+-
+-ACHADO REPRODUZIDO
+-------------------
+-1. USB WWID com serial vazio era classificado incorretamente como não USB.
+-   BlsUsbDevicePathNodeIsConforming() rejeitava
+-   Length == sizeof(USB_WWID_DEVICE_PATH) por usar `<=` no limite inferior.
++Foi auditado o FULL-SOURCE v2.15/Round69 mais recente recebido nesta conversa. A
++revisão preservou dependências vendorizadas e comportamento já comprovado, usando
++regressões RED→GREEN antes de cada correção, ASan/LeakSanitizer/UBSan/IntegerSan,
++ThreadSanitizer, fuzz/bounds do BaseTools, Clang Static Analyzer, GCC -fanalyzer,
++warnings estritos e revisão manual de ownership, device paths, configuração,
++screenshot/GOP, menu/layout, lifecycle UEFI e pipeline de assinatura/publicação.
++
++ACHADOS REPRODUZIDOS
++--------------------
++1. USB WWID sem serial — falso positivo de conformidade introduzido na Round69.
++   O v2.15 aceitava Length == sizeof(USB_WWID_DEVICE_PATH), isto é, um subtype 16
++   sem nenhum CHAR16 de serial.
++
++2. Certificado self-issued, mas não self-signed — falso positivo de política.
++   verify_certificate_policy() exigia Subject == Issuer, porém não verificava a
++   assinatura do certificado contra sua própria chave. Um leaf codeSigning assinado
++   por outra chave/certificado com o mesmo DN era aceito.
++
++3. Volume de configuração acoplado indevidamente a screenshot/priorização.
++   Um BLS.plist malformado deixa ConfigVolumeHandle=NULL de propósito para impedir
++   overwrite automático. O mesmo handle era, porém, usado por F10 e pela priorização
++   do volume do selector, desabilitando funcionalidades independentes do plist.
+ 
+ EVIDÊNCIA / CAUSA RAIZ
+ ----------------------
+-O EDK2 vendorizado no próprio source define o serial do USB WWID como os últimos
+-64-ou-menos caracteres UTF-16 e calcula seu comprimento pelo Length do nó menos o
+-offset do campo serial. Mais importante, DevPathFromTextUsbWwid() em
+-MdePkg/Library/UefiDevicePathLib/DevicePathFromText.c cria explicitamente o nó com:
+-  sizeof(USB_WWID_DEVICE_PATH) + SerialNumberStrLen * sizeof(CHAR16)
+-sem exigir SerialNumberStrLen > 0. Portanto SerialNumberStrLen == 0 produz um nó
+-base de 10 bytes válido. A validação local era um byte/condição mais restritiva que
+-o formato aceito pelo EDK2.
+-
+-IMPACTO
+--------
+-Quando esse device path válido era encontrado, BlsVolumeIsUsb() retornava FALSE.
+-Isso podia fazer uma entrada realmente USB aparecer como "Non-USB / firmware path"
+-e perder o destaque visual amarelo reservado a loaders descobertos em USB. Scan,
+-chainload e conteúdo do arquivo EFI não eram corrompidos; o defeito era de
+-classificação/transporte e apresentação associada.
+-
+-CORREÇÃO
+---------
+-A correção funcional é mínima e localizada em BootScan.c:
+-  Length <= sizeof(USB_WWID_DEVICE_PATH)
+-passou a:
+-  Length < sizeof(USB_WWID_DEVICE_PATH)
+-O restante da política foi preservado: serial bytes precisam ser múltiplos exatos de
+-CHAR16 e não podem exceder 64 caracteres UTF-16. Nós truncados, ímpares e acima do
+-limite continuam rejeitados.
+-
+-REGRESSÃO RED→GREEN
+--------------------
+-- o teste foi alterado primeiro para exigir que o nó USB WWID de tamanho base seja USB;
+-- RED no source v2.14: test_bootscan_policy abortou exatamente nessa nova asserção;
+-- GREEN após a correção mínima: test_bootscan_policy passou;
+-- a regressão também valida BlsVolumeIsUsb() no mesmo nó para cobrir o comportamento
+-  efetivamente consumido pelo menu/detalhes, não apenas o helper interno;
+-- casos +1 byte e >64 CHAR16 continuam negativos; 1 CHAR16 continua positivo.
+-
+-VALIDAÇÃO EXECUTADA
+--------------------
+-- Clang ASan+UBSan+leak detection: 17/17 testes x3 — PASS;
+-- GCC ASan+UBSan+leak detection: 17/17 testes x3 — PASS;
+-- Clang ASan+IntegerSan: 17/17 testes x2 — PASS;
++USB WWID:
++- UEFI Specification 2.10 §10.3.4.7 descreve USB WWID por Vendor ID, Product ID,
++  Interface e Serial Number e afirma que dispositivos sem serial devem usar o USB
++  Device Path subtype 5;
++- a estrutura base mede 10 bytes e o serial ocupa o restante do nó. Portanto um WWID
++  conforme precisa conter ao menos 1 CHAR16 e no máximo 64 CHAR16;
++- a Round69 inferiu conformidade a partir do comportamento permissivo de um helper EDK2.
++  Esse comportamento de construção não substitui a exigência normativa do formato.
++
++X.509:
++- igualdade textual entre Subject e Issuer prova somente self-issued;
++- foi criado um root e um leaf distintos com o mesmo DN. O leaf possui validade atual,
++  digitalSignature e EKU codeSigning, e Subject==Issuer, mas sua assinatura foi feita
++  pela chave do root;
++- o verificador v2.15 aceitou esse leaf; `openssl verify -CAfile leaf leaf` o rejeitou.
++
++Config/screenshot:
++- BlsLoadConfig() mantém ConfigVolumeHandle=NULL após EFI_LOAD_ERROR para que options,
++  remember e logger não sobrescrevam um plist malformado/futuro;
++- BlsRunMenu()/BlsRunOptions() reutilizavam esse mesmo handle em BlsSaveScreenshot();
++- Main.c também reutilizava ConfigVolume em BlsPrioritizeVolume();
++- portanto uma restrição de escrita de configuração vazava para recursos que só
++  precisam conhecer o volume físico da imagem do selector.
++
++CORREÇÕES
++---------
++1. BootScan.c
++   - USB WWID exige Length >= sizeof(USB_WWID_DEVICE_PATH) + sizeof(CHAR16);
++   - preservados: tamanho exato dos nós USB/USB Class, múltiplo de CHAR16 e máximo de
++     64 caracteres para WWID;
++   - o nó WWID base de 10 bytes volta a ser rejeitado como não conforme.
++
++2. Verify-PeCoff-Authenticode.py
++   - preservadas validações DER de notBefore/notAfter e EKU codeSigning;
++   - após confirmar Subject==Issuer, o certificado publicado precisa também passar
++     `openssl verify -CAfile <cert> <cert>`;
++   - falha gera rejeição explícita: certificado não é criptograficamente self-signed.
++
++3. Config/Main/Menu
++   - BlsGetImageVolumeHandle() foi exposto sem mudança de sua lógica;
++   - Main.c mantém `ConfigVolume` como autorização de escrita da configuração e usa
++     `SelectorVolume` separadamente para o volume físico da imagem;
++   - screenshots usam ScreenshotVolumeHandle independente em menu e options;
++   - BlsPrioritizeVolume() usa SelectorVolume;
++   - plist malformado continua protegido: ConfigVolume permanece NULL nesse caso.
++
++REGRESSÕES RED→GREEN
++--------------------
++USB WWID:
++- teste alterado primeiro para exigir FALSE para o nó base de 10 bytes;
++- RED no v2.15: test_bootscan_policy abortou exatamente nessa asserção;
++- GREEN após a correção mínima;
++- 1 CHAR16 continua positivo, +1 byte continua negativo, 65 CHAR16 continua negativo.
++
++Certificado self-sign:
++- a regressão foi adicionada antes do verificador;
++- RED no v2.15: o leaf same-DN externamente assinado foi aceito;
++- GREEN após a auto-verificação criptográfica;
++- controle positivo, certificado sem EKU e certificado notBefore futuro continuam com
++  seus resultados esperados.
++
++Screenshot/config:
++- o teste de menu foi alterado primeiro para exigir handles independentes e falhou na
++  compilação contra a API v2.15, que oferecia apenas ConfigVolumeHandle;
++- após a separação mínima, F10 recebe um ScreenshotVolumeHandle válido mesmo quando
++  ConfigVolumeHandle é NULL; a regressão captura e compara o handle recebido.
++
++VALIDAÇÃO EXECUTADA DURANTE A RODADA
++------------------------------------
++- Clang ASan+UBSan+leak detection: 17/17 testes x2 — PASS;
++- GCC ASan+UBSan+leak detection: 17/17 testes x2 — PASS;
++- Clang ASan+IntegerSan: 17/17 testes x1 — PASS;
+ - GCC ThreadSanitizer: 17/17 testes x1 — PASS;
+ - BaseTools deep bounds/fuzz: Clang — PASS; GCC — PASS;
+ - Clang -fsyntax-only + Static Analyzer: 9/9 unidades C — PASS;
+@@ -70,36 +111,45 @@
+ - Test-Authenticode-Verifier-Policy.command — PASS;
+ - Test-Signer-Bootstrap.command — PASS;
+ - Test-Release-Publish-Invariants.command — PASS;
+-- bash -n em 13 scripts .command/.sh — PASS;
+-- compile() do verificador Python sem gerar bytecode — PASS;
+-- checagem de resíduos BaseTools (__pycache__, pyc/pyo, o/d/a, bin/libs) — PASS;
+-- manifest imutável: 3.496 arquivos, cobertura exata + SHA-256 de todos — PASS;
+-- builder canônico aceitou versão/manifest e chegou ao signer preflight; sem signer local,
+-  encerrou fail-closed e removeu Release/ parcial — PASS para o contrato de falha;
+-- quality gate v2.15 passou todos os gates anteriores ao teste de assinatura real; esse
+-  teste encerrou somente por ausência de signer PE/COFF no host.
+-
+-REVISÃO SEM ALTERAÇÃO ESPECULATIVA
+-----------------------------------
+-Ownership e fechamento de files/protocols/events, rollback de config/logger, watchdog,
+-LoadImage/StartImage/UnloadImage, limites de memory map/SMBIOS, GOP/screenshot/BMP,
+-clipping/ellipsis/wrapping, modos de console, countdown/menu e pipeline de Release foram
+-revistos e/ou cobertos pelos analyzers/regressões. Não surgiu segundo defeito
+-reproduzível que justificasse mudar essas áreas. Em particular, não foi aplicada
+-mudança cosmética de layout, cor, timing ou arquitetura.
++- `bash -n` nos 11 scripts .command/.sh próprios — PASS;
++- sintaxe do verificador Python via compile(), sem gerar bytecode — PASS;
++- manifest imutável: 3.497 arquivos, cobertura exata + SHA-256 — PASS;
++- catálogo derivado do toolchain manteve o SHA-256 pinado
++  8f4b02181becf4526501d6ece6fe0c04f092af0a20f4929fde0becfbb6cda7ab — PASS;
++- builder canônico aceitou versão 2.16 e manifest; com bootstrap de rede desabilitado
++  e sem signer local, recusou Release unsigned e removeu `Release/` parcial — PASS
++  para o contrato fail-closed;
++- quality gate passou metadata, créditos, DSE scope, invariantes de UI/Release,
++  política Authenticode e bootstrap do signer;
++- o teste de assinatura PE/COFF real não pôde iniciar porque a sandbox não resolve
++  github.com para obter o Jsign 7.5 quando nenhum signer local está instalado.
++
++REVISÃO DE LAYOUT / LIFECYCLE
++-----------------------------
++Foram revistos novamente clipping, ellipsis/wrapping, viewport do menu, options compact,
++footer, console-mode cache/restore, GOP/BMP bounds, files/protocols/events, watchdog,
++LoadImage/StartImage/UnloadImage, config transacional e logger. Os primitives de UI
++limitam escrita às dimensões reportadas e protegem a célula inferior direita contra
++scroll de firmware. Não surgiu outro defeito reproduzível que justificasse modificar
++geometria, cores, timing ou comportamento visual nesta rodada.
+ 
+ LIMITAÇÃO AMBIENTAL DO BUILD CANÔNICO
+ -------------------------------------
+-Este host Linux não possui sbsign, jsign, NASM nativo ou QEMU/OVMF. O NASM empacotado
+-é Mach-O x86_64 para macOS. O bootstrap do Jsign exige github.com quando não existe
+-signer local, e a sandbox não resolve esse host. Por isso a assinatura PE/COFF real e
+-o build UEFI canônico end-to-end não podem ser concluídos aqui sem relaxar o pipeline;
+-essa limitação não foi convertida em alteração do source nem em publicação unsigned.
++Este host não possui um signer PE/COFF local utilizável. O fallback Jsign é pinado e
++fail-closed, mas seu bootstrap oficial exige github.com e a sandbox não possui resolução
++DNS para esse host. A limitação não foi contornada desabilitando assinatura nem alterando
++o trust model. O build/publicação final signed deve ser executado em um host macOS com
++o signer/cache disponível para comprovação end-to-end do EFI real.
+ 
+ CHANGE CONTROL
+ --------------
+-- versão: 2.15 / Professional Evolution Round69 / 2026-10-04;
+-- alteração funcional: somente validação USB WWID em BootScan.c;
+-- teste funcional: AuditTests/Host/test_bootscan_policy.c;
+-- metadata/documentação: Utils.h, INF, DSC, INFO, CHANGELOG, relatório/diff/manifest;
++- versão: 2.16 / Professional Evolution Round70 / 2026-10-04;
++- base imutável: v2.15/Round69 SHA-256
++  00d65d337330f87bbb59bc93442e0dce0fd554e75c1f9210be9bff8a6706bbef;
++- runtime: BootScan.c, Config.c/.h, Main.c, Menu.c/.h;
++- segurança/tooling: Verify-PeCoff-Authenticode.py e regressão de política;
++- testes: test_bootscan_policy.c e test_menu_countdown_starvation.c;
++- metadata/documentação: Utils.h, INF, DSC, INFO, CHANGELOG, SECURITY-NOTES,
++  AUDIT-REPORT, ROUND70.diff e MANIFEST.sha256;
++- dependências vendorizadas não foram modificadas;
+ - crédito obrigatório preservado: ©DNMTechLabs / dnmtechlabs@gmail.com.
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/AuditTests/Host/test_bootscan_policy.c /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/AuditTests/Host/test_bootscan_policy.c
+--- /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/AuditTests/Host/test_bootscan_policy.c	2026-10-05 01:40:44.000000000 +0000
++++ /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/AuditTests/Host/test_bootscan_policy.c	2026-10-05 02:10:49.862577376 +0000
+@@ -278,10 +278,10 @@
+   assert(BlsVolumeIsUsb((EFI_DEVICE_PATH_PROTOCOL *)mMockUsbDevicePath, L"not-used") == TRUE);
+   assert(BlsDevicePathHasUsbNode(BuildMockUsbPath(MSG_USB_CLASS_DP, sizeof(USB_CLASS_DEVICE_PATH) + 1U)) == FALSE);
+   assert(BlsDevicePathHasUsbNode(BuildMockUsbPath(MSG_USB_CLASS_DP, sizeof(USB_CLASS_DEVICE_PATH))) == TRUE);
+-  /* A WWID serial occupies 0..64 UTF-16 code units. EDK2's own text-to-device-path
+-     constructor emits the base 10-byte USB_WWID_DEVICE_PATH for an empty serial. */
+-  assert(BlsDevicePathHasUsbNode(BuildMockUsbPath(MSG_USB_WWID_DP, sizeof(USB_WWID_DEVICE_PATH))) == TRUE);
+-  assert(BlsVolumeIsUsb((EFI_DEVICE_PATH_PROTOCOL *)mMockUsbDevicePath, L"not-used") == TRUE);
++  /* UEFI USB-WWID requires a serial-number string. A base 10-byte node has
++     no serial and must not be classified as conforming USB-WWID. */
++  assert(BlsDevicePathHasUsbNode(BuildMockUsbPath(MSG_USB_WWID_DP, sizeof(USB_WWID_DEVICE_PATH))) == FALSE);
++  assert(BlsVolumeIsUsb((EFI_DEVICE_PATH_PROTOCOL *)mMockUsbDevicePath, L"UsbWwid(1234,5678,0,\"\")") == FALSE);
+   assert(BlsDevicePathHasUsbNode(BuildMockUsbPath(MSG_USB_WWID_DP, sizeof(USB_WWID_DEVICE_PATH) + 1U)) == FALSE);
+   assert(BlsDevicePathHasUsbNode(BuildMockUsbPath(MSG_USB_WWID_DP, sizeof(USB_WWID_DEVICE_PATH) + sizeof(CHAR16))) == TRUE);
+   assert(BlsDevicePathHasUsbNode(BuildMockUsbPath(MSG_USB_WWID_DP, sizeof(USB_WWID_DEVICE_PATH) + 65U * sizeof(CHAR16))) == FALSE);
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/AuditTests/Host/test_menu_countdown_starvation.c /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/AuditTests/Host/test_menu_countdown_starvation.c
+--- /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/AuditTests/Host/test_menu_countdown_starvation.c	2026-10-05 00:57:54.000000000 +0000
++++ /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/AuditTests/Host/test_menu_countdown_starvation.c	2026-10-05 02:14:12.187333447 +0000
+@@ -32,6 +32,7 @@
+ static UINTN gCreateCalls;
+ static UINTN gSetTimerCalls;
+ static UINTN gUiPrintCalls;
++static EFI_HANDLE gScreenshotVolumeSeen;
+ static UINTN gUiCols = 80U;
+ static UINTN gUiRows = 25U;
+ static UINTN gCreateMode;
+@@ -112,7 +113,7 @@
+ }
+ 
+ EFI_STATUS BlsSaveScreenshot(IN EFI_HANDLE VolumeHandle, OUT CHAR16 *SavedPath, IN UINTN SavedPathChars) {
+-  (void)VolumeHandle;
++  gScreenshotVolumeSeen = VolumeHandle;
+   if (SavedPath != NULL && SavedPathChars > 0) SavedPath[0] = L'\0';
+   return EFI_UNSUPPORTED;
+ }
+@@ -228,6 +229,11 @@
+     Key->UnicodeChar = (gReadCalls == 1U) ? L' ' : ((gReadCalls == 2U) ? CHAR_CARRIAGE_RETURN : CHAR_NULL);
+     return EFI_SUCCESS;
+   }
++  if (gInputMode == 9U) {
++    Key->ScanCode = (gReadCalls == 1U) ? SCAN_F10 : SCAN_ESC;
++    Key->UnicodeChar = CHAR_NULL;
++    return EFI_SUCCESS;
++  }
+   if (gInputMode >= 5U && gInputMode <= 8U) {
+     if (gReadCalls == 1U) {
+       static CONST UINT16 UnmappedScans[] = { SCAN_HOME, SCAN_END, SCAN_PAGE_UP, SCAN_PAGE_DOWN };
+@@ -255,6 +261,7 @@
+   gCloseCalls = 0U;
+   gCreateCalls = 0U;
+   gSetTimerCalls = 0U;
++  gScreenshotVolumeSeen = NULL;
+   gCreateMode = 0U;
+ }
+ 
+@@ -272,7 +279,7 @@
+   gInputMode = InputMode;
+   ResetCounters();
+ 
+-  Status = BlsRunMenu(NULL, &Config, NULL, &List, FALSE, &Selected, &Action);
++  Status = BlsRunMenu(NULL, &Config, NULL, NULL, &List, FALSE, &Selected, &Action);
+   assert(Status == EFI_SUCCESS);
+   assert(Action == BlsMenuBoot);
+   assert(Selected == 0U);
+@@ -317,7 +324,7 @@
+   List.Count = 1U;
+   gInputMode = 2U;
+   ResetCounters();
+-  Status = BlsRunMenu(NULL, &Config, NULL, &List, FALSE, &Selected, &Action);
++  Status = BlsRunMenu(NULL, &Config, NULL, NULL, &List, FALSE, &Selected, &Action);
+   assert(Status == EFI_SUCCESS);
+   assert(Action == BlsMenuExit);
+   assert(gWaitCalls == 1U);
+@@ -339,7 +346,7 @@
+   BlsSafeStrCpy(List.Entries[0].VolumeDevicePath, ARRAY_SIZE(List.Entries[0].VolumeDevicePath), L"GPT:TEST");
+   gInputMode = 3U;
+   ResetCounters();
+-  Status = BlsRunMenu(NULL, &Config, NULL, &List, FALSE, &Selected, &Action);
++  Status = BlsRunMenu(NULL, &Config, NULL, NULL, &List, FALSE, &Selected, &Action);
+   assert(Status == EFI_SUCCESS);
+   assert(Action == BlsMenuExit);
+   assert(gReadCalls == 3U);
+@@ -348,7 +355,7 @@
+ 
+   gInputMode = 4U;
+   ResetCounters();
+-  Status = BlsRunMenu(NULL, &Config, NULL, &List, FALSE, &Selected, &Action);
++  Status = BlsRunMenu(NULL, &Config, NULL, NULL, &List, FALSE, &Selected, &Action);
+   assert(Status == EFI_SUCCESS);
+   assert(Action == BlsMenuExit);
+   assert(gReadCalls == 3U);
+@@ -373,7 +380,7 @@
+     for (mode = 5U; mode <= 8U; mode++) {
+       gInputMode = mode;
+       ResetCounters();
+-      Status = BlsRunMenu(NULL, &Config, NULL, &List, FALSE, &Selected, &Action);
++      Status = BlsRunMenu(NULL, &Config, NULL, NULL, &List, FALSE, &Selected, &Action);
+       assert(Status == EFI_SUCCESS);
+       assert(Action == BlsMenuBoot);
+       assert(Selected == 1U);
+@@ -381,6 +388,20 @@
+     }
+   }
+ 
++  /* Screenshot storage is independent from configuration write authorization.
++     A malformed plist may intentionally leave ConfigVolumeHandle NULL while F10
++     must still target the selector/image volume. */
++  memset(&Config, 0, sizeof(Config));
++  memset(&List, 0, sizeof(List));
++  Config.Timeout = 0U;
++  List.Count = 1U;
++  gInputMode = 9U;
++  ResetCounters();
++  Status = BlsRunMenu(NULL, &Config, NULL, (EFI_HANDLE)(UINTN)0xBEEFU, &List, FALSE, &Selected, &Action);
++  assert(Status == EFI_SUCCESS);
++  assert(Action == BlsMenuExit);
++  assert(gScreenshotVolumeSeen == (EFI_HANDLE)(UINTN)0xBEEFU);
++
+   /* Non-conforming firmware must never receive SetTimer(NULL) when CreateEvent
+      reports success without returning the requested handle. */
+   memset(&Config, 0, sizeof(Config));
+@@ -390,7 +411,7 @@
+   gInputMode = 2U;
+   ResetCounters();
+   gCreateMode = 1U;
+-  Status = BlsRunMenu(NULL, &Config, NULL, &List, FALSE, &Selected, &Action);
++  Status = BlsRunMenu(NULL, &Config, NULL, NULL, &List, FALSE, &Selected, &Action);
+   assert(Status == EFI_SUCCESS);
+   assert(Action == BlsMenuExit);
+   assert(gCreateCalls == 1U);
+@@ -400,7 +421,7 @@
+   ResetCounters();
+   gInputMode = 2U;
+   gCreateMode = 2U;
+-  Status = BlsRunMenu(NULL, &Config, NULL, &List, FALSE, &Selected, &Action);
++  Status = BlsRunMenu(NULL, &Config, NULL, NULL, &List, FALSE, &Selected, &Action);
+   assert(Status == EFI_SUCCESS);
+   assert(Action == BlsMenuExit);
+   assert(gCreateCalls == 2U);
+@@ -414,7 +435,7 @@
+   ResetCounters();
+   gInputMode = 2U;
+   gCreateMode = 3U;
+-  Status = BlsRunMenu(NULL, &Config, NULL, &List, FALSE, &Selected, &Action);
++  Status = BlsRunMenu(NULL, &Config, NULL, NULL, &List, FALSE, &Selected, &Action);
+   assert(Status == EFI_SUCCESS);
+   assert(Action == BlsMenuExit);
+   assert(gCreateCalls == 1U);
+@@ -424,7 +445,7 @@
+   ResetCounters();
+   gInputMode = 2U;
+   gCreateMode = 4U;
+-  Status = BlsRunMenu(NULL, &Config, NULL, &List, FALSE, &Selected, &Action);
++  Status = BlsRunMenu(NULL, &Config, NULL, NULL, &List, FALSE, &Selected, &Action);
+   assert(Status == EFI_SUCCESS);
+   assert(Action == BlsMenuExit);
+   assert(gCreateCalls == 2U);
+@@ -497,7 +518,7 @@
+   List.Count = 1U;
+   gInputMode = 0U;
+   ResetCounters();
+-  Status = BlsRunMenu(NULL, &Config, NULL, &List, FALSE, &Selected, &Action);
++  Status = BlsRunMenu(NULL, &Config, NULL, NULL, &List, FALSE, &Selected, &Action);
+   assert(Status == EFI_DEVICE_ERROR);
+   assert(gReadCalls == BLS_SPURIOUS_KEY_SIGNAL_MAX);
+ 
+@@ -506,7 +527,7 @@
+   Config.Timeout = 10U;
+   gInputMode = 0U;
+   ResetCounters();
+-  Status = BlsRunOptions(&Config, NULL);
++  Status = BlsRunOptions(&Config, NULL, NULL);
+   assert(Status == EFI_DEVICE_ERROR);
+   assert(gReadCalls == BLS_SPURIOUS_KEY_SIGNAL_MAX);
+ 
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/AuditTests/Test-Authenticode-Verifier-Policy.command /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/AuditTests/Test-Authenticode-Verifier-Policy.command
+--- /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/AuditTests/Test-Authenticode-Verifier-Policy.command	2026-10-05 01:22:58.000000000 +0000
++++ /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/AuditTests/Test-Authenticode-Verifier-Policy.command	2026-10-05 02:11:51.157606837 +0000
+@@ -114,4 +114,27 @@
+ cd "$PROJECT_ROOT"
+ check_policy reject "$TMP_ROOT/future-ca/future-cert.pem"
+ 
++# Regression: matching Subject/Issuer DNs prove only that a certificate is
++# self-issued. Build a code-signing leaf signed by a different key whose issuer
++# has the same DN. The release policy requires the ad-hoc signer to be genuinely
++# self-signed, so this certificate must be rejected.
++SAME_DN='/CN=DNMTechLabs Same-DN Policy Test/O=DNMTechLabs'
++openssl req -new -x509 -newkey rsa:2048 -sha256 -nodes -days 2 \
++  -subj "$SAME_DN" \
++  -addext 'basicConstraints=critical,CA:TRUE' \
++  -addext 'keyUsage=critical,keyCertSign,cRLSign' \
++  -keyout "$TMP_ROOT/same-dn-root-key.pem" -out "$TMP_ROOT/same-dn-root-cert.pem" >/dev/null 2>&1
++openssl req -new -newkey rsa:2048 -sha256 -nodes \
++  -subj "$SAME_DN" \
++  -keyout "$TMP_ROOT/same-dn-leaf-key.pem" -out "$TMP_ROOT/same-dn-leaf.csr" >/dev/null 2>&1
++cat > "$TMP_ROOT/same-dn-ext.cnf" <<'EOF'
++basicConstraints=critical,CA:FALSE
++keyUsage=critical,digitalSignature
++extendedKeyUsage=codeSigning
++EOF
++openssl x509 -req -in "$TMP_ROOT/same-dn-leaf.csr" \
++  -CA "$TMP_ROOT/same-dn-root-cert.pem" -CAkey "$TMP_ROOT/same-dn-root-key.pem" -CAcreateserial \
++  -days 1 -sha256 -extfile "$TMP_ROOT/same-dn-ext.cnf" -out "$TMP_ROOT/same-dn-leaf-cert.pem" >/dev/null 2>&1
++check_policy reject "$TMP_ROOT/same-dn-leaf-cert.pem"
++
+ echo "Authenticode certificate-policy regression: PASS"
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/AuditTools/Verify-PeCoff-Authenticode.py /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/AuditTools/Verify-PeCoff-Authenticode.py
+--- /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/AuditTools/Verify-PeCoff-Authenticode.py	2026-10-05 01:08:54.000000000 +0000
++++ /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/AuditTools/Verify-PeCoff-Authenticode.py	2026-10-05 02:12:10.027891182 +0000
+@@ -264,6 +264,9 @@
+     issuer = next((x.partition("=")[2].strip() for x in lines if x.startswith("issuer=")), None)
+     if not subject or subject != issuer:
+         raise VerifyError("ad-hoc signer certificate is not self-issued")
++    self_verify = run(["openssl", "verify", "-CAfile", str(cert), str(cert)])
++    if self_verify.returncode != 0:
++        raise VerifyError("ad-hoc signer certificate is not cryptographically self-signed")
+     if not has_code_signing_eku:
+         raise VerifyError("signer certificate does not contain the codeSigning EKU")
+ 
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/BootLoaderSelector.dsc /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelector.dsc
+--- /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/BootLoaderSelector.dsc	2026-10-05 01:41:24.000000000 +0000
++++ /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelector.dsc	2026-10-05 02:19:16.192908791 +0000
+@@ -6,7 +6,7 @@
+ [Defines]
+   PLATFORM_NAME                  = BootLoaderSelector
+   PLATFORM_GUID                  = 3F71A792-6E03-4D84-9F1D-F3C81EC80F44
+-  PLATFORM_VERSION = 2.15
++  PLATFORM_VERSION = 2.16
+   DSC_SPECIFICATION              = 0x00010006
+   OUTPUT_DIRECTORY               = Build/BootLoaderSelector
+   SUPPORTED_ARCHITECTURES        = X64
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf
+--- /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf	2026-10-05 01:41:24.000000000 +0000
++++ /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf	2026-10-05 02:19:16.192866568 +0000
+@@ -8,7 +8,7 @@
+   BASE_NAME                      = BootLoaderSelector
+   FILE_GUID                      = F9C8E131-0A87-4C6C-A3E4-CA03DE31F6F1
+   MODULE_TYPE                    = UEFI_APPLICATION
+-  VERSION_STRING = 2.15
++  VERSION_STRING = 2.16
+   ENTRY_POINT                    = UefiMain
+ 
+ [Sources]
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootScan.c /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootScan.c
+--- /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootScan.c	2026-10-05 01:37:32.000000000 +0000
++++ /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/BootScan.c	2026-10-05 02:11:05.896030068 +0000
+@@ -395,15 +395,15 @@
+   Length = DevicePathNodeLength(Node);
+   SubType = DevicePathSubType(Node);
+ 
+-  /* UEFI 2.11 §10.3.4.5/.7/.8 fixes the USB and USB-Class node sizes and
+-     bounds USB-WWID serial data to 64-or-fewer UTF-16 characters; zero serial
+-     characters are valid because the node length encodes the serial size. Generic
++  /* UEFI §10.3.4.5/.7 fixes the USB and USB-Class node sizes and bounds
++     USB-WWID serial data to 64-or-fewer UTF-16 characters. USB-WWID requires
++     a serial-number string; devices without one must use MSG_USB_DP. Generic
+      IsDevicePathValid() validates traversal, not every subtype's wire format. */
+   if (SubType == MSG_USB_DP) return (BOOLEAN)(Length == sizeof(USB_DEVICE_PATH));
+   if (SubType == MSG_USB_CLASS_DP) return (BOOLEAN)(Length == sizeof(USB_CLASS_DEVICE_PATH));
+   if (SubType == MSG_USB_WWID_DP) {
+     UINTN SerialBytes;
+-    if (Length < sizeof(USB_WWID_DEVICE_PATH)) return FALSE;
++    if (Length < sizeof(USB_WWID_DEVICE_PATH) + sizeof(CHAR16)) return FALSE;
+     SerialBytes = Length - sizeof(USB_WWID_DEVICE_PATH);
+     if ((SerialBytes % sizeof(CHAR16)) != 0) return FALSE;
+     return (BOOLEAN)(SerialBytes <= 64U * sizeof(CHAR16));
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Config.c /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Config.c
+--- /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Config.c	2026-10-05 00:57:54.000000000 +0000
++++ /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Config.c	2026-10-05 02:14:44.106785401 +0000
+@@ -1559,7 +1559,7 @@
+ }
+ 
+ 
+-static EFI_HANDLE BlsGetImageVolumeHandle(IN EFI_HANDLE ImageHandle) {
++EFI_HANDLE BlsGetImageVolumeHandle(IN EFI_HANDLE ImageHandle) {
+   EFI_LOADED_IMAGE_PROTOCOL *LoadedImage;
+   EFI_STATUS Status;
+ 
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Config.h /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Config.h
+--- /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Config.h	2026-10-05 00:57:54.000000000 +0000
++++ /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Config.h	2026-10-05 02:14:44.106931507 +0000
+@@ -23,6 +23,7 @@
+ } BLS_CONFIG;
+ 
+ VOID BlsConfigDefaults(OUT BLS_CONFIG *Config);
++EFI_HANDLE BlsGetImageVolumeHandle(IN EFI_HANDLE ImageHandle);
+ EFI_STATUS BlsLoadConfig(IN EFI_HANDLE ImageHandle, OUT BLS_CONFIG *Config, OUT EFI_HANDLE *ConfigVolumeHandle);
+ EFI_STATUS BlsSaveConfig(IN EFI_HANDLE VolumeHandle, IN CONST BLS_CONFIG *Config);
+ BOOLEAN BlsConfigMatchesEntry(IN CONST BLS_CONFIG *Config, IN CONST BLS_BOOT_ENTRY *Entry);
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Main.c /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Main.c
+--- /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Main.c	2026-10-05 00:57:54.000000000 +0000
++++ /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Main.c	2026-10-05 02:14:44.107230948 +0000
+@@ -305,6 +305,7 @@
+   EFI_STATUS Status;
+   BLS_CONFIG Config;
+   EFI_HANDLE ConfigVolume;
++  EFI_HANDLE SelectorVolume;
+   BLS_LOGGER *Logger;
+   BLS_HARDWARE_INFO Hw;
+   BLS_BOOT_LIST *List;
+@@ -336,6 +337,7 @@
+      QueryMode() calls or a visible SetMode() transition. */
+   BlsUiCaptureOriginalState();
+   ConfigVolume = NULL;
++  SelectorVolume = BlsGetImageVolumeHandle(ImageHandle);
+   HardwareLoaded = FALSE;
+   AutoBootFailed = FALSE;
+   UiModeInitialized = FALSE;
+@@ -344,6 +346,7 @@
+ 
+   BlsConfigDefaults(&Config);
+   Status = BlsLoadConfig(ImageHandle, &Config, &ConfigVolume);
++  if (SelectorVolume == NULL) SelectorVolume = ConfigVolume;
+   if (Status != EFI_SUCCESS && Status != EFI_WARN_WRITE_FAILURE) {
+     BlsConfigDefaults(&Config);
+     ConfigVolume = NULL;
+@@ -370,7 +373,7 @@
+       Status = BlsScanBootloaders(List);
+     }
+     if (List->Count > 0) {
+-      BlsPrioritizeVolume(List, ConfigVolume);
++      BlsPrioritizeVolume(List, SelectorVolume);
+       if (List->Truncated) {
+         BlsLog(Logger, "Boot scan found more entries than the display cap; additional entries were omitted");
+       }
+@@ -420,7 +423,7 @@
+         HardwareLoaded = TRUE;
+         BlsLog(Logger, "Hardware info loaded");
+       }
+-      Status = BlsRunMenu((Config.ShowHardwareInfo && HardwareLoaded) ? &Hw : NULL, &Config, ConfigVolume, List, AutoBootFailed, &Selected, &Action);
++      Status = BlsRunMenu((Config.ShowHardwareInfo && HardwareLoaded) ? &Hw : NULL, &Config, ConfigVolume, SelectorVolume, List, AutoBootFailed, &Selected, &Action);
+       if (Status != EFI_SUCCESS) {
+         BlsLog(Logger, "Menu failed");
+         BlsLogStatus(Logger, "Menu", Status);
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Menu.c /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Menu.c
+--- /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Menu.c	2026-10-05 00:57:54.000000000 +0000
++++ /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Menu.c	2026-10-05 02:14:44.107128567 +0000
+@@ -896,7 +896,11 @@
+   return (Status == EFI_SUCCESS) ? EFI_SUCCESS : EFI_WARN_WRITE_FAILURE;
+ }
+ 
+-static EFI_STATUS BlsRunOptions(IN OUT BLS_CONFIG *Config, IN EFI_HANDLE ConfigVolumeHandle) {
++static EFI_STATUS BlsRunOptions(
++  IN OUT BLS_CONFIG *Config,
++  IN EFI_HANDLE ConfigVolumeHandle,
++  IN EFI_HANDLE ScreenshotVolumeHandle
++  ) {
+   EFI_STATUS Status;
+   EFI_INPUT_KEY Key;
+   EFI_EVENT Event;
+@@ -1017,7 +1021,7 @@
+       CHAR16 ShotPath[BLS_MAX_PATH];
+       EFI_STATUS ShotStatus;
+       ShotPath[0] = L'\0';
+-      ShotStatus = BlsSaveScreenshot(ConfigVolumeHandle, ShotPath, ARRAY_SIZE(ShotPath));
++      ShotStatus = BlsSaveScreenshot(ScreenshotVolumeHandle, ShotPath, ARRAY_SIZE(ShotPath));
+       BlsDrawOptionsScreen(Config, SelectedOption, FALSE);
+       if (ShotStatus == EFI_SUCCESS) {
+         BlsUiCentered(BlsFooterRow(), BLS_ATTR_ACCENT, L"PrintScreen saved");
+@@ -1069,6 +1073,7 @@
+   IN CONST BLS_HARDWARE_INFO *Hw,
+   IN OUT BLS_CONFIG *Config,
+   IN EFI_HANDLE ConfigVolumeHandle,
++  IN EFI_HANDLE ScreenshotVolumeHandle,
+   IN OUT BLS_BOOT_LIST *List,
+   IN BOOLEAN SuppressCountdown,
+   OUT UINTN *SelectedIndex,
+@@ -1296,7 +1301,7 @@
+       CHAR16 ShotPath[BLS_MAX_PATH];
+       EFI_STATUS ShotStatus;
+       ShotPath[0] = L'\0';
+-      ShotStatus = BlsSaveScreenshot(ConfigVolumeHandle, ShotPath, ARRAY_SIZE(ShotPath));
++      ShotStatus = BlsSaveScreenshot(ScreenshotVolumeHandle, ShotPath, ARRAY_SIZE(ShotPath));
+       DisplayHw = BlsSelectDisplayHardware(Hw, Config);
+       BlsDrawEntries(List, Selected, DisplayHw != NULL);
+       BlsDrawFooter();
+@@ -1309,7 +1314,7 @@
+       if (BlsSelectionIsOptions(List, Selected)) {
+         EFI_STATUS OptionsStatus;
+ 
+-        OptionsStatus = BlsRunOptions(Config, ConfigVolumeHandle);
++        OptionsStatus = BlsRunOptions(Config, ConfigVolumeHandle, ScreenshotVolumeHandle);
+         if (EFI_ERROR(OptionsStatus)) {
+           ReturnStatus = OptionsStatus;
+           *Action = BlsMenuExit;
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Menu.h /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Menu.h
+--- /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Menu.h	2026-10-05 00:57:54.000000000 +0000
++++ /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Menu.h	2026-10-05 02:14:44.106984274 +0000
+@@ -20,6 +20,7 @@
+   IN CONST BLS_HARDWARE_INFO *Hw,
+   IN OUT BLS_CONFIG *Config,
+   IN EFI_HANDLE ConfigVolumeHandle,
++  IN EFI_HANDLE ScreenshotVolumeHandle,
+   IN OUT BLS_BOOT_LIST *List,
+   IN BOOLEAN SuppressCountdown,
+   OUT UINTN *SelectedIndex,
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h
+--- /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h	2026-10-05 01:41:24.000000000 +0000
++++ /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/BootLoaderSelectorPkg/BootLoaderSelector/Utils.h	2026-10-05 02:19:16.192756827 +0000
+@@ -9,8 +9,8 @@
+ #include <Protocol/SimpleFileSystem.h>
+ #include <Guid/FileInfo.h>
+ 
+-#define BLS_VERSION_ASCII "2.15"
+-#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.15"
++#define BLS_VERSION_ASCII "2.16"
++#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.16"
+ 
+ #define BLS_MAX_TEXT      128
+ #define BLS_MAX_PATH      192
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/CHANGELOG.txt /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/CHANGELOG.txt
+--- /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/CHANGELOG.txt	2026-10-05 01:41:24.000000000 +0000
++++ /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/CHANGELOG.txt	2026-10-05 02:19:16.193088155 +0000
+@@ -1,7 +1,34 @@
+ BootLoaderSelector — CHANGELOG
+ ===========================
+ 
+-Versão atual: 2.15
++Versão atual: 2.16
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
++
++VERSÃO 2.16 — PROFESSIONAL EVOLUTION ROUND 70 — 2026-10-04
++------------------------------------------------------------
++Base exclusiva: v2.15/Round69 FULL-SOURCE
++SHA-256 do ZIP-base: 00d65d337330f87bbb59bc93442e0dce0fd554e75c1f9210be9bff8a6706bbef
++
++Alterações desta rodada:
++- corrigida a conclusão da Round69 sobre USB WWID vazio após confronto com a UEFI
++  Specification: subtype 16 descreve um dispositivo por serial e dispositivos sem
++  serial devem usar o USB Device Path subtype 5; o WWID agora exige 1..64 CHAR16;
++- regressão RED→GREEN comprova que o v2.15 aceitava indevidamente o nó WWID base de
++  10 bytes e que v2.16 rejeita esse formato, preservando 1..64 caracteres válidos;
++- endurecido o verificador Authenticode: `subject == issuer` não basta para provar
++  self-sign; um leaf codeSigning assinado por outra chave com o mesmo DN era aceito;
++  v2.16 exige também `openssl verify -CAfile cert cert` com sucesso;
++- nova regressão constrói esse certificado self-issued porém não self-signed e confirma
++  RED no v2.15 / GREEN no v2.16, sem quebrar o certificado ad-hoc legítimo;
++- separado o volume físico do selector do handle autorizado a gravar BLS.plist: plist
++  malformado continua protegido contra overwrite, mas F10 e priorização do volume não
++  são mais desabilitados por essa proteção de configuração;
++- menu/options agora recebem um handle independente para screenshots; regressão captura
++  o handle e comprova que ConfigVolumeHandle pode permanecer NULL sem quebrar F10;
++- ASan/LeakSanitizer/UBSan, IntegerSan, TSan, fuzz/bounds e analyzers estritos foram
++  reexecutados; nenhuma mudança cosmética de layout/timing foi aplicada sem evidência;
++- versão/build incrementados para 2.16/Round70.
++
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+ 
+ VERSÃO 2.15 — PROFESSIONAL EVOLUTION ROUND 69 — 2026-10-04
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/INFO.txt /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/INFO.txt
+--- /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/INFO.txt	2026-10-05 01:41:24.000000000 +0000
++++ /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/INFO.txt	2026-10-05 02:19:16.193680478 +0000
+@@ -1,12 +1,41 @@
+ BootLoaderSelector — INFORMAÇÕES COMPLETAS DO PROJETO
+ =====================================================
+ 
+-Versão atual: 2.15
+-Base imediata: BootLoaderSelector v2.14 Professional Evolution Round68 (2026-10-04)
+-SHA-256 do ZIP-base recebido nesta rodada: a6f3904025918e128a654a4f5c9fcae60470b51318bfbc7ebd68b2666c856305
++Versão atual: 2.16
++Base imediata: BootLoaderSelector v2.15 Professional Evolution Round69 (2026-10-04)
++SHA-256 do ZIP-base recebido nesta rodada: 00d65d337330f87bbb59bc93442e0dce0fd554e75c1f9210be9bff8a6706bbef
+ Data desta rodada: 2026-10-04
+ Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com
+ 
++VERSÃO 2.16 — PROFESSIONAL EVOLUTION ROUND 70 — 2026-10-04
++------------------------------------------------------------
++Esta rodada parte exclusivamente do FULL-SOURCE v2.15/Round69 recebido nesta
++conversa (SHA-256 00d65d337330f87bbb59bc93442e0dce0fd554e75c1f9210be9bff8a6706bbef).
++
++Fine-tune de conformidade UEFI, segurança de Release e independência da UI:
++- a validação USB WWID da Round69 foi reavaliada contra a fonte normativa. O fato de
++  um helper EDK2 conseguir materializar um nó de 10 bytes não torna o nó conforme:
++  a UEFI Specification define WWID pelo serial e manda dispositivos sem serial usar
++  MSG_USB_DP. `BlsUsbDevicePathNodeIsConforming()` agora exige 1..64 CHAR16;
++- a regressão foi invertida antes do código e falhou no v2.15 exatamente no WWID sem
++  serial; depois do ajuste mínimo, 10 bytes é rejeitado, 1..64 CHAR16 permanecem
++  aceitos e comprimentos ímpares/truncados/>64 continuam rejeitados;
++- a política X.509 tinha uma lacuna distinta: Subject e Issuer iguais demonstram
++  self-issued, não self-signed. Foi reproduzido um certificado codeSigning com ambos
++  DNs iguais mas assinado por outra chave; o verificador v2.15 o aceitava;
++- o verificador agora exige auto-verificação criptográfica do certificado além de
++  validade, EKU exato e demais checks já existentes; controle positivo continua PASS;
++- configuração malformada continua mantendo ConfigVolumeHandle=NULL para impedir
++  escrita automática no BLS.plist original. Separadamente, SelectorVolume resolve o
++  DeviceHandle físico da imagem e é usado para F10 e priorização do volume;
++- `BlsRunMenu()`/options recebem ScreenshotVolumeHandle independente, eliminando a
++  dependência acidental entre permissão de gravar configuração e salvar screenshot;
++- geometria, cores e timing do menu foram revisados e preservados: não apareceu falha
++  reproduzível que justificasse alteração visual adicional.
++
++Versão/build incrementados para 2.16/Round70.
++Créditos: ©DNMTechLabs / dnmtechlabs@gmail.com.
++
+ VERSÃO 2.15 — PROFESSIONAL EVOLUTION ROUND 69 — 2026-10-04
+ ------------------------------------------------------------
+ Esta rodada parte exclusivamente do FULL-SOURCE v2.14/Round68 recebido nesta
+diff -ruN '--exclude=MANIFEST.sha256' '--exclude=ROUND*.diff' '--exclude=BootLoaderSelector-Build.log' '--exclude=Build' '--exclude=Conf' '--exclude=Release' '--exclude=.git' /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/SECURITY-NOTES.txt /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/SECURITY-NOTES.txt
+--- /mnt/data/bls_r70_base/BootLoaderSelector-Source-v2.15-DNMTechLabs-Professional-Evolution-Round69-2026-10-04-FULL-SOURCE/SECURITY-NOTES.txt	2026-10-05 01:20:18.000000000 +0000
++++ /mnt/data/bls_r70_work/BootLoaderSelector-Source-v2.16-DNMTechLabs-Professional-Evolution-Round70-2026-10-04-FULL-SOURCE/SECURITY-NOTES.txt	2026-10-05 02:19:16.193818782 +0000
+@@ -90,6 +90,10 @@
+ codeSigning must be present as the exact 1.3.6.1.5.5.7.3.3 EKU OID. This prevents
+ subject/display text from impersonating an EKU and prevents not-yet-valid signer
+ certificates from being accepted by the Jsign 7.x compatibility route.
++Starting with v2.16/Round70, the ad-hoc signer must also be cryptographically
++self-signed. Matching Subject/Issuer DNs alone is not accepted: the verifier requires
++the published certificate to verify against itself, closing the self-issued/same-DN
++but externally signed certificate case.
+ Tampered EFI bytes or a different certificate fail closed. Native Jsign verification
+ continues to be preferred when the selected Jsign version provides it. No verifier
+ JAR, private signing material, or third-party Python package is vendored.

@@ -1,0 +1,59 @@
+## @file
+# BootLoaderSelector clean UEFI application.
+# Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = BootLoaderSelector
+  FILE_GUID                      = F9C8E131-0A87-4C6C-A3E4-CA03DE31F6F1
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING = 2.32
+  ENTRY_POINT                    = UefiMain
+
+[Sources]
+  Main.c
+  BootScan.c
+  BootScan.h
+  Config.c
+  Config.h
+  HardwareInfo.c
+  HardwareInfo.h
+  Logger.c
+  Logger.h
+  Menu.c
+  Menu.h
+  Screenshot.c
+  Screenshot.h
+  Ui.c
+  Ui.h
+  Utils.c
+  Utils.h
+
+[Packages]
+  MdePkg/MdePkg.dec
+
+[LibraryClasses]
+  UefiApplicationEntryPoint
+  UefiLib
+  UefiBootServicesTableLib
+  MemoryAllocationLib
+  DevicePathLib
+  BaseMemoryLib
+  BaseLib
+  PrintLib
+  DebugLib
+
+[Guids]
+  gEfiSmbiosTableGuid
+  gEfiSmbios3TableGuid
+  gEfiFileInfoGuid
+  gEfiFileSystemInfoGuid
+
+[Protocols]
+  gEfiPciIoProtocolGuid
+  gEfiLoadedImageProtocolGuid
+  gEfiSimpleFileSystemProtocolGuid
+  gEfiGraphicsOutputProtocolGuid
+  gEfiDevicePathProtocolGuid
+  gEfiMpServiceProtocolGuid
