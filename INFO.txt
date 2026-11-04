@@ -23,6 +23,8 @@ b7d91a29817891dd51e523da66d4c565932197210511e5c723191f615fc10892.
   dependências dos testes deep reconstruídas pelo compilador selecionado.
 - GenFv/GenFw: leituras incompletas e erros de I/O tratados com limpeza e
   propagação de falhas, preservando os formatos válidos.
+- Split: falhas de diretório e getcwd tratadas; diretório restaurado e memória
+  liberada antes de encerrar com erro.
 - Build: rollback em cancelamento e abertura do Finder somente por opção.
 - Distribuição pública de fontes com BSD-3-Clause para o código próprio,
   avisos upstream preservados e toolchain binária externa, verificada por hashes.

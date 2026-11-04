@@ -183,10 +183,10 @@ CreateDir (
         tempchar = temp[index + 1];
         temp[index + 1] = 0;
         if (chdir(start)) {
-          if (mkdir(start, S_IRWXU | S_IRWXG | S_IRWXO) != 0) {
+          if (mkdir(start, S_IRWXU | S_IRWXG | S_IRWXO) != 0 || chdir(start) != 0) {
+            temp[index + 1] = tempchar;
             return EFI_ABORTED;
           }
-          chdir(start);
         }
         start = temp + index + 1;
         temp[index] = '/';
@@ -396,20 +396,37 @@ Returns:
   }
 
   CurrentDir = (CHAR8*)getcwd((CHAR8*)0, 0);
-  if (EFI_ERROR(CreateDir(&OutFileName1))) {
-      Error (OutFileName1, 0, 5, "Create Dir for File1 Fail.", NULL);
-      ReturnStatus = STATUS_ERROR;
-      goto Finish;
+  if (CurrentDir == NULL) {
+    Error (NULL, 0, 5, "Get current directory failure", NULL);
+    ReturnStatus = STATUS_ERROR;
+    goto Finish;
   }
-  chdir(CurrentDir);
 
-  if (EFI_ERROR(CreateDir(&OutFileName2))) {
-      Error (OutFileName2, 0, 5, "Create Dir for File2 Fail.", NULL);
-      ReturnStatus = STATUS_ERROR;
-      goto Finish;
+  Status = CreateDir(&OutFileName1);
+  if (EFI_ERROR(Status)) {
+    Error (OutFileName1, 0, 5, "Create Dir for File1 Fail.", NULL);
+    ReturnStatus = STATUS_ERROR;
   }
-  chdir(CurrentDir);
-  free(CurrentDir);
+  if (chdir(CurrentDir) != 0) {
+    Error (CurrentDir, 0, 5, "Restore directory failure", NULL);
+    ReturnStatus = STATUS_ERROR;
+  }
+  if (ReturnStatus != STATUS_SUCCESS) {
+    goto Finish;
+  }
+
+  Status = CreateDir(&OutFileName2);
+  if (EFI_ERROR(Status)) {
+    Error (OutFileName2, 0, 5, "Create Dir for File2 Fail.", NULL);
+    ReturnStatus = STATUS_ERROR;
+  }
+  if (chdir(CurrentDir) != 0) {
+    Error (CurrentDir, 0, 5, "Restore directory failure", NULL);
+    ReturnStatus = STATUS_ERROR;
+  }
+  if (ReturnStatus != STATUS_SUCCESS) {
+    goto Finish;
+  }
 
   Out1 = fopen (LongFilePath (OutFileName1), "wb");
   if (Out1 == NULL) {
@@ -446,6 +463,9 @@ Returns:
   }
 
 Finish:
+  if (CurrentDir != NULL) {
+    free(CurrentDir);
+  }
   if (OutName1 != NULL) {
     free(OutName1);
   }
