@@ -6,7 +6,7 @@
 [Defines]
   PLATFORM_NAME                  = BootLoaderSelector
   PLATFORM_GUID                  = 3F71A792-6E03-4D84-9F1D-F3C81EC80F44
-  PLATFORM_VERSION = 2.32
+  PLATFORM_VERSION = 2.33
   DSC_SPECIFICATION              = 0x00010006
   OUTPUT_DIRECTORY               = Build/BootLoaderSelector
   SUPPORTED_ARCHITECTURES        = X64

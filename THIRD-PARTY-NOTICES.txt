@@ -1,46 +1,131 @@
-BootLoaderSelector — third-party notice index (v2.32)
+BootLoaderSelector — third-party notice index (v2.33)
 ==================================================
-Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
+Project development/adaptation/maintenance: MaLd0n.
+Original project credit: ©DNMTechLabs / dnmtechlabs@gmail.com.
+Full credits and upstream acknowledgments: CREDITS.md.
 
 The root BSD-3-Clause LICENSE applies to original BootLoaderSelector code,
-project-owned build/audit helpers and documentation. It does not relicense
-upstream components. Copyright and license headers in all upstream files remain
-intact; the source file's own terms control if they differ from this index.
+project-owned build/audit helpers and documentation only. It does not relicense
+upstream components. Original copyright and license headers remain intact;
+each file's own terms control if they differ from this index.
 
-EDK II / TianoCore: MdePkg and BaseTools, primarily BSD-2-Clause-Patent.
-Full license: LICENSES/BSD-2-Clause-Patent.txt.
+1. EDK II / TianoCore
+--------------------
+Locations: MdePkg/, BaseTools/, edksetup.sh, upstream build configuration.
 Upstream: https://github.com/tianocore/edk2
 License source: https://github.com/tianocore/edk2/blob/master/License.txt
-The exact imported upstream revision is not established by the supplied archive;
-AuditReports/MANIFEST.sha256 identifies the actual distributed bytes.
-Local defensive DevicePathLib changes retain the upstream license and headers.
+Primary license copy: LICENSES/BSD-2-Clause-Patent.txt.
+Legacy EDK II BSD license copy: LICENSES/BSD-2-Clause-EDK-II-Legacy.txt.
+Legacy license source:
+https://github.com/tianocore/edk2/blob/edk2-stable201903/License.txt
+Original copyright lines: LICENSES/EDK-II-Copyright-Notices.txt.
+Additional complete file notices: LICENSES/Upstream-File-Notices.txt.
 
-Brotli: BaseTools/Source/C/BrotliCompress, MIT.
-Original notice: BaseTools/Source/C/BrotliCompress/LICENSE.
-Convenience copy: LICENSES/MIT-Brotli.txt.
+Credits include TianoCore and contributors; Intel; Apple; ARM; Linaro;
+Hewlett-Packard / HP / Hewlett Packard Enterprise; Red Hat; AMD; Microsoft;
+American Megatrends; Dell; NVIDIA; Loongson; Paulo Alcantara; and Dave Gilbert.
+Full legal names, dates and source locations are retained in the notice copies.
+Some ARM/AArch64 optimized memory sources carry BSD-3-Clause text from Linaro
+and/or ARM; those exact headers are in Upstream-File-Notices.txt.
 
-LZMA SDK: BaseTools/Source/C/LzmaCompress/Sdk, Igor Pavlov, public domain as
-stated in its source headers. See, for example, Sdk/C/LzmaDec.c.
+MdePkg includes UEFI headers and libraries used by the EFI application.
+BaseTools and its embedded components run on the host. Retained files for
+other architectures or optional utilities are not all linked into the x64 EFI.
+The exact imported EDK II revision is not established by the supplied archive.
+AuditReports/MANIFEST.sha256 identifies the distributed bytes. Local changes
+retain the original upstream licenses and notices.
 
-PCCTS / ANTLR 1.33: BaseTools/Source/C/VfrCompile/Pccts.
-Terence Parr, Purdue University, AHPCRC / University of Minnesota and contributors.
-Public-domain statement and requested acknowledgment are preserved in
-BaseTools/Source/C/VfrCompile/Pccts/antlr/main.c. This project acknowledges PCCTS
-as the parser generator used by the upstream BaseTools VFR compiler.
+2. Brotli
+---------
+Location: BaseTools/Source/C/BrotliCompress/ (host compression tool).
+Credits: the Brotli Authors; Google Inc.; EDK II integration contributors.
+License: MIT; original BaseTools/Source/C/BrotliCompress/LICENSE.
+Identical license copy: LICENSES/MIT-Brotli.txt.
+Upstream: https://github.com/google/brotli
+
+3. LZMA SDK 18.05
+----------------
+Location: BaseTools/Source/C/LzmaCompress/Sdk/ (host compression tool).
+Credits: Igor Pavlov. The full SDK documentation also acknowledges Dmitry
+Shkarin (PPMd) and Wei Dai (SHA-256); those algorithm sources are not retained
+in this tree. License: public domain as stated by the original source headers.
+Original notice: BaseTools/Source/C/LzmaCompress/Sdk/DOC/lzma-sdk.txt, LICENSE
+section. Version evidence: BaseTools/Source/C/LzmaCompress/LZMA-SDK-README.txt.
+Exact notice excerpt: LICENSES/LZMA-SDK-Public-Domain.txt.
+Upstream: https://www.7-zip.org/sdk.html
+EDK II's LzmaCompress integration has its own preserved BSD source headers.
+
+4. PCCTS / ANTLR 1.33 / DLG 1.33
+--------------------------------
+Location: BaseTools/Source/C/VfrCompile/Pccts/; retained tools identify MR33.
+Credits: Terence Parr, Russell Quong, Will Cohen, Hank Dietz, Parr Research
+Corporation, Purdue University Electrical Engineering, and AHPCRC / University
+of Minnesota; maintenance contributors and reporters named in CREDITS.md and
+the retained upstream README, CHANGES_FROM_133*.txt and source headers.
+Public-domain statement: BaseTools/Source/C/VfrCompile/Pccts/RIGHTS.
+Exact distribution copy: LICENSES/PCCTS-RIGHTS.txt.
+Complete original acknowledgment records: LICENSES/PCCTS-ACKNOWLEDGMENTS.txt.
+Further original terms: Pccts/antlr/main.c and Pccts/dlg/main.c.
+
+Acknowledgment: the upstream BaseTools VFR compiler incorporates PCCTS source
+and is built using PCCTS parser-generation tools. Original PCCTS headers and
+acknowledgments are preserved as requested by its authors.
+
+5. FreeBSD ELF headers / John D. Polstra
+--------------------------------------
+Locations: BaseTools/Source/C/GenFw/elf32.h, elf64.h, elf_common.h.
+Credits: John D. Polstra (1996-1998 / 1998); FreeBSD; Apple and ARM porting
+contributors as identified by the source headers.
+Licenses: original BSD-2-Clause terms plus EDK II BSD-2-Clause-Patent porting
+notices, preserved in each file and LICENSES/Upstream-File-Notices.txt.
+Scope: definitions for the host GenFw tool.
+
+6. QueueHandler / Vinay Sajip
+---------------------------
+Location: BaseTools/Source/Python/Common/EdkLogger.py.
+Credit: Copyright 2001-2016 by Vinay Sajip. All Rights Reserved.
+License: the original permission notice and disclaimer for QueueHandler,
+including the restriction on advertising/publicity using the author's name.
+Exact notice copy: LICENSES/Upstream-File-Notices.txt.
+Scope: fallback in host-side Python tooling, alongside EDK II's own notice.
+
+7. Apple cctools / mtoc
+----------------------
+Locations: BaseTools/Source/C/Mtoc/mtoc-v921.c.origin and mtoc-v921_jief.c.
+Credit: Copyright (c) 2007 Apple Inc. All rights reserved.
+The modified variant explicitly credits jief for retaining __mod_init_func
+to support global C++ variables; no expanded identity is inferred.
+License: Apple Public Source License 2.0; full copy LICENSES/APSL-2.0.txt.
+Exact license-copy source (Apple's cctools-921 distribution):
+https://github.com/apple-oss-distributions/cctools/blob/cctools-921/APPLE_LICENSE
+Original headers: the two source files and LICENSES/Upstream-File-Notices.txt.
+Scope: retained host-tool source; absent from the current BaseTools GNU make
+target list and not linked into the x64 EFI. The local v921 filenames do not
+establish the complete import/modification history.
+
+8. External tools, fixtures and exclusions
+-----------------------------------------
+GCC/binutils/NASM, LLVM/Clang/LLD, Make/Bash, Python, OpenSSL, Java, Jsign,
+sbsigntools, QEMU/OVMF, FAT tools and the other workflow dependencies are external
+tools under their own licenses; see CREDITS.md for roles and primary project
+links. Their binaries are not redistributed in these source/EFI packages.
+Jsign bootstrap downloads its official hash-pinned JAR into an external cache.
+Optional upstream ECC/EOT parsers identify external ANTLR 3/4 runtime imports;
+documentation utilities additionally refer to wxPython, Doxygen and HTML Help.
+Those runtimes/tools are not bundled or required by the normal selector build.
+
+Public EDK II test keys/certificates are fixtures identified in SECURITY-NOTES.txt,
+never production signing credentials. Their upstream notices remain intact.
 
 Unused prebuilt ARM CompilerIntrinsicsLib libraries and Windows EOT Python
-extensions from the original archive are also excluded; the x64 application and
-its Linux/macOS build/tests do not use them. Their original source notices remain.
+extensions from the original archive are excluded. The legacy binary package
+toolchain.gcc102.snb is also excluded: matching source/provenance was not
+established. Its checksum catalog verifies a separately supplied dependency;
+hashes do not establish redistribution rights. See Toolchains/README.md.
 
-The legacy binary toolchain.gcc102.snb is NOT included in this public source
-release. Its matching source/provenance was not established. A checksum catalog
-is retained solely to verify a separately supplied local dependency; hashes do
-not establish redistribution rights. See Toolchains/README.md.
+OpenCore and Clover are supported external chainload targets, not evidence of
+bundled implementation code. Their user-supplied binaries and respective
+projects retain their own licenses. See the acknowledgment in CREDITS.md.
 
-GCC/binutils/NASM, Clang/LLVM/LLD, OpenSSL, Java, Jsign, sbsigntools and QEMU/OVMF
-are external build/test dependencies under their respective licenses. They are
-not redistributed as binaries in this source package. Jsign bootstrap downloads
-its official hash-pinned JAR into an external cache, not into the source tree.
-
-Public test keys/certificates from EDK2 are fixtures, identified in SECURITY-NOTES.txt.
-They are never production signing credentials.
+Keep CREDITS.md, this index, LICENSE and LICENSES/ with release distributions.
+Preserve every original copyright/license header with redistributed source.

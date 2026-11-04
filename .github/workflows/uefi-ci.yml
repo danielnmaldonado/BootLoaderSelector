@@ -276,29 +276,48 @@ jobs:
           VERSION="$(sed -n 's/^#define BLS_VERSION_ASCII "\([^"]*\)"/\1/p' BootLoaderSelectorPkg/BootLoaderSelector/Utils.h)"
           test "$RELEASE_TAG" = "v$VERSION"
           test -s Release/LICENSE
+          test -s Release/CREDITS.md
           test -s Release/LICENSES/BSD-2-Clause-Patent.txt
           git archive --format=zip --prefix="BootLoaderSelector-$VERSION/" HEAD > "BootLoaderSelector-$VERSION-Source.zip"
           (cd Release && zip -qr "../BootLoaderSelector-$VERSION-EFI.zip" \
             BootLoaderSelector.efi BOOTX64.efi BootLoaderSelector-AdHoc.pem \
-            BUILD-PROVENANCE.txt LICENSE LICENSES THIRD-PARTY-NOTICES.txt)
+            BUILD-PROVENANCE.txt LICENSE LICENSES THIRD-PARTY-NOTICES.txt CREDITS.md)
           sha256sum "BootLoaderSelector-$VERSION-Source.zip" "BootLoaderSelector-$VERSION-EFI.zip" > SHA256SUMS.txt
           cat > RELEASE-NOTES.txt <<'NOTES'
-          Correções de limites e alocação na DevicePathLib, política criptográfica
-          de certificados, portabilidade dos testes e recuperação de publicação.
+          UEFI x64 bootloader selector with remembered selection, plist configuration,
+          hardware information and logging. Project by MaLd0n / DNMTechLabs.
+          This release includes English documentation,
+          complete project and third-party credits, and donation links matching TahoeRealtekWiFi.
 
-          Esta pré-release exige os gates Linux/macOS, verificação de assinatura
-          e smoke test OVMF antes de publicar. Os arquivos incluem licenças e
-          hashes. A assinatura ad-hoc não estabelece confiança para Secure Boot.
-          Boot em hardware real permanece sem homologação.
+          Device-path bounds and allocation handling, certificate verification and
+          transactional build publication have passed the Linux/macOS quality gates.
+          The production EFI files were built twice, signature-verified on both platforms,
+          and exercised through a dedicated child chainload under OVMF.
+
+          Assets: full source, production EFI pair, public certificate, build provenance,
+          credits, license notices and SHA-256 checksums. No production signing private
+          key or test child is included in the EFI ZIP.
+
+          Hardware boot and real OpenCore/Clover integration remain unverified.
+          The ad-hoc signature does not establish firmware trust for Secure Boot.
+          See [credits and component licenses](https://github.com/danielnmaldonado/BootLoaderSelector/blob/main/CREDITS.md)
+          and [validation scope](https://github.com/danielnmaldonado/BootLoaderSelector/blob/main/VALIDATION.md).
+
+          Support the project:
+          - [Ko-fi](https://ko-fi.com/olarila)
+          - [PayPal](https://www.paypal.com/donate/?hosted_button_id=AA4QBFJQYW2N2)
+          - [Revolut](https://revolut.me/olarila)
+          - [Remitly](https://remit.ly/pay/danielm2937)
+          - [Mercado Pago](https://mpago.la/2wFPzHP)
           NOTES
-      - name: Publish prerelease after all checks
+      - name: Publish release after all checks
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
           set -euo pipefail
-          gh release create "$RELEASE_TAG" --verify-tag --prerelease \
+          gh release create "$RELEASE_TAG" --verify-tag --latest \
             --title "BootLoaderSelector $RELEASE_TAG" --notes-file RELEASE-NOTES.txt \
             "BootLoaderSelector-${RELEASE_TAG#v}-Source.zip" \
             "BootLoaderSelector-${RELEASE_TAG#v}-EFI.zip" SHA256SUMS.txt

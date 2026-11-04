@@ -30,8 +30,8 @@ CODE_VERSION="$(sed -n 's/^#define BLS_VERSION_ASCII "\([^"]*\)"/\1/p' "$SRC/Uti
 TEXT_VERSION="$(sed -n 's/^#define BLS_VERSION_TEXT[[:space:]]*L"BootLoaderSelector v\([^"]*\)"/\1/p' "$SRC/Utils.h")"
 INF_VERSION="$(sed -n 's/^[[:space:]]*VERSION_STRING[[:space:]]*=[[:space:]]*//p' "$SRC/BootLoaderSelector.inf")"
 DSC_VERSION="$(sed -n 's/^[[:space:]]*PLATFORM_VERSION[[:space:]]*=[[:space:]]*//p' BootLoaderSelector.dsc)"
-INFO_VERSION="$(sed -n 's/^Versão atual:[[:space:]]*//p' INFO.txt)"
-CHANGELOG_VERSION="$(sed -n 's/^Versão atual:[[:space:]]*//p' CHANGELOG.txt)"
+INFO_VERSION="$(sed -n 's/^Current version:[[:space:]]*//p' INFO.txt)"
+CHANGELOG_VERSION="$(sed -n 's/^Current version:[[:space:]]*//p' CHANGELOG.txt)"
 if [ -z "$CODE_VERSION" ] || [ -z "$TEXT_VERSION" ] ||
    [ "$CODE_VERSION" != "$TEXT_VERSION" ] || [ "$CODE_VERSION" != "$INF_VERSION" ] ||
    [ "$CODE_VERSION" != "$DSC_VERSION" ] || [ "$CODE_VERSION" != "$INFO_VERSION" ] ||
@@ -65,6 +65,7 @@ CREDIT_FILES=(
   AuditReports/AUDIT-REPORT.txt
   SECURITY-NOTES.txt
   THIRD-PARTY-NOTICES.txt
+  CREDITS.md
   INFO.txt
   CHANGELOG.txt
 )

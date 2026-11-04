@@ -1,0 +1,4516 @@
+Original upstream copyright lines
+=================================
+
+Each source notice below is copied byte for byte, including comment prefixes.
+The following source-path index identifies every matching retained header.
+Licenses: BSD-2-Clause-Patent.txt and BSD-2-Clause-EDK-II-Legacy.txt, except
+for the component-specific terms identified in THIRD-PARTY-NOTICES.txt and
+Upstream-File-Notices.txt. Original source headers remain authoritative.
+
+--- Original notice ---
+        # Copyright (c) 2007 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/UPT/UnitTest/CommentParsingUnitTest.py:43
+
+--- Original notice ---
+        #Copyright (c) 2007 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/UPT/UnitTest/CommentParsingUnitTest.py:85
+
+--- Original notice ---
+  (C) Copyright 2012-2014 Hewlett-Packard Development Company, L.P.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/ShellDynamicCommand.h:4
+
+--- Original notice ---
+  (C) Copyright 2014 Hewlett-Packard Development Company, L.P.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/Shell.h:4
+
+--- Original notice ---
+  (C) Copyright 2015 Hewlett Packard Enterprise Development LP<BR>
+
+Locations:
+  MdePkg/Library/DxeServicesLib/DxeServicesLib.c:6
+  MdePkg/Include/IndustryStandard/SerialPortConsoleRedirectionTable.h:6
+  MdePkg/Include/IndustryStandard/Acpi51.h:6
+
+--- Original notice ---
+  (C) Copyright 2015 Hewlett-Packard Development Company, L.P.<BR>
+
+Locations:
+  MdePkg/Library/UefiDevicePathLib/DevicePathToText.c:4
+  BaseTools/Source/C/Include/Common/UefiMultiPhase.h:5
+
+--- Original notice ---
+  (C) Copyright 2015-2016 Hewlett Packard Enterprise Development LP<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Acpi60.h:5
+  MdePkg/Include/IndustryStandard/Http11.h:6
+
+--- Original notice ---
+  (C) Copyright 2015-2017 Hewlett Packard Enterprise Development LP<BR>
+
+Locations:
+  MdePkg/Include/Protocol/Http.h:8
+
+--- Original notice ---
+  (C) Copyright 2016 Hewlett Packard Enterprise Development LP<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Nvme.h:4
+  MdePkg/Include/IndustryStandard/PciExpress21.h:5
+  MdePkg/Include/Protocol/Mtftp6.h:7
+  MdePkg/Include/Guid/Cper.h:5
+  BaseTools/Scripts/GccBase.lds:7
+
+--- Original notice ---
+  Copyright (C) 2014, Red Hat, Inc.
+
+Locations:
+  MdePkg/Library/BaseOrderedCollectionRedBlackTreeLib/BaseOrderedCollectionRedBlackTreeLib.c:13
+  MdePkg/Include/Library/OrderedCollectionLib.h:7
+
+--- Original notice ---
+  Copyright (C) 2014-2017 Paulo Alcantara <pcacjr@zytor.com>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Udf.h:4
+
+--- Original notice ---
+  Copyright (C) 2018 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/X86SpeculationBarrier.c:4
+
+--- Original notice ---
+  Copyright (C) 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/X86PatchInstruction.c:4
+  MdePkg/Library/BaseLib/Ebc/SpeculationBarrier.c:4
+
+--- Original notice ---
+  Copyright (C) 2018, Red Hat, Inc.
+
+Locations:
+  MdePkg/Library/BaseLib/X86PatchInstruction.c:5
+
+--- Original notice ---
+  Copyright (c) 1999 - 2015, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/IpmiNetFnFirmware.h:4
+  MdePkg/Include/IndustryStandard/IpmiNetFnSensorEvent.h:12
+  MdePkg/Include/IndustryStandard/IpmiNetFnGroupExtension.h:4
+  MdePkg/Include/IndustryStandard/IpmiNetFnBridge.h:9
+
+--- Original notice ---
+  Copyright (c) 1999 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/IpmiNetFnChassis.h:10
+  MdePkg/Include/IndustryStandard/IpmiNetFnStorage.h:13
+  MdePkg/Include/IndustryStandard/IpmiNetFnTransport.h:13
+  MdePkg/Include/IndustryStandard/IpmiNetFnApp.h:14
+  MdePkg/Include/IndustryStandard/Ipmi.h:8
+
+--- Original notice ---
+  Copyright (c) 2004 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/UefiUsbLib/UsbDxeLib.c:6
+  MdePkg/Library/UefiUsbLib/Hid.c:6
+
+--- Original notice ---
+  Copyright (c) 2006 - 2008, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseCacheMaintenanceLib/EbcCache.c:4
+  MdePkg/Library/BaseLib/SwapBytes32.c:4
+  MdePkg/Library/BaseLib/X86ReadIdtr.c:4
+  MdePkg/Library/BaseLib/X86WriteIdtr.c:4
+  MdePkg/Library/BaseLib/RRotU64.c:4
+  MdePkg/Library/BaseLib/LongJump.c:4
+  MdePkg/Library/BaseLib/DivU64x64Remainder.c:4
+  MdePkg/Library/BaseLib/CpuDeadLoop.c:4
+  MdePkg/Library/BaseLib/LowBitSet64.c:4
+  MdePkg/Library/BaseLib/LRotU64.c:4
+  MdePkg/Library/BaseLib/X86GetInterruptState.c:4
+  MdePkg/Library/BaseLib/X86DisablePaging32.c:4
+  MdePkg/Library/BaseLib/X86EnablePaging64.c:4
+  MdePkg/Library/BaseLib/HighBitSet64.c:4
+  MdePkg/Library/BaseLib/LShiftU64.c:4
+  MdePkg/Library/BaseLib/GetPowerOfTwo32.c:4
+  MdePkg/Library/BaseLib/RRotU32.c:4
+  MdePkg/Library/BaseLib/DivU64x32.c:4
+  MdePkg/Library/BaseLib/DivU64x32Remainder.c:4
+  MdePkg/Library/BaseLib/X86MemoryFence.c:4
+  MdePkg/Library/BaseLib/SwapBytes64.c:4
+  MdePkg/Library/BaseLib/RShiftU64.c:4
+  MdePkg/Library/BaseLib/SetJump.c:4
+  MdePkg/Library/BaseLib/X86EnablePaging32.c:4
+  MdePkg/Library/BaseLib/X86WriteGdtr.c:4
+  MdePkg/Library/BaseLib/SwapBytes16.c:4
+  MdePkg/Library/BaseLib/HighBitSet32.c:4
+  MdePkg/Library/BaseLib/X86DisablePaging64.c:4
+  MdePkg/Library/BaseLib/X86ReadGdtr.c:4
+  MdePkg/Library/BaseLib/LowBitSet32.c:4
+  MdePkg/Library/BaseLib/LRotU32.c:4
+  MdePkg/Library/BaseLib/ModU64x32.c:4
+  MdePkg/Library/UefiMemoryLib/MemLib.c:4
+  MdePkg/Library/UefiRuntimeServicesTableLib/UefiRuntimeServicesTableLib.c:7
+  MdePkg/Library/BaseCpuLib/Ebc/CpuSleepFlushTlb.c:4
+  MdePkg/Library/BaseCpuLib/Ia32/CpuSleep.c:4
+  MdePkg/Library/BaseCpuLib/Ia32/CpuFlushTlbGcc.c:4
+  MdePkg/Library/BaseCpuLib/Ia32/CpuFlushTlb.c:4
+  MdePkg/Library/BaseCpuLib/Ia32/CpuSleepGcc.c:4
+  MdePkg/Library/BaseLib/Ebc/SetJumpLongJump.c:7
+  MdePkg/Library/BaseLib/X64/ReadMsr64.c:4
+  MdePkg/Library/BaseLib/X64/CpuBreakpoint.c:4
+  MdePkg/Library/BaseLib/X64/Non-existing.c:4
+  MdePkg/Library/BaseLib/Ia32/EnablePaging32.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteDr3.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadGdtr.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadDr2.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadSs.c:4
+  MdePkg/Library/BaseLib/Ia32/Monitor.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteGdtr.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadDr6.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadPmc.c:4
+  MdePkg/Library/BaseLib/Ia32/Wbinvd.c:4
+  MdePkg/Library/BaseLib/Ia32/DisablePaging32.c:4
+  MdePkg/Library/BaseLib/Ia32/Invd.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteDr7.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteMm7.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadCr2.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadTr.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadMm6.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteCr3.c:4
+  MdePkg/Library/BaseLib/Ia32/CpuPause.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadMm2.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteMm3.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadDr1.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadEs.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteDr0.c:4
+  MdePkg/Library/BaseLib/Ia32/DisableInterrupts.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteDr4.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadDr5.c:4
+  MdePkg/Library/BaseLib/Ia32/EnableCache.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadMm5.c:4
+  MdePkg/Library/BaseLib/Ia32/EnableInterrupts.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteCr0.c:4
+  MdePkg/Library/BaseLib/Ia32/MultU64x32.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteMm4.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteLdtr.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadMsr64.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteMm0.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadDs.c:4
+  MdePkg/Library/BaseLib/Ia32/FxSave.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteCr4.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadMm1.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadLdtr.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadDr0.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadCs.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteDr1.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteDr5.c:4
+  MdePkg/Library/BaseLib/Ia32/Mwait.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadDr4.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadGs.c:4
+  MdePkg/Library/BaseLib/Ia32/CpuBreakpoint.c:4
+  MdePkg/Library/BaseLib/Ia32/InternalSwitchStack.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadMm4.c:4
+  MdePkg/Library/BaseLib/Ia32/DivU64x32Remainder.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadFs.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteMm5.c:4
+  MdePkg/Library/BaseLib/Ia32/SwapBytes64.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteMm1.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadCr4.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadMm0.c:4
+  MdePkg/Library/BaseLib/Ia32/DisableCache.c:4
+  MdePkg/Library/BaseLib/Ia32/FxRestore.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteMsr64.c:4
+  MdePkg/Library/BaseLib/Ia32/Non-existing.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteDr2.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadDr3.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadDr7.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadEflags.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteDr6.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadIdtr.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadCr3.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteMm6.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadTsc.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteCr2.c:4
+  MdePkg/Library/BaseLib/Ia32/ModU64x32.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadMm7.c:4
+  MdePkg/Library/BaseLib/Ia32/EnableDisableInterrupts.c:4
+  MdePkg/Library/BaseLib/Ia32/ReadMm3.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteMm2.c:4
+
+--- Original notice ---
+  Copyright (c) 2006 - 2009, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/UefiMemoryLib/SetMem64Wrapper.c:14
+  MdePkg/Library/UefiMemoryLib/SetMem32Wrapper.c:14
+  MdePkg/Library/UefiMemoryLib/SetMem16Wrapper.c:14
+  MdePkg/Library/PeiMemoryLib/SetMem64Wrapper.c:14
+  MdePkg/Library/PeiMemoryLib/SetMem32Wrapper.c:14
+  MdePkg/Library/PeiMemoryLib/SetMem16Wrapper.c:14
+  MdePkg/Library/BaseIoLibIntrinsic/IoLibArmVirt.c:4
+  MdePkg/Library/BaseMemoryLibOptPei/SetMem32Wrapper.c:14
+
+--- Original notice ---
+  Copyright (c) 2006 - 2010, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/Cpu.c:4
+  MdePkg/Library/BaseLib/GetPowerOfTwo64.c:4
+  MdePkg/Library/BaseLib/MultU64x32.c:4
+  MdePkg/Library/BaseLib/MultS64x64.c:4
+  MdePkg/Library/BaseLib/Unaligned.c:4
+  MdePkg/Library/BaseLib/Math64.c:5
+  MdePkg/Library/BaseLib/MultU64x64.c:4
+  MdePkg/Library/BaseLib/ARShiftU64.c:4
+  MdePkg/Library/BaseMemoryLibRepStr/SetMem64Wrapper.c:14
+  MdePkg/Library/BaseMemoryLibRepStr/SetMem32Wrapper.c:14
+  MdePkg/Library/BaseMemoryLibRepStr/SetMem16Wrapper.c:14
+  MdePkg/Library/BaseMemoryLibOptDxe/SetMem64Wrapper.c:14
+  MdePkg/Library/BaseMemoryLibOptDxe/SetMem32Wrapper.c:14
+  MdePkg/Library/BaseMemoryLibOptDxe/SetMem16Wrapper.c:14
+  MdePkg/Library/BasePeCoffLib/BasePeCoffLibInternals.h:4
+  MdePkg/Library/BaseMemoryLib/SetMem64Wrapper.c:14
+  MdePkg/Library/BaseMemoryLib/SetMem32Wrapper.c:14
+  MdePkg/Library/BaseMemoryLib/SetMem.c:7
+  MdePkg/Library/BaseMemoryLib/SetMem16Wrapper.c:14
+  MdePkg/Library/BaseMemoryLibSse2/SetMem64Wrapper.c:14
+  MdePkg/Library/BaseMemoryLibSse2/SetMem32Wrapper.c:14
+  MdePkg/Library/BaseMemoryLibSse2/SetMem16Wrapper.c:14
+  MdePkg/Library/BaseMemoryLibMmx/SetMem64Wrapper.c:14
+  MdePkg/Library/BaseMemoryLibMmx/SetMem32Wrapper.c:14
+  MdePkg/Library/BaseMemoryLibMmx/SetMem16Wrapper.c:14
+  MdePkg/Library/BaseMemoryLibOptPei/SetMem64Wrapper.c:14
+  MdePkg/Library/BaseMemoryLibOptPei/SetMem16Wrapper.c:14
+  MdePkg/Library/BaseLib/Ebc/CpuBreakpoint.c:4
+  MdePkg/Library/BaseLib/Ebc/SwitchStack.c:4
+  MdePkg/Library/BaseLib/X64/WriteMsr64.c:4
+  MdePkg/Library/BaseLib/Ia32/DivS64x64Remainder.c:4
+  MdePkg/Library/BaseLib/Ia32/CpuIdEx.c:4
+  MdePkg/Library/BaseLib/Ia32/DivU64x32.c:4
+  MdePkg/Library/BaseLib/Ia32/CpuId.c:4
+  MdePkg/Library/BaseLib/Ia32/WriteIdtr.c:4
+  MdePkg/Library/BaseLib/Ia32/MultU64x64.c:4
+
+--- Original notice ---
+  Copyright (c) 2006 - 2011, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/SimpleTextIn.h:7
+
+--- Original notice ---
+  Copyright (c) 2006 - 2012, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/X86FxRestore.c:4
+  MdePkg/Library/BaseLib/X86FxSave.c:4
+  MdePkg/Include/Pi/PiBootMode.h:4
+  MdePkg/Include/Guid/WinCertificate.h:4
+
+--- Original notice ---
+  Copyright (c) 2006 - 2014, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/Ia32/ReadCr0.c:4
+  MdePkg/Include/IndustryStandard/Usb.h:4
+  BaseTools/Source/C/Include/IndustryStandard/Acpi.h:5
+  BaseTools/Source/C/Include/IndustryStandard/Acpi1_0.h:4
+  BaseTools/Source/C/Include/IndustryStandard/Acpi3_0.h:4
+  BaseTools/Source/C/Include/IndustryStandard/pci23.h:4
+  BaseTools/Source/C/Include/IndustryStandard/Acpi2_0.h:4
+  BaseTools/Source/C/Include/IndustryStandard/EfiPci.h:4
+  BaseTools/Source/C/Include/IndustryStandard/pci30.h:4
+  BaseTools/Source/C/Include/Common/UefiCapsule.h:6
+  BaseTools/Source/C/Include/Common/WorkingBlockHeader.h:7
+
+--- Original notice ---
+  Copyright (c) 2006 - 2015, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/SecPeiDxeTimerLibCpu/X86TimerLib.c:4
+  MdePkg/Library/BaseLib/Ia32/RRotU64.c:4
+  MdePkg/Library/BaseLib/Ia32/LRotU64.c:4
+  MdePkg/Library/BaseLib/Ia32/LShiftU64.c:4
+  MdePkg/Library/BaseLib/Ia32/RShiftU64.c:4
+  MdePkg/Library/BaseLib/Ia32/ARShiftU64.c:4
+
+--- Original notice ---
+  Copyright (c) 2006 - 2016, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseMemoryLibRepStr/MemLibInternals.h:12
+  MdePkg/Library/UefiMemoryLib/MemLibGeneric.c:9
+  MdePkg/Library/UefiMemoryLib/MemLibInternals.h:4
+  MdePkg/Library/BaseMemoryLibOptDxe/MemLibInternals.h:12
+  MdePkg/Library/BaseMemoryLib/MemLibGeneric.c:9
+  MdePkg/Library/BaseMemoryLib/CopyMem.c:6
+  MdePkg/Library/BaseMemoryLib/MemLibInternals.h:12
+  MdePkg/Library/BaseMemoryLibSse2/MemLibInternals.h:12
+  MdePkg/Library/PeiMemoryLib/MemLibGeneric.c:9
+  MdePkg/Library/BaseMemoryLibMmx/MemLibInternals.h:12
+  MdePkg/Library/BaseMemoryLibOptPei/MemLibInternals.h:12
+  MdePkg/Library/BaseMemoryLibOptDxe/Arm/ScanMemGeneric.c:9
+  MdePkg/Library/BaseMemoryLibOptDxe/Arm/MemLibGuid.c:4
+  MdePkg/Library/BaseSynchronizationLib/X64/InterlockedCompareExchange64.c:4
+  MdePkg/Library/BaseSynchronizationLib/X64/InterlockedCompareExchange16.c:4
+  MdePkg/Library/BaseSynchronizationLib/X64/InterlockedCompareExchange32.c:4
+  MdePkg/Library/BaseSynchronizationLib/Ia32/InterlockedCompareExchange64.c:4
+  MdePkg/Library/BaseSynchronizationLib/Ia32/InterlockedCompareExchange16.c:4
+  MdePkg/Library/BaseSynchronizationLib/Ia32/InterlockedCompareExchange32.c:4
+  MdePkg/Include/Protocol/ShellParameters.h:4
+
+--- Original notice ---
+  Copyright (c) 2006 - 2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Acpi.h:5
+  MdePkg/Include/Pi/PiFirmwareVolume.h:4
+  BaseTools/Source/C/Include/Common/MdeModuleHii.h:4
+
+--- Original notice ---
+  Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved. <BR>
+
+Locations:
+  MdePkg/Library/UefiFileHandleLib/UefiFileHandleLib.c:4
+
+--- Original notice ---
+  Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/PeiServicesTablePointerLibIdt/PeiServicesTablePointer.c:7
+  MdePkg/Library/BaseCacheMaintenanceLib/X86Cache.c:4
+  MdePkg/Library/BaseCacheMaintenanceLib/ArmCache.c:5
+  MdePkg/Library/BasePciLibCf8/PciLib.c:5
+  MdePkg/Library/PeiServicesTablePointerLib/PeiServicesTablePointer.c:7
+  MdePkg/Library/BasePciExpressLib/PciExpressLib.c:8
+  MdePkg/Library/BaseLib/DivS64x64Remainder.c:4
+  MdePkg/Library/BaseLib/X86Msr.c:4
+  MdePkg/Library/BaseLib/X86Thunk.c:4
+  MdePkg/Library/BaseLib/BitField.c:4
+  MdePkg/Library/BaseLib/SwitchStack.c:4
+  MdePkg/Library/BaseLib/ChkStkGcc.c:4
+  MdePkg/Library/BaseLib/LinkedList.c:4
+  MdePkg/Library/BaseMemoryLibRepStr/ZeroMemWrapper.c:15
+  MdePkg/Library/BaseMemoryLibRepStr/CopyMemWrapper.c:15
+  MdePkg/Library/BaseMemoryLibRepStr/ScanMem64Wrapper.c:15
+  MdePkg/Library/BaseMemoryLibRepStr/ScanMem8Wrapper.c:15
+  MdePkg/Library/BaseMemoryLibRepStr/ScanMem32Wrapper.c:14
+  MdePkg/Library/BaseMemoryLibRepStr/SetMemWrapper.c:15
+  MdePkg/Library/BaseMemoryLibRepStr/MemLibGuid.c:15
+  MdePkg/Library/BaseMemoryLibRepStr/ScanMem16Wrapper.c:15
+  MdePkg/Library/BaseSynchronizationLib/InterlockedIncrementMsc.c:4
+  MdePkg/Library/BaseSynchronizationLib/BaseSynchronizationLibInternals.h:4
+  MdePkg/Library/BaseSynchronizationLib/SynchronizationMsc.c:4
+  MdePkg/Library/BaseSynchronizationLib/Synchronization.c:4
+  MdePkg/Library/BaseSynchronizationLib/SynchronizationGcc.c:4
+  MdePkg/Library/BaseSynchronizationLib/InterlockedDecrementMsc.c:4
+  MdePkg/Library/UefiMemoryLib/ZeroMemWrapper.c:15
+  MdePkg/Library/UefiMemoryLib/CopyMemWrapper.c:15
+  MdePkg/Library/UefiMemoryLib/ScanMem64Wrapper.c:15
+  MdePkg/Library/UefiMemoryLib/ScanMem8Wrapper.c:15
+  MdePkg/Library/UefiMemoryLib/ScanMem32Wrapper.c:14
+  MdePkg/Library/UefiMemoryLib/SetMemWrapper.c:15
+  MdePkg/Library/UefiMemoryLib/MemLibGuid.c:15
+  MdePkg/Library/UefiMemoryLib/ScanMem16Wrapper.c:15
+  MdePkg/Library/DxeRuntimePciExpressLib/PciExpressLib.c:8
+  MdePkg/Library/BaseMemoryLibOptDxe/ZeroMemWrapper.c:15
+  MdePkg/Library/BaseMemoryLibOptDxe/CopyMemWrapper.c:15
+  MdePkg/Library/BaseMemoryLibOptDxe/ScanMem64Wrapper.c:15
+  MdePkg/Library/BaseMemoryLibOptDxe/ScanMem8Wrapper.c:15
+  MdePkg/Library/BaseMemoryLibOptDxe/ScanMem32Wrapper.c:14
+  MdePkg/Library/BaseMemoryLibOptDxe/SetMemWrapper.c:15
+  MdePkg/Library/BaseMemoryLibOptDxe/MemLibGuid.c:15
+  MdePkg/Library/BaseMemoryLibOptDxe/ScanMem16Wrapper.c:15
+  MdePkg/Library/BasePerformanceLibNull/PerformanceLib.c:4
+  MdePkg/Library/PeiDxePostCodeLibReportStatusCode/PostCode.c:5
+  MdePkg/Library/BasePcdLibNull/PcdLib.c:4
+  MdePkg/Library/BasePostCodeLibPort80/PostCode.c:4
+  MdePkg/Library/BasePeCoffLib/PeCoffLoaderEx.c:4
+  MdePkg/Library/BasePciCf8Lib/PciCf8Lib.c:5
+  MdePkg/Library/BaseMemoryLib/ZeroMemWrapper.c:15
+  MdePkg/Library/BaseMemoryLib/CopyMemWrapper.c:15
+  MdePkg/Library/BaseMemoryLib/ScanMem64Wrapper.c:15
+  MdePkg/Library/BaseMemoryLib/ScanMem8Wrapper.c:15
+  MdePkg/Library/BaseMemoryLib/ScanMem32Wrapper.c:14
+  MdePkg/Library/BaseMemoryLib/SetMemWrapper.c:15
+  MdePkg/Library/BaseMemoryLib/MemLibGuid.c:15
+  MdePkg/Library/BaseMemoryLib/ScanMem16Wrapper.c:15
+  MdePkg/Library/BaseMemoryLibSse2/ZeroMemWrapper.c:15
+  MdePkg/Library/BaseMemoryLibSse2/CopyMemWrapper.c:15
+  MdePkg/Library/BaseMemoryLibSse2/ScanMem64Wrapper.c:15
+  MdePkg/Library/BaseMemoryLibSse2/ScanMem8Wrapper.c:15
+  MdePkg/Library/BaseMemoryLibSse2/ScanMem32Wrapper.c:14
+  MdePkg/Library/BaseMemoryLibSse2/SetMemWrapper.c:15
+  MdePkg/Library/BaseMemoryLibSse2/MemLibGuid.c:15
+  MdePkg/Library/BaseMemoryLibSse2/ScanMem16Wrapper.c:15
+  MdePkg/Library/BaseSerialPortLibNull/BaseSerialPortLibNull.c:4
+  MdePkg/Library/UefiScsiLib/UefiScsiLib.c:4
+  MdePkg/Library/PeiResourcePublicationLib/PeiResourcePublicationLib.c:4
+  MdePkg/Library/SmmMemoryAllocationLib/MemoryAllocationLib.c:15
+  MdePkg/Library/UefiBootServicesTableLib/UefiBootServicesTableLib.c:5
+  MdePkg/Library/PeiMemoryAllocationLib/MemoryAllocationLib.c:5
+  MdePkg/Library/UefiDevicePathLib/DevicePathUtilities.c:11
+  MdePkg/Library/UefiDevicePathLib/UefiDevicePathLib.c:11
+  MdePkg/Library/PeiMemoryLib/ZeroMemWrapper.c:15
+  MdePkg/Library/PeiMemoryLib/CopyMemWrapper.c:15
+  MdePkg/Library/PeiMemoryLib/ScanMem64Wrapper.c:15
+  MdePkg/Library/PeiMemoryLib/ScanMem8Wrapper.c:15
+  MdePkg/Library/PeiMemoryLib/ScanMem32Wrapper.c:14
+  MdePkg/Library/PeiMemoryLib/SetMemWrapper.c:15
+  MdePkg/Library/PeiMemoryLib/MemLib.c:4
+  MdePkg/Library/PeiMemoryLib/MemLibGuid.c:15
+  MdePkg/Library/PeiMemoryLib/MemLibInternals.h:4
+  MdePkg/Library/PeiMemoryLib/ScanMem16Wrapper.c:15
+  MdePkg/Library/BaseIoLibIntrinsic/IoLibGcc.c:13
+  MdePkg/Library/BaseIoLibIntrinsic/IoLib.c:4
+  MdePkg/Library/BaseIoLibIntrinsic/IoHighLevel.c:7
+  MdePkg/Library/BaseIoLibIntrinsic/IoLibMsc.c:11
+  MdePkg/Library/BaseIoLibIntrinsic/IoLibArm.c:4
+  MdePkg/Library/BasePeCoffGetEntryPointLib/PeCoffGetEntryPoint.c:5
+  MdePkg/Library/UefiDevicePathLibDevicePathProtocol/UefiDevicePathLib.c:5
+  MdePkg/Library/BaseMemoryLibMmx/ZeroMemWrapper.c:15
+  MdePkg/Library/BaseMemoryLibMmx/CopyMemWrapper.c:15
+  MdePkg/Library/BaseMemoryLibMmx/ScanMem64Wrapper.c:15
+  MdePkg/Library/BaseMemoryLibMmx/ScanMem8Wrapper.c:15
+  MdePkg/Library/BaseMemoryLibMmx/ScanMem32Wrapper.c:14
+  MdePkg/Library/BaseMemoryLibMmx/SetMemWrapper.c:15
+  MdePkg/Library/BaseMemoryLibMmx/MemLibGuid.c:15
+  MdePkg/Library/BaseMemoryLibMmx/ScanMem16Wrapper.c:15
+  MdePkg/Library/UefiMemoryAllocationLib/MemoryAllocationLib.c:5
+  MdePkg/Library/BasePciLibPciExpress/PciLib.c:5
+  MdePkg/Library/UefiLib/UefiDriverModel.c:6
+  MdePkg/Library/UefiLib/Console.c:4
+  MdePkg/Library/UefiLib/UefiLib.c:8
+  MdePkg/Library/BasePostCodeLibDebug/PostCode.c:4
+  MdePkg/Library/BaseMemoryLibOptPei/ZeroMemWrapper.c:15
+  MdePkg/Library/BaseMemoryLibOptPei/CopyMemWrapper.c:15
+  MdePkg/Library/BaseMemoryLibOptPei/ScanMem64Wrapper.c:15
+  MdePkg/Library/BaseMemoryLibOptPei/ScanMem8Wrapper.c:15
+  MdePkg/Library/BaseMemoryLibOptPei/ScanMem32Wrapper.c:14
+  MdePkg/Library/BaseMemoryLibOptPei/SetMemWrapper.c:15
+  MdePkg/Library/BaseMemoryLibOptPei/MemLibGuid.c:15
+  MdePkg/Library/BaseMemoryLibOptPei/ScanMem16Wrapper.c:15
+  MdePkg/Library/BaseS3PciLib/S3PciLib.c:6
+  MdePkg/Library/BasePrintLib/PrintLibInternal.h:4
+  MdePkg/Library/BasePrintLib/PrintLib.c:4
+  MdePkg/Library/BasePrintLib/PrintLibInternal.c:4
+  MdePkg/Library/PeiIoLibCpuIo/IoLib.c:4
+  MdePkg/Library/PeiIoLibCpuIo/IoHighLevel.c:7
+  MdePkg/Library/DxeServicesTableLib/DxeServicesTableLib.c:15
+  MdePkg/Library/UefiUsbLib/UefiUsbLibInternal.h:7
+  MdePkg/Library/BasePeCoffLib/Arm/PeCoffLoaderEx.c:4
+  MdePkg/Library/BaseSynchronizationLib/Ebc/Synchronization.c:4
+  MdePkg/Library/BaseSynchronizationLib/X64/GccInline.c:4
+  MdePkg/Library/BaseSynchronizationLib/Ia32/GccInline.c:4
+  MdePkg/Library/BaseLib/X64/GccInline.c:4
+  MdePkg/Library/BaseLib/Ia32/FlushCacheLine.c:4
+  MdePkg/Library/BaseLib/Ia32/GccInline.c:4
+  MdePkg/Library/BaseLib/Arm/Unaligned.c:6
+  MdePkg/Library/BaseLib/Arm/InternalSwitchStack.c:4
+  MdePkg/Include/IndustryStandard/AlertStandardFormatTable.h:4
+  MdePkg/Include/IndustryStandard/UefiTcgPlatform.h:4
+  MdePkg/Include/IndustryStandard/Pci22.h:10
+  MdePkg/Include/IndustryStandard/IScsiBootFirmwareTable.h:5
+  MdePkg/Include/IndustryStandard/Acpi20.h:4
+  MdePkg/Include/IndustryStandard/Pci23.h:4
+  MdePkg/Include/IndustryStandard/WatchdogResourceTable.h:5
+  MdePkg/Include/IndustryStandard/Acpi30.h:4
+  MdePkg/Include/IndustryStandard/Scsi.h:4
+  MdePkg/Include/IndustryStandard/Pci30.h:4
+  MdePkg/Include/IndustryStandard/Tpm12.h:5
+  MdePkg/Include/Library/S3PciLib.h:6
+  MdePkg/Include/Library/S3IoLib.h:6
+  MdePkg/Include/Library/S3BootScriptLib.h:8
+  MdePkg/Include/Protocol/UgaDraw.h:6
+  MdePkg/Include/Protocol/LoadedImage.h:7
+  MdePkg/Include/Protocol/DevicePathFromText.h:5
+  MdePkg/Include/Protocol/Shell.h:5
+  MdePkg/Include/Protocol/SimpleTextInEx.h:8
+  MdePkg/Include/Protocol/DriverConfiguration.h:4
+  MdePkg/Include/Protocol/DiskIo.h:8
+  MdePkg/Include/Protocol/ScsiPassThruExt.h:6
+  MdePkg/Include/Protocol/SmbusHc.h:5
+  MdePkg/Include/Protocol/DevicePathToText.h:5
+  MdePkg/Include/Protocol/ServiceBinding.h:8
+  MdePkg/Include/Protocol/DriverConfiguration2.h:4
+  MdePkg/Include/Protocol/Usb2HostController.h:7
+  MdePkg/Include/Protocol/EdidDiscovered.h:7
+  MdePkg/Include/Protocol/RealTimeClock.h:14
+  MdePkg/Include/Protocol/SimplePointer.h:6
+  MdePkg/Include/Protocol/DeviceIo.h:7
+  MdePkg/Include/Protocol/ScsiIo.h:7
+  MdePkg/Include/Protocol/Security.h:17
+  MdePkg/Include/Protocol/EdidActive.h:6
+  MdePkg/Include/Protocol/PlatformDriverOverride.h:4
+  MdePkg/Include/Protocol/VariableWrite.h:23
+  MdePkg/Include/Protocol/GraphicsOutput.h:6
+  MdePkg/Include/Protocol/IScsiInitiatorName.h:5
+  MdePkg/Include/Protocol/ComponentName2.h:6
+  MdePkg/Include/Protocol/DriverDiagnostics2.h:4
+  MdePkg/Include/Protocol/GuidedSectionExtraction.h:7
+  MdePkg/Include/Protocol/Variable.h:23
+  MdePkg/Include/Protocol/FirmwareVolume2.h:8
+  MdePkg/Include/Protocol/BlockIo.h:7
+  MdePkg/Include/Protocol/Metronome.h:6
+  MdePkg/Include/Protocol/Runtime.h:13
+  MdePkg/Include/Protocol/PlatformToDriverConfiguration.h:8
+  MdePkg/Include/Protocol/Timer.h:6
+  MdePkg/Include/Protocol/DevicePathUtilities.h:5
+  MdePkg/Include/Protocol/DebugPort.h:7
+  MdePkg/Include/Protocol/PciRootBridgeIo.h:8
+  MdePkg/Include/Protocol/UgaIo.h:6
+  MdePkg/Include/Protocol/DriverSupportedEfiVersion.h:7
+  MdePkg/Include/Protocol/SecurityPolicy.h:4
+  MdePkg/Include/Protocol/BusSpecificDriverOverride.h:9
+  MdePkg/Include/Protocol/PciHotPlugRequest.h:31
+  MdePkg/Include/Protocol/Decompress.h:4
+  MdePkg/Include/Protocol/HiiImage.h:4
+  MdePkg/Include/Protocol/SuperIo.h:8
+  MdePkg/Include/Protocol/Cpu.h:6
+  MdePkg/Include/Protocol/AbsolutePointer.h:5
+  MdePkg/Include/Protocol/UsbHostController.h:8
+  MdePkg/Include/Protocol/UsbIo.h:8
+  MdePkg/Include/Protocol/PciIo.h:5
+  MdePkg/Include/Protocol/ScsiPassThru.h:11
+  MdePkg/Include/Protocol/DiskInfo.h:5
+  MdePkg/Include/Protocol/Bds.h:6
+  MdePkg/Include/Protocol/SerialIo.h:7
+  MdePkg/Include/Protocol/Smbios.h:16
+  MdePkg/Include/Protocol/AcpiSystemDescriptionTable.h:4
+  MdePkg/Include/Protocol/WatchdogTimer.h:6
+  MdePkg/Include/Protocol/Reset.h:9
+  MdePkg/Include/Protocol/StatusCode.h:4
+  MdePkg/Include/Protocol/AcpiTable.h:5
+  MdePkg/Include/Protocol/EdidOverride.h:7
+  MdePkg/Include/Protocol/Ebc.h:4
+  MdePkg/Include/Protocol/LoadFile2.h:10
+  MdePkg/Include/Pi/PiDependency.h:4
+  MdePkg/Include/Guid/AprioriFileName.h:6
+  MdePkg/Include/Guid/MemoryAllocationHob.h:4
+  MdePkg/Include/Guid/FirmwareFileSystem3.h:4
+  MdePkg/Include/Guid/Gpt.h:7
+  MdePkg/Include/Guid/EventLegacyBios.h:6
+  MdePkg/Include/Guid/Acpi.h:8
+  MdePkg/Include/Guid/Apriori.h:6
+  MdePkg/Include/Guid/DxeServices.h:4
+  MdePkg/Include/Guid/HobList.h:6
+  MdePkg/Include/Guid/FileSystemVolumeLabelInfo.h:6
+  MdePkg/Include/Guid/FirmwareFileSystem2.h:4
+  MdePkg/Include/Guid/DebugImageInfoTable.h:4
+  MdePkg/Include/Guid/HiiKeyBoardLayout.h:5
+  MdePkg/Include/Guid/SmBios.h:8
+  MdePkg/Include/Guid/Mps.h:6
+  MdePkg/Include/Guid/PcAnsi.h:4
+  MdePkg/Include/Guid/GlobalVariable.h:4
+  MdePkg/Include/Ppi/Security2.h:8
+  MdePkg/Include/Ppi/EndOfPeiPhase.h:7
+  MdePkg/Include/Ppi/Smbus2.h:6
+  MdePkg/Include/Ppi/BootInRecoveryMode.h:5
+  MdePkg/Include/Ppi/DxeIpl.h:5
+  MdePkg/Include/Ppi/GuidedSectionExtraction.h:7
+  MdePkg/Include/Ppi/MemoryDiscovered.h:8
+  MdePkg/Include/Ppi/LoadImage.h:5
+  MdePkg/Include/Ppi/Stall.h:6
+  MdePkg/Include/Ppi/PciCfg2.h:7
+  MdePkg/Include/Ppi/Decompress.h:4
+  MdePkg/Include/Ppi/MasterBootMode.h:8
+  MdePkg/Include/Ppi/FirmwareVolumeInfo.h:4
+  MdePkg/Include/Ppi/TemporaryRamSupport.h:5
+  MdePkg/Include/Ppi/LoadFile.h:4
+  MdePkg/Include/Ppi/Reset.h:7
+  MdePkg/Include/Ppi/StatusCode.h:5
+  MdePkg/Include/Ppi/FirmwareVolume.h:4
+  BaseTools/Source/C/LzmaCompress/LzmaCompress.c:8
+  BaseTools/Source/C/Common/PeCoffLib.h:4
+  BaseTools/Source/C/TianoCompress/TianoCompress.h:4
+  BaseTools/Source/C/Include/X64/ProcessorBind.h:4
+  BaseTools/Source/C/Include/IndustryStandard/pci22.h:4
+  BaseTools/Source/C/Include/IndustryStandard/PeImage.h:7
+  BaseTools/Source/C/Include/IndustryStandard/MemoryMappedConfigurationSpaceAccessTable.h:6
+  BaseTools/Source/C/Include/Protocol/UgaDraw.h:6
+  BaseTools/Source/C/Include/Protocol/GraphicsOutput.h:6
+  BaseTools/Source/C/Include/Protocol/GuidedSectionExtraction.h:12
+  BaseTools/Source/C/Include/Ia32/ProcessorBind.h:4
+  BaseTools/Source/C/Include/Common/UefiBaseTypes.h:4
+  BaseTools/Source/C/Include/Common/PiFirmwareVolume.h:7
+  BaseTools/Source/C/Include/Common/BaseTypes.h:6
+  BaseTools/Source/C/Include/Common/UefiInternalFormRepresentation.h:6
+  BaseTools/Source/C/Include/Common/PiFirmwareFile.h:7
+  BaseTools/Source/C/Include/Common/UefiMultiPhase.h:6
+  BaseTools/Source/C/Include/Guid/PiFirmwareFileSystem.h:8
+  BaseTools/Source/C/Include/Guid/PcAnsi.h:6
+  BaseTools/Source/C/Include/Arm/ProcessorBind.h:4
+  BaseTools/Source/C/Include/AArch64/ProcessorBind.h:4
+
+--- Original notice ---
+  Copyright (c) 2006 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseDebugLibNull/DebugLib.c:4
+  MdePkg/Library/PeiServicesLib/PeiServicesLib.c:4
+  MdePkg/Library/BaseLib/BaseLibInternals.h:4
+  MdePkg/Library/BaseLib/String.c:4
+  MdePkg/Library/BasePeCoffLib/BasePeCoff.c:18
+  MdePkg/Library/BaseDebugLibSerialPort/DebugLib.c:10
+  MdePkg/Library/BaseUefiDecompressLib/BaseUefiDecompressLibInternals.h:4
+  MdePkg/Library/BaseUefiDecompressLib/BaseUefiDecompressLib.c:4
+  MdePkg/Library/BaseUefiDecompressLib/BaseUefiTianoCustomDecompressLib.c:4
+  MdePkg/Library/UefiDebugLibStdErr/DebugLib.c:4
+  MdePkg/Library/DxeRuntimeDebugLibSerialPort/DebugLib.c:7
+  MdePkg/Library/UefiDebugLibConOut/DebugLib.c:4
+  MdePkg/Include/X64/ProcessorBind.h:4
+  MdePkg/Include/Guid/StatusCodeDataTypeId.h:4
+
+--- Original notice ---
+  Copyright (c) 2006 - 2021, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/PciExpress21.h:4
+
+--- Original notice ---
+  Copyright (c) 2006 -2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseS3IoLib/S3IoLib.c:5
+
+--- Original notice ---
+  Copyright (c) 2007 - 2008, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsicInternal.h:6
+
+--- Original notice ---
+  Copyright (c) 2007 - 2009, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Guid/HardwareErrorVariable.h:4
+
+--- Original notice ---
+  Copyright (c) 2007 - 2011, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseTimerLibNullTemplate/TimerLibNull.c:4
+
+--- Original notice ---
+  Copyright (c) 2007 - 2016, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/SdramSpd.h:4
+
+--- Original notice ---
+  Copyright (c) 2007 - 2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/UefiLib/UefiLibInternal.h:4
+
+--- Original notice ---
+  Copyright (c) 2007 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/PeiPciLibPciCfg2/PciLib.c:4
+  MdePkg/Library/UefiPciSegmentLibPciRootBridgeIo/PciSegmentLib.h:4
+  MdePkg/Library/UefiPciSegmentLibPciRootBridgeIo/PciSegmentLib.c:4
+  MdePkg/Library/BaseS3SmbusLib/S3SmbusLib.c:6
+  MdePkg/Library/DxeServicesLib/DxeServicesLib.c:5
+  MdePkg/Library/BaseLib/CheckSum.c:5
+  MdePkg/Library/PeiExtractGuidedSectionLib/PeiExtractGuidedSectionLib.c:4
+  MdePkg/Library/DxeExtractGuidedSectionLib/DxeExtractGuidedSectionLib.c:4
+  MdePkg/Library/BaseS3BootScriptLibNull/BootScriptLib.c:4
+  MdePkg/Library/BaseExtractGuidedSectionLib/BaseExtractGuidedSectionLib.c:4
+  MdePkg/Library/BaseIoLibIntrinsic/IoLibMmioBuffer.c:4
+  MdePkg/Library/PeiPciSegmentLibPciCfg2/PciSegmentLib.c:4
+  MdePkg/Library/UefiLib/UefiLibPrint.c:5
+  MdePkg/Library/BaseS3StallLib/S3StallLib.c:6
+  MdePkg/Library/UefiPciLibPciRootBridgeIo/PciLib.c:4
+  MdePkg/Library/PeiIoLibCpuIo/IoLibMmioBuffer.c:5
+  MdePkg/Include/IndustryStandard/SerialPortConsoleRedirectionTable.h:5
+  MdePkg/Include/IndustryStandard/MemoryMappedConfigurationSpaceAccessTable.h:6
+  MdePkg/Include/IndustryStandard/HighPrecisionEventTimerTable.h:5
+  MdePkg/Include/IndustryStandard/SmBus.h:5
+  MdePkg/Include/Library/S3SmbusLib.h:6
+  MdePkg/Include/Library/S3StallLib.h:6
+  MdePkg/Include/Library/SmmLib.h:6
+  MdePkg/Include/Protocol/SmmReportStatusCodeHandler.h:4
+  MdePkg/Include/Protocol/CpuIo2.h:15
+  MdePkg/Include/Protocol/ReportStatusCodeHandler.h:5
+  MdePkg/Include/Protocol/IncompatiblePciDeviceSupport.h:61
+  MdePkg/Include/Protocol/PciHotPlugInit.h:43
+  MdePkg/Include/Ppi/ReportStatusCodeHandler.h:4
+  MdePkg/Include/Ppi/RecoveryModule.h:34
+  MdePkg/Include/Ppi/DeviceRecoveryModule.h:13
+  BaseTools/Source/C/Include/Protocol/HiiFramework.h:9
+  BaseTools/Source/C/Include/Common/VariableFormat.h:4
+
+--- Original notice ---
+  Copyright (c) 2008 - 2011, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/Mtftp6.h:6
+
+--- Original notice ---
+  Copyright (c) 2008 - 2014, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/Tcp6.h:7
+  MdePkg/Include/Protocol/Ip6.h:13
+
+--- Original notice ---
+  Copyright (c) 2008 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/WatchdogActionTable.h:5
+  MdePkg/Include/Protocol/Udp6.h:6
+  MdePkg/Include/Protocol/Dhcp6.h:5
+
+--- Original notice ---
+  Copyright (c) 2009 - 2010, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/PiPcd.h:15
+  MdePkg/Include/Protocol/SmmStandbyButtonDispatch2.h:7
+
+--- Original notice ---
+  Copyright (c) 2009 - 2012, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/SmmIoLibSmmCpuIo2/IoHighLevel.c:7
+
+--- Original notice ---
+  Copyright (c) 2009 - 2013, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Ppi/PiPcd.h:14
+
+--- Original notice ---
+  Copyright (c) 2009 - 2016, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/SmmReadyToLock.h:14
+
+--- Original notice ---
+  Copyright (c) 2009 - 2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/SmmSxDispatch2.h:7
+  MdePkg/Include/Protocol/SmmCpuIo2.h:6
+  MdePkg/Include/Protocol/SmmUsbDispatch2.h:7
+  MdePkg/Include/Protocol/SmmPowerButtonDispatch2.h:7
+  MdePkg/Include/Protocol/DxeSmmReadyToLock.h:20
+  MdePkg/Include/Protocol/SmmIoTrapDispatch2.h:7
+
+--- Original notice ---
+  Copyright (c) 2009 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/StandaloneMmServicesTableLib/StandaloneMmServicesTableLib.c:4
+  MdePkg/Library/SmmPciLibPciRootBridgeIo/PciLib.c:4
+  MdePkg/Library/SmmLibNull/SmmLibNull.c:4
+  MdePkg/Library/MmServicesTableLib/MmServicesTableLib.c:4
+  MdePkg/Library/SmmServicesTableLib/SmmServicesTableLib.c:4
+  MdePkg/Library/SmmIoLibSmmCpuIo2/IoLibMmioBuffer.c:4
+  MdePkg/Library/SmmIoLibSmmCpuIo2/IoLib.c:6
+  MdePkg/Library/SmmIoLibSmmCpuIo2/SmmCpuIoLibInternal.h:7
+  MdePkg/Library/BaseReportStatusCodeLibNull/BaseReportStatusCodeLib.c:4
+  MdePkg/Library/BasePeCoffExtraActionLibNull/PeCoffExtraActionLib.c:4
+  MdePkg/Include/Library/FileHandleLib.h:4
+  MdePkg/Include/Library/PeCoffExtraActionLib.h:6
+  MdePkg/Include/Protocol/SmmSwDispatch2.h:7
+  MdePkg/Include/Protocol/IpSec.h:13
+  MdePkg/Include/Protocol/FirmwareManagement.h:11
+  MdePkg/Include/Protocol/UserCredential.h:7
+  MdePkg/Include/Protocol/Ftp4.h:10
+  MdePkg/Include/Protocol/AtaPassThru.h:6
+  MdePkg/Include/Protocol/SmmStatusCode.h:6
+  MdePkg/Include/Protocol/S3SmmSaveState.h:17
+  MdePkg/Include/Protocol/LegacyRegion2.h:5
+  MdePkg/Include/Protocol/SmmCpu.h:9
+  MdePkg/Include/Protocol/UserManager.h:6
+  MdePkg/Include/Protocol/HiiPackageList.h:8
+  MdePkg/Include/Protocol/SmmGpiDispatch2.h:12
+  MdePkg/Include/Protocol/SmmCommunication.h:7
+  MdePkg/Include/Protocol/IpSecConfig.h:6
+  MdePkg/Include/Protocol/DeferredImageLoad.h:9
+  MdePkg/Include/Protocol/DriverHealth.h:23
+  MdePkg/Include/Protocol/EapManagement.h:9
+  MdePkg/Include/Protocol/SmmPeriodicTimerDispatch2.h:7
+  MdePkg/Include/Protocol/SmmConfiguration.h:9
+  MdePkg/Include/Protocol/SmmControl2.h:14
+  MdePkg/Include/Protocol/VlanConfig.h:4
+  MdePkg/Include/Protocol/SmmAccess2.h:14
+  MdePkg/Include/Protocol/UserCredential2.h:6
+  MdePkg/Include/Protocol/Eap.h:8
+  MdePkg/Include/Protocol/SmmBase2.h:7
+  MdePkg/Include/Protocol/SmmPciRootBridgeIo.h:6
+  MdePkg/Include/Pi/PiSmmCis.h:5
+  MdePkg/Include/Pi/PiS3BootScript.h:5
+  MdePkg/Include/Guid/MdePkgTokenSpace.h:4
+  MdePkg/Include/Guid/MemoryOverwriteControl.h:10
+  MdePkg/Include/Guid/HiiFormMapMethodGuid.h:4
+  MdePkg/Include/Guid/ImageAuthentication.h:4
+
+--- Original notice ---
+  Copyright (c) 2009 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/S3SaveState.h:8
+
+--- Original notice ---
+  Copyright (c) 2009, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/PciOverride.h:7
+  MdePkg/Include/Protocol/PciEnumerationComplete.h:5
+
+--- Original notice ---
+  Copyright (c) 2010 - 2012, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/DxeIoLibCpuIo2/IoHighLevel.c:7
+
+--- Original notice ---
+  Copyright (c) 2010 - 2015, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Scripts/GccBase.lds:5
+
+--- Original notice ---
+  Copyright (c) 2010 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/DxeIoLibCpuIo2/IoLibMmioBuffer.c:4
+  MdePkg/Library/DxeIoLibCpuIo2/IoLib.c:4
+  MdePkg/Library/DxeIoLibCpuIo2/DxeCpuIo2LibInternal.h:4
+  MdePkg/Include/Ppi/S3Resume2.h:10
+
+--- Original notice ---
+  Copyright (c) 2010 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Register/Intel/LocalApic.h:4
+
+--- Original notice ---
+  Copyright (c) 2010 - 2022, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Acpi40.h:4
+
+--- Original notice ---
+  Copyright (c) 2011 - 2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/FilePaths.c:4
+  MdePkg/Include/Guid/Cper.h:4
+
+--- Original notice ---
+  Copyright (c) 2011 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseDebugPrintErrorLevelLib/BaseDebugPrintErrorLevelLib.c:6
+  MdePkg/Library/SmmPeriodicSmiLib/SmmPeriodicSmiLib.c:4
+  MdePkg/Include/Library/DebugPrintErrorLevelLib.h:4
+  MdePkg/Include/Protocol/StorageSecurityCommand.h:8
+  MdePkg/Include/Protocol/BlockIo2.h:8
+  MdePkg/Include/Protocol/Kms.h:11
+
+--- Original notice ---
+  Copyright (c) 2011 - 2022, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Acpi50.h:5
+
+--- Original notice ---
+  Copyright (c) 2011, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/AcpiAml.h:4
+
+--- Original notice ---
+  Copyright (c) 2012 - 2013, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseMemoryLib/CopyMem.c:7
+  MdePkg/Library/BaseMemoryLib/SetMem.c:8
+
+--- Original notice ---
+  Copyright (c) 2012 - 2016, ARM Limited. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/DebugPort2Table.h:6
+
+--- Original notice ---
+  Copyright (c) 2012 - 2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/SmmEndOfDxe.h:12
+
+--- Original notice ---
+  Copyright (c) 2012 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/PciCodeId.h:5
+  MdePkg/Include/IndustryStandard/DebugPortTable.h:5
+  MdePkg/Include/IndustryStandard/DebugPort2Table.h:5
+  MdePkg/Include/Protocol/Security2.h:20
+
+--- Original notice ---
+  Copyright (c) 2013 - 2014, Hewlett-Packard Development Company, L.P.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/FirmwareManagement.h:12
+
+--- Original notice ---
+  Copyright (c) 2013 - 2015, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Guid/FmpCapsule.h:5
+
+--- Original notice ---
+  Copyright (c) 2013 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/UefiDevicePathLib/UefiDevicePathLibOptionalDevicePathProtocol.c:11
+  MdePkg/Include/Protocol/I2cHost.h:7
+  MdePkg/Include/Protocol/I2cIo.h:7
+  MdePkg/Include/Protocol/DiskIo2.h:7
+  MdePkg/Include/Protocol/NvmExpressPassthru.h:6
+  MdePkg/Include/Protocol/I2cMaster.h:7
+  MdePkg/Include/Protocol/I2cBusConfigurationManagement.h:9
+  MdePkg/Include/Protocol/PcdInfo.h:11
+  MdePkg/Include/Protocol/Timestamp.h:5
+  MdePkg/Include/Protocol/I2cEnumerate.h:6
+  MdePkg/Include/Guid/FirmwareContentsSigned.h:4
+  MdePkg/Include/Guid/VectorHandoffTable.h:5
+  MdePkg/Include/Ppi/VectorHandoffInfo.h:9
+  MdePkg/Include/Ppi/FirmwareVolumeInfo2.h:4
+  MdePkg/Include/Ppi/I2cMaster.h:5
+  MdePkg/Include/Ppi/TemporaryRamDone.h:5
+  MdePkg/Include/Ppi/PcdInfo.h:11
+
+--- Original notice ---
+  Copyright (c) 2013, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/PiPcdInfo.h:6
+  MdePkg/Include/Ppi/PiPcdInfo.h:6
+
+--- Original notice ---
+  Copyright (c) 2014 - 2015, Hewlett-Packard Development Company, L.P.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Pci22.h:11
+
+--- Original notice ---
+  Copyright (c) 2014 - 2016, ARM Limited. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/SerialPortConsoleRedirectionTable.h:7
+
+--- Original notice ---
+  Copyright (c) 2014 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/PciExpress30.h:6
+  MdePkg/Include/Protocol/AdapterInformation.h:6
+
+--- Original notice ---
+  Copyright (c) 2014 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/SafeString.c:4
+
+--- Original notice ---
+  Copyright (c) 2014 - 2022, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Acpi51.h:5
+
+--- Original notice ---
+  Copyright (c) 2014 Hewlett-Packard Development Company, L.P.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Acpi50.h:4
+  MdePkg/Include/IndustryStandard/Acpi51.h:4
+
+--- Original notice ---
+  Copyright (c) 2014, Hewlett-Packard Development Company, L.P.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/DriverHealth.h:24
+
+--- Original notice ---
+  Copyright (c) 2014, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseOrderedCollectionRedBlackTreeLib/BaseOrderedCollectionRedBlackTreeLib.c:14
+
+--- Original notice ---
+  Copyright (c) 2015 - 2016, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/WiFi.h:6
+  MdePkg/Include/Guid/GraphicsInfoHob.h:4
+
+--- Original notice ---
+  Copyright (c) 2015 - 2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Bluetooth.h:5
+  MdePkg/Include/Protocol/BluetoothIo.h:7
+  MdePkg/Include/Ppi/MpServices.h:6
+
+--- Original notice ---
+  Copyright (c) 2015 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/SmmMemLib/SmmMemLib.c:9
+  MdePkg/Library/DxeHstiLib/HstiDxe.c:3
+  MdePkg/Library/DxeHstiLib/HstiAip.c:3
+  MdePkg/Library/DxeHstiLib/HstiDxe.h:3
+  MdePkg/Include/IndustryStandard/MemoryOverwriteRequestControlLock.h:6
+  MdePkg/Include/IndustryStandard/Hsti.h:5
+  MdePkg/Include/IndustryStandard/WindowsUxCapsule.h:5
+  MdePkg/Include/Library/SmmMemLib.h:8
+  MdePkg/Include/Protocol/EapConfiguration.h:4
+  MdePkg/Include/Protocol/BootManagerPolicy.h:7
+  MdePkg/Include/Protocol/Dns6.h:7
+  MdePkg/Include/Protocol/BluetoothHc.h:5
+  MdePkg/Include/Protocol/IsaHc.h:8
+  MdePkg/Include/Protocol/SuperIoControl.h:6
+  MdePkg/Include/Protocol/UsbFunctionIo.h:14
+  MdePkg/Include/Protocol/Dns4.h:7
+  MdePkg/Include/Protocol/BluetoothConfig.h:5
+  MdePkg/Include/Guid/CapsuleReport.h:4
+  MdePkg/Include/Ppi/IsaHc.h:4
+  MdePkg/Include/Ppi/SuperIo.h:4
+
+--- Original notice ---
+  Copyright (c) 2015 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/UefiDebugLibDebugPortProtocol/DebugLibConstructor.c:6
+  MdePkg/Library/UefiDebugLibDebugPortProtocol/DebugLib.c:4
+  MdePkg/Library/UefiDebugLibStdErr/DebugLibConstructor.c:6
+  MdePkg/Library/UefiDebugLibConOut/DebugLibConstructor.c:6
+  MdePkg/Include/Register/Intel/Cpuid.h:9
+  MdePkg/Include/Register/Intel/StmStatusCode.h:4
+  MdePkg/Include/Register/Intel/StmResourceDescriptor.h:4
+  MdePkg/Include/Register/Intel/StmApi.h:4
+
+--- Original notice ---
+  Copyright (c) 2015 - 2022, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Acpi60.h:4
+
+--- Original notice ---
+  Copyright (c) 2015, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseIoLibIntrinsic/IoLibEbc.c:6
+  MdePkg/Include/IndustryStandard/Emmc.h:6
+  MdePkg/Include/IndustryStandard/Sd.h:7
+  MdePkg/Include/Library/HstiLib.h:4
+  MdePkg/Include/Protocol/Rest.h:4
+  MdePkg/Include/Protocol/EapManagement2.h:4
+  MdePkg/Include/Protocol/SdMmcPassThru.h:5
+  MdePkg/Include/Protocol/SmartCardReader.h:7
+  MdePkg/Include/Protocol/HttpUtilities.h:5
+  MdePkg/Include/Guid/SystemResourceTable.h:4
+  MdePkg/Include/Guid/PropertiesTable.h:4
+  MdePkg/Include/Ppi/Reset2.h:7
+  MdePkg/Include/Ppi/Graphics.h:6
+
+--- Original notice ---
+  Copyright (c) 2015, Linaro Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseSynchronizationLib/X64/InterlockedCompareExchange16.c:5
+  MdePkg/Library/BaseSynchronizationLib/Ia32/InterlockedCompareExchange16.c:5
+  BaseTools/Scripts/Rvct-Align32.sct:3
+  BaseTools/Scripts/Rvct-Align4K.sct:3
+  BaseTools/Scripts/GccBase.lds:6
+  BaseTools/Source/C/Include/Guid/FfsSectionAlignmentPadding.h:2
+
+--- Original notice ---
+  Copyright (c) 2015-2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/SmartCardEdge.h:9
+  MdePkg/Include/Protocol/BlockIoCrypto.h:5
+
+--- Original notice ---
+  Copyright (c) 2016 - 2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BasePciSegmentLibPci/PciSegmentLib.c:5
+  MdePkg/Include/Protocol/Supplicant.h:4
+
+--- Original notice ---
+  Copyright (c) 2016 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseSynchronizationLib/Ia32/InternalGetSpinLockProperties.c:4
+  MdePkg/Include/IndustryStandard/WindowsSmmSecurityMitigationTable.h:5
+  MdePkg/Include/IndustryStandard/DmaRemappingReportingTable.h:5
+  MdePkg/Include/IndustryStandard/Tls1.h:6
+  MdePkg/Include/Protocol/ShellDynamicCommand.h:5
+  MdePkg/Include/Protocol/Http.h:7
+
+--- Original notice ---
+  Copyright (c) 2016 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Register/Intel/Microcode.h:8
+  MdePkg/Include/Register/Intel/ArchitecturalMsr.h:9
+  MdePkg/Include/Register/Intel/Msr/Pentium4Msr.h:9
+  MdePkg/Include/Register/Intel/Msr/IvyBridgeMsr.h:9
+  MdePkg/Include/Register/Intel/Msr/BroadwellMsr.h:9
+  MdePkg/Include/Register/Intel/Msr/HaswellEMsr.h:9
+  MdePkg/Include/Register/Intel/Msr/XeonE7Msr.h:9
+  MdePkg/Include/Register/Intel/Msr/Core2Msr.h:9
+  MdePkg/Include/Register/Intel/Msr/NehalemMsr.h:9
+  MdePkg/Include/Register/Intel/Msr/SandyBridgeMsr.h:9
+  MdePkg/Include/Register/Intel/Msr/P6Msr.h:9
+  MdePkg/Include/Register/Intel/Msr/PentiumMsr.h:9
+  MdePkg/Include/Register/Intel/Msr/SilvermontMsr.h:9
+  MdePkg/Include/Register/Intel/Msr/Xeon5600Msr.h:9
+  MdePkg/Include/Register/Intel/Msr/SkylakeMsr.h:9
+  MdePkg/Include/Register/Intel/Msr/CoreMsr.h:9
+  MdePkg/Include/Register/Intel/Msr/XeonDMsr.h:9
+  MdePkg/Include/Register/Intel/Msr/XeonPhiMsr.h:9
+  MdePkg/Include/Register/Intel/Msr/PentiumMMsr.h:9
+  MdePkg/Include/Register/Intel/Msr/GoldmontMsr.h:9
+  MdePkg/Include/Register/Intel/Msr/HaswellMsr.h:9
+  MdePkg/Include/Register/Intel/Msr/AtomMsr.h:9
+
+--- Original notice ---
+  Copyright (c) 2016 - 2022, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Acpi61.h:4
+
+--- Original notice ---
+  Copyright (c) 2016 ~ 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Register/Intel/Msr.h:9
+
+--- Original notice ---
+  Copyright (c) 2016, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/X86RdRand.c:5
+  MdePkg/Library/BaseMemoryLibRepStr/IsZeroBufferWrapper.c:15
+  MdePkg/Library/UefiMemoryLib/IsZeroBufferWrapper.c:15
+  MdePkg/Library/BaseMemoryLibOptDxe/IsZeroBufferWrapper.c:15
+  MdePkg/Library/BaseMemoryLib/IsZeroBufferWrapper.c:15
+  MdePkg/Library/BaseMemoryLibSse2/IsZeroBufferWrapper.c:15
+  MdePkg/Library/PeiMemoryLib/IsZeroBufferWrapper.c:15
+  MdePkg/Library/BaseMemoryLibMmx/IsZeroBufferWrapper.c:15
+  MdePkg/Library/BaseMemoryLibOptPei/IsZeroBufferWrapper.c:15
+  MdePkg/Include/IndustryStandard/SdramSpdLpDdr.h:4
+  MdePkg/Include/IndustryStandard/SdramSpdDdr3.h:4
+  MdePkg/Include/IndustryStandard/LowPowerIdleTable.h:4
+  MdePkg/Include/IndustryStandard/SdramSpdDdr4.h:4
+  MdePkg/Include/IndustryStandard/Dhcp.h:5
+  MdePkg/Include/Protocol/Tls.h:9
+  MdePkg/Include/Protocol/TlsConfig.h:5
+  MdePkg/Include/Protocol/RamDisk.h:4
+  MdePkg/Include/Protocol/EraseBlock.h:4
+  MdePkg/Include/Guid/MemoryAttributesTable.h:4
+
+--- Original notice ---
+  Copyright (c) 2016, Linaro Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseMemoryLib/CopyMem.c:8
+  MdePkg/Library/BaseMemoryLib/SetMem.c:9
+  MdePkg/Library/BaseMemoryLibOptDxe/Arm/MemLibGuid.c:5
+
+--- Original notice ---
+  Copyright (c) 2016-2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/HiiImageDecoder.h:5
+
+--- Original notice ---
+  Copyright (c) 2017 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/HttpBootCallback.h:4
+
+--- Original notice ---
+  Copyright (c) 2017 - 2019, Advanced Micro Devices. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Register/Amd/Msr.h:9
+
+--- Original notice ---
+  Copyright (c) 2017 - 2022, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Acpi62.h:4
+  MdePkg/Include/IndustryStandard/Acpi64.h:4
+  MdePkg/Include/IndustryStandard/Acpi63.h:4
+
+--- Original notice ---
+  Copyright (c) 2017, AMD Incorporated. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/DxeIoLibCpuIo2/IoLib.c:5
+  MdePkg/Library/DxeIoLibCpuIo2/DxeCpuIo2LibInternal.h:5
+  MdePkg/Library/SmmIoLibSmmCpuIo2/IoLib.c:7
+  MdePkg/Library/BaseIoLibIntrinsic/IoLibEbc.c:7
+  MdePkg/Library/BaseIoLibIntrinsic/IoLibArm.c:6
+  MdePkg/Library/BaseIoLibIntrinsic/IoLibArmVirt.c:6
+  MdePkg/Library/PeiIoLibCpuIo/IoLib.c:5
+
+--- Original notice ---
+  Copyright (c) 2017, Advanced Micro Devices. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Register/Amd/Cpuid.h:9
+  MdePkg/Include/Register/Amd/Fam17Msr.h:9
+
+--- Original notice ---
+  Copyright (c) 2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/PciSegmentLibSegmentInfo/PciSegmentLibCommon.h:5
+  MdePkg/Library/PciSegmentLibSegmentInfo/BasePciSegmentLib.c:7
+  MdePkg/Library/PciSegmentLibSegmentInfo/PciSegmentLibCommon.c:5
+  MdePkg/Library/PciSegmentLibSegmentInfo/DxeRuntimePciSegmentLib.c:7
+  MdePkg/Library/BaseS3PciSegmentLib/S3PciSegmentLib.c:6
+  MdePkg/Library/BasePciSegmentInfoLibNull/PciSegmentInfoLib.c:5
+  MdePkg/Library/SmmIoLib/SmmIoLib.c:8
+  MdePkg/Library/SmiHandlerProfileLibNull/SmiHandlerProfileLibNull.c:4
+  MdePkg/Include/IndustryStandard/Nvme.h:5
+  MdePkg/Include/Library/S3PciSegmentLib.h:6
+  MdePkg/Include/Library/SmmIoLib.h:6
+  MdePkg/Include/Library/PciSegmentInfoLib.h:6
+  MdePkg/Include/Protocol/LegacySpiController.h:4
+  MdePkg/Include/Protocol/SpiHc.h:4
+  MdePkg/Include/Protocol/MmSxDispatch.h:7
+  MdePkg/Include/Protocol/MmCpu.h:9
+  MdePkg/Include/Protocol/WiFi2.h:4
+  MdePkg/Include/Protocol/PartitionInfo.h:4
+  MdePkg/Include/Protocol/SpiSmmConfiguration.h:4
+  MdePkg/Include/Protocol/MmReadyToLock.h:11
+  MdePkg/Include/Protocol/MmStatusCode.h:6
+  MdePkg/Include/Protocol/MmCpuIo.h:6
+  MdePkg/Include/Protocol/MmEndOfDxe.h:9
+  MdePkg/Include/Protocol/UfsDeviceConfig.h:4
+  MdePkg/Include/Protocol/MmControl.h:14
+  MdePkg/Include/Protocol/MmPowerButtonDispatch.h:7
+  MdePkg/Include/Protocol/MmAccess.h:14
+  MdePkg/Include/Protocol/BluetoothLeConfig.h:5
+  MdePkg/Include/Protocol/MmReportStatusCodeHandler.h:4
+  MdePkg/Include/Protocol/DxeMmReadyToLock.h:4
+  MdePkg/Include/Protocol/MmBase.h:7
+  MdePkg/Include/Protocol/SpiNorFlash.h:4
+  MdePkg/Include/Protocol/LegacySpiSmmFlash.h:4
+  MdePkg/Include/Protocol/LegacySpiSmmController.h:4
+  MdePkg/Include/Protocol/SpiSmmNorFlash.h:4
+  MdePkg/Include/Protocol/SpiConfiguration.h:4
+  MdePkg/Include/Protocol/MmSwDispatch.h:7
+  MdePkg/Include/Protocol/MmCommunication.h:7
+  MdePkg/Include/Protocol/SpiIo.h:4
+  MdePkg/Include/Protocol/MmUsbDispatch.h:7
+  MdePkg/Include/Protocol/BluetoothAttribute.h:6
+  MdePkg/Include/Protocol/MmPeriodicTimerDispatch.h:7
+  MdePkg/Include/Protocol/LegacySpiFlash.h:4
+  MdePkg/Include/Protocol/ResetNotification.h:5
+  MdePkg/Include/Protocol/MmPciRootBridgeIo.h:6
+  MdePkg/Include/Protocol/MmConfiguration.h:9
+  MdePkg/Include/Protocol/MmGpiDispatch.h:12
+  MdePkg/Include/Protocol/MmIoTrapDispatch.h:7
+  MdePkg/Include/Protocol/MmStandbyButtonDispatch.h:7
+  MdePkg/Include/Protocol/SpiSmmHc.h:4
+  MdePkg/Include/Pi/PiMmCis.h:5
+  BaseTools/Source/C/DevicePath/DevicePathUtilities.c:11
+  BaseTools/Source/C/DevicePath/UefiDevicePathLib.c:11
+  BaseTools/Source/C/Include/IndustryStandard/Bluetooth.h:5
+  BaseTools/Source/C/Include/Protocol/DevicePathUtilities.h:5
+
+--- Original notice ---
+  Copyright (c) 2017, Linaro Limited. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/IoRemappingTable.h:6
+
+--- Original notice ---
+  Copyright (c) 2017, Microsoft Corporation
+
+Locations:
+  MdePkg/Library/BaseSafeIntLib/SafeIntLib64.c:5
+  MdePkg/Library/BaseSafeIntLib/SafeIntLibEbc.c:5
+  MdePkg/Library/BaseSafeIntLib/SafeIntLib32.c:5
+  MdePkg/Library/BaseSafeIntLib/SafeIntLib.c:5
+  MdePkg/Include/Library/SafeIntLib.h:5
+
+--- Original notice ---
+  Copyright (c) 2017-2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/HiiPopup.h:5
+
+--- Original notice ---
+  Copyright (c) 2018 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Register/Intel/Msr/GoldmontPlusMsr.h:9
+
+--- Original notice ---
+  Copyright (c) 2018, ARM Limited. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/IoRemappingTable.h:7
+
+--- Original notice ---
+  Copyright (c) 2018, Dell Technologies. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/FilePaths.c:5
+
+--- Original notice ---
+  Copyright (c) 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/UefiLib/Acpi.c:4
+  MdePkg/Include/IndustryStandard/IpmiFruInformationStorage.h:8
+  MdePkg/Include/IndustryStandard/ServiceProcessorManagementInterfaceTable.h:5
+
+--- Original notice ---
+  Copyright (c) 2018, Linaro, Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/StandaloneMmServicesTableLib/StandaloneMmServicesTableLib.c:5
+  MdePkg/Library/DxeServicesLib/Allocate.c:4
+  MdePkg/Library/MmServicesTableLib/MmServicesTableLib.c:5
+  MdePkg/Library/BaseIoLibIntrinsic/IoLibArmVirt.c:7
+  MdePkg/Library/DxeRuntimeDebugLibSerialPort/DebugLib.c:8
+  MdePkg/Library/DxeServicesLib/X64/Allocate.c:4
+
+--- Original notice ---
+  Copyright (c) 2018, Microsoft Corporation
+
+Locations:
+  MdePkg/Library/UefiDebugLibDebugPortProtocol/DebugLibConstructor.c:5
+  MdePkg/Library/UefiDebugLibStdErr/DebugLibConstructor.c:5
+  MdePkg/Library/UefiDebugLibConOut/DebugLibConstructor.c:5
+
+--- Original notice ---
+  Copyright (c) 2019 - 2020, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Acpi63.h:5
+
+--- Original notice ---
+  Copyright (c) 2019 - 2021, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Acpi.h:6
+  MdePkg/Include/IndustryStandard/Acpi64.h:5
+
+--- Original notice ---
+  Copyright (c) 2019 - 2021, Arm Limited. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/AcpiAml.h:5
+
+--- Original notice ---
+  Copyright (c) 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/MmMp.h:11
+  MdePkg/Include/Guid/SmramMemoryReserve.h:10
+  MdePkg/Include/Ppi/PeiCoreFvLocation.h:9
+  MdePkg/Include/Ppi/MmControl.h:9
+  MdePkg/Include/Ppi/MmAccess.h:12
+
+--- Original notice ---
+  Copyright (c) 2019, NVIDIA Corporation. All rights reserved.
+
+Locations:
+  MdePkg/Library/UefiLib/UefiDriverModel.c:5
+
+--- Original notice ---
+  Copyright (c) 2020 Arm Limited.
+
+Locations:
+  MdePkg/Include/IndustryStandard/ArmErrorSourceTable.h:5
+
+--- Original notice ---
+  Copyright (c) 2020, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Acpi62.h:5
+  MdePkg/Include/IndustryStandard/Acpi61.h:6
+  MdePkg/Include/IndustryStandard/Acpi50.h:6
+  MdePkg/Include/IndustryStandard/Acpi60.h:6
+  MdePkg/Include/IndustryStandard/Acpi51.h:7
+
+--- Original notice ---
+  Copyright (c) 2021 Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/RegisterFilterLibNull/RegisterFilterLibNull.c:4
+
+--- Original notice ---
+  Portions copyright (c) 2008 - 2009, Apple Inc. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseCacheMaintenanceLib/ArmCache.c:6
+  MdePkg/Library/BaseSynchronizationLib/SynchronizationGcc.c:5
+  MdePkg/Library/BasePeCoffLib/BasePeCoff.c:19
+  MdePkg/Library/BaseUefiDecompressLib/BaseUefiDecompressLib.c:5
+  MdePkg/Library/BaseUefiDecompressLib/BaseUefiTianoCustomDecompressLib.c:5
+  MdePkg/Library/BaseIoLibIntrinsic/IoLibArm.c:5
+  MdePkg/Library/BaseIoLibIntrinsic/IoLibArmVirt.c:5
+  MdePkg/Library/BasePeCoffGetEntryPointLib/PeCoffGetEntryPoint.c:6
+  MdePkg/Library/BasePrintLib/PrintLib.c:5
+  MdePkg/Library/BaseCpuLib/Ia32/CpuFlushTlbGcc.c:5
+  MdePkg/Library/BaseCpuLib/Ia32/CpuSleepGcc.c:5
+  MdePkg/Library/BaseSynchronizationLib/X64/GccInline.c:5
+  MdePkg/Library/BaseSynchronizationLib/Ia32/GccInline.c:5
+  MdePkg/Library/BaseLib/X64/GccInline.c:5
+  MdePkg/Library/BaseLib/Ia32/GccInline.c:5
+  MdePkg/Library/BaseLib/Arm/Unaligned.c:7
+  MdePkg/Library/BaseLib/Arm/InternalSwitchStack.c:5
+  BaseTools/Source/C/Include/Arm/ProcessorBind.h:5
+  BaseTools/Source/C/Include/AArch64/ProcessorBind.h:5
+
+--- Original notice ---
+  Portions copyright (c) 2008 - 2010, Apple Inc. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BasePeCoffLib/Arm/PeCoffLoaderEx.c:5
+
+--- Original notice ---
+  Portions copyright (c) 2011 - 2013, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/Include/IndustryStandard/PeImage.h:8
+
+--- Original notice ---
+  Portions copyright (c) 2013, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/Include/AArch64/ProcessorBind.h:6
+
+--- Original notice ---
+ (C) Copyright 2016 Hewlett Packard Enterprise Development LP<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Acpi61.h:5
+  BaseTools/Source/C/Include/Common/UefiInternalFormRepresentation.h:7
+
+--- Original notice ---
+ * Copyright (c) 1996-1998 John D. Polstra.
+
+Locations:
+  BaseTools/Source/C/GenFw/elf64.h:9
+  BaseTools/Source/C/GenFw/elf32.h:10
+
+--- Original notice ---
+ * Copyright (c) 1998 John D. Polstra.
+
+Locations:
+  BaseTools/Source/C/GenFw/elf_common.h:11
+
+--- Original notice ---
+ * Copyright (c) 2007 Apple Inc. All rights reserved.
+
+Locations:
+  BaseTools/Source/C/Mtoc/mtoc-v921.c.origin:2
+  BaseTools/Source/C/Mtoc/mtoc-v921_jief.c:2
+
+--- Original notice ---
+ Copyright (c) 2006 - 2012, Intel Corporation. All rights reserved.
+
+Locations:
+  MdePkg/Library/SmmPciExpressLib/PciExpressLib.c:8
+
+--- Original notice ---
+ Copyright (c) 2009 - 2010, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/Ecc/C.g:4
+
+--- Original notice ---
+ Copyright (c) 2009 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/Ecc/CParser4/C.g4:4
+
+--- Original notice ---
+ Copyright (c) 2012, Apple Inc. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseStackCheckLib/BaseStackCheckGcc.c:9
+
+--- Original notice ---
+ Copyright (c) 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseStackCheckLib/BaseStackCheckNull.c:4
+
+--- Original notice ---
+ Portions copyright (c) 2016, American Megatrends, Inc. All rights reserved.
+
+Locations:
+  MdePkg/Library/SmmPciExpressLib/PciExpressLib.c:9
+
+--- Original notice ---
+#   Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/UefiFileHandleLib/UefiFileHandleLib.inf:4
+
+--- Original notice ---
+#  (C) Copyright 2016 Hewlett Packard Enterprise Development LP<BR>
+
+Locations:
+  BaseTools/Conf/tools_def.template:6
+
+--- Original notice ---
+#  Copyright (C) 2014, Red Hat, Inc.
+
+Locations:
+  MdePkg/Library/BaseOrderedCollectionRedBlackTreeLib/BaseOrderedCollectionRedBlackTreeLib.inf:14
+
+--- Original notice ---
+#  Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Conf/tools_def.template:2
+
+--- Original notice ---
+#  Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BasePeCoffLib/BasePeCoffLib.inf:12
+  MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.inf:5
+  MdePkg/Library/BaseSerialPortLibNull/BaseSerialPortLibNull.inf:4
+  MdePkg/Library/DxeRuntimeDebugLibSerialPort/DxeRuntimeDebugLibSerialPort.inf:7
+  MdePkg/Library/BaseMemoryLibMmx/BaseMemoryLibMmx.inf:7
+
+--- Original notice ---
+#  Copyright (c) 2006 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseUefiDecompressLib/BaseUefiTianoCustomDecompressLib.inf:5
+  BaseTools/Conf/target.template:2
+
+--- Original notice ---
+#  Copyright (c) 2007 - 2010, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/Eot/CodeFragment.py:4
+
+--- Original notice ---
+#  Copyright (c) 2007 - 2014, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/Eot/FileProfile.py:4
+  BaseTools/Source/Python/Eot/c.py:4
+
+--- Original notice ---
+#  Copyright (c) 2007 - 2015, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsicArmVirt.inf:4
+
+--- Original notice ---
+#  Copyright (c) 2007 - 2016, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Scripts/ConvertMasmToNasm.py:4
+
+--- Original notice ---
+#  Copyright (c) 2007 - 2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/GNUmakefile:4
+  BaseTools/Source/Python/GenFds/CompressSection.py:4
+  BaseTools/Source/Python/GenFds/UiSection.py:4
+
+--- Original notice ---
+#  Copyright (c) 2007 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseCacheMaintenanceLib/BaseCacheMaintenanceLib.inf:7
+  MdePkg/Library/BasePciLibCf8/BasePciLibCf8.inf:7
+  MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf:4
+  MdePkg/Library/BasePciExpressLib/BasePciExpressLib.inf:7
+  MdePkg/Library/BaseMemoryLibRepStr/BaseMemoryLibRepStr.inf:7
+  MdePkg/Library/BaseSynchronizationLib/BaseSynchronizationLib.inf:4
+  MdePkg/Library/BaseCpuLib/BaseCpuLib.inf:7
+  MdePkg/Library/BaseMemoryLibOptDxe/BaseMemoryLibOptDxe.inf:7
+  MdePkg/Library/BasePerformanceLibNull/BasePerformanceLibNull.inf:4
+  MdePkg/Library/BasePcdLibNull/BasePcdLibNull.inf:7
+  MdePkg/Library/BasePostCodeLibPort80/BasePostCodeLibPort80.inf:6
+  MdePkg/Library/BasePciCf8Lib/BasePciCf8Lib.inf:7
+  MdePkg/Library/BaseMemoryLib/BaseMemoryLib.inf:6
+  MdePkg/Library/BaseTimerLibNullTemplate/BaseTimerLibNullTemplate.inf:9
+  MdePkg/Library/BaseMemoryLibSse2/BaseMemoryLibSse2.inf:6
+  MdePkg/Library/BaseUefiDecompressLib/BaseUefiDecompressLib.inf:4
+  MdePkg/Library/BaseExtractGuidedSectionLib/BaseExtractGuidedSectionLib.inf:14
+  MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsic.inf:9
+  MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsicSev.inf:7
+  MdePkg/Library/BasePeCoffGetEntryPointLib/BasePeCoffGetEntryPointLib.inf:4
+  MdePkg/Library/UefiDevicePathLibDevicePathProtocol/UefiDevicePathLibDevicePathProtocol.inf:7
+  MdePkg/Library/BasePciLibPciExpress/BasePciLibPciExpress.inf:7
+  MdePkg/Library/BasePostCodeLibDebug/BasePostCodeLibDebug.inf:7
+  MdePkg/Library/BaseMemoryLibOptPei/BaseMemoryLibOptPei.inf:7
+  MdePkg/Library/BasePrintLib/BasePrintLib.inf:4
+  BaseTools/Conf/build_rule.template:2
+  BaseTools/Source/Python/GenFds/Capsule.py:4
+  BaseTools/Source/Python/GenFds/DepexSection.py:4
+  BaseTools/Source/Python/GenFds/Region.py:4
+  BaseTools/Source/Python/GenFds/FvImageSection.py:4
+  BaseTools/Source/Python/GenFds/OptionRom.py:4
+  BaseTools/Source/Python/GenFds/GuidSection.py:4
+  BaseTools/Source/Python/GenFds/FfsFileStatement.py:4
+  BaseTools/Source/Python/GenFds/DataSection.py:4
+  BaseTools/Source/Python/GenFds/Fv.py:4
+  BaseTools/Source/Python/GenFds/FfsInfStatement.py:4
+  BaseTools/Source/Python/GenFds/AprioriSection.py:4
+  BaseTools/Source/Python/GenFds/OptRomInfStatement.py:4
+  BaseTools/Source/Python/GenFds/EfiSection.py:4
+  BaseTools/Source/Python/GenFds/VerSection.py:4
+  BaseTools/Source/Python/GenFds/OptRomFileStatement.py:4
+  BaseTools/Source/Python/GenFds/Fd.py:4
+  BaseTools/Source/Python/Ecc/FileProfile.py:4
+  BaseTools/Source/Python/Ecc/CodeFragmentCollector.py:4
+  BaseTools/Source/Python/Ecc/CodeFragment.py:4
+  BaseTools/Source/Python/CommonDataClass/FdfClass.py:4
+  BaseTools/Source/Python/Eot/ParserWarning.py:4
+  BaseTools/Source/Python/Eot/CodeFragmentCollector.py:4
+
+--- Original notice ---
+#  Copyright (c) 2007 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/BaseLib.inf:4
+
+--- Original notice ---
+#  Copyright (c) 2007 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/UefiDebugLibStdErr/UefiDebugLibStdErr.inf:8
+  MdePkg/Library/UefiDebugLibConOut/UefiDebugLibConOut.inf:8
+  BaseTools/Source/Python/GenFds/GenFds.py:4
+
+--- Original notice ---
+#  Copyright (c) 2007 - 2021, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/GenFds/FdfParser.py:4
+  BaseTools/Source/Python/GenFds/GenFdsGlobalVariable.py:4
+  BaseTools/Source/Python/build/build.py:5
+  BaseTools/Source/Python/build/buildoptions.py:5
+  BaseTools/Source/Python/TargetTool/TargetTool.py:4
+
+--- Original notice ---
+#  Copyright (c) 2007, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/GenFds/RuleComplexFile.py:4
+  BaseTools/Source/Python/GenFds/Rule.py:4
+  BaseTools/Source/Python/GenFds/RuleSimpleFile.py:4
+
+--- Original notice ---
+#  Copyright (c) 2007-2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/GenFds/Ffs.py:4
+  BaseTools/Source/Python/GenFds/CapsuleData.py:4
+  BaseTools/Source/Python/GenFds/Section.py:4
+
+--- Original notice ---
+#  Copyright (c) 2008 - 2015, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Tests/PythonToolsTests.py:4
+
+--- Original notice ---
+#  Copyright (c) 2008 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Tests/TestTools.py:5
+
+--- Original notice ---
+#  Copyright (c) 2008, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Tests/TianoCompress.py:4
+  BaseTools/Tests/CToolsTests.py:4
+  BaseTools/Tests/RunTests.py:4
+  BaseTools/Source/C/PyEfiCompressor/setup.py:4
+
+--- Original notice ---
+#  Copyright (c) 2009 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/SmmLibNull/SmmLibNull.inf:4
+  MdePkg/Library/BasePeCoffExtraActionLibNull/BasePeCoffExtraActionLibNull.inf:4
+  BaseTools/Tests/CheckPythonSyntax.py:4
+
+--- Original notice ---
+#  Copyright (c) 2010 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/BPDG/GenVpd.py:5
+  BaseTools/Source/Python/BPDG/BPDG.py:9
+
+--- Original notice ---
+#  Copyright (c) 2011 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseDebugPrintErrorLevelLib/BaseDebugPrintErrorLevelLib.inf:5
+
+--- Original notice ---
+#  Copyright (c) 2014 - 2015, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Scripts/UpdateBuildVersions.py:9
+
+--- Original notice ---
+#  Copyright (c) 2014, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseStackCheckLib/BaseStackCheckLib.inf:6
+
+--- Original notice ---
+#  Copyright (c) 2014, Hewlett-Packard Development Company, L.P.<BR>
+
+Locations:
+  BaseTools/Source/Python/build/build.py:4
+  BaseTools/Source/Python/build/buildoptions.py:4
+
+--- Original notice ---
+#  Copyright (c) 2014-2016 Hewlett-Packard Development Company, L.P.<BR>
+
+Locations:
+  BaseTools/Source/Python/GenFds/FfsInfStatement.py:5
+
+--- Original notice ---
+#  Copyright (c) 2014-2018, Linaro Limited. All rights reserved.
+
+Locations:
+  MdePkg/Library/BaseIoLibIntrinsic/Arm/ArmVirtMmio.S:2
+  MdePkg/Library/BaseIoLibIntrinsic/AArch64/ArmVirtMmio.S:2
+
+--- Original notice ---
+#  Copyright (c) 2015 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/SmmMemLib/SmmMemLib.inf:9
+
+--- Original notice ---
+#  Copyright (c) 2015 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/UefiDebugLibDebugPortProtocol/UefiDebugLibDebugPortProtocol.inf:8
+  BaseTools/Scripts/PatchCheck.py:4
+
+--- Original notice ---
+#  Copyright (c) 2015, Hewlett Packard Enterprise Development, L.P.<BR>
+
+Locations:
+  BaseTools/Source/Python/GenFds/FdfParser.py:5
+
+--- Original notice ---
+#  Copyright (c) 2015, Hewlett-Packard Development Company, L.P.<BR>
+
+Locations:
+  BaseTools/Conf/tools_def.template:5
+
+--- Original notice ---
+#  Copyright (c) 2015, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseRngLib/BaseRngLib.inf:7
+  BaseTools/Tests/CheckUnicodeSourceFiles.py:4
+  BaseTools/Scripts/ConvertUni.py:4
+
+--- Original notice ---
+#  Copyright (c) 2017 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/SmiHandlerProfileLibNull/SmiHandlerProfileLibNull.inf:4
+
+--- Original notice ---
+#  Copyright (c) 2017, AMD Incorporated. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsic.inf:11
+  MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsicSev.inf:9
+  MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsicArmVirt.inf:6
+
+--- Original notice ---
+#  Copyright (c) 2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/SmmIoLib/SmmIoLib.inf:8
+
+--- Original notice ---
+#  Copyright (c) 2018 - 2020, Hewlett Packard Enterprise Development, L.P.<BR>
+
+Locations:
+  BaseTools/Source/Python/build/buildoptions.py:6
+
+--- Original notice ---
+#  Copyright (c) 2018, Hewlett Packard Enterprise Development, L.P.<BR>
+
+Locations:
+  BaseTools/Source/Python/GenFds/GuidSection.py:5
+  BaseTools/Source/Python/build/build.py:6
+
+--- Original notice ---
+#  Copyright (c) 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseSafeIntLib/BaseSafeIntLib.inf:7
+  MdePkg/Library/BaseOrderedCollectionRedBlackTreeLib/BaseOrderedCollectionRedBlackTreeLib.inf:13
+  BaseTools/Scripts/FormatDosFiles.py:5
+  BaseTools/Source/C/Makefiles/NmakeSubdirs.py:5
+
+--- Original notice ---
+#  Copyright (c) 2018, Linaro, Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsicArmVirt.inf:7
+  MdePkg/Library/DxeRuntimeDebugLibSerialPort/DxeRuntimeDebugLibSerialPort.inf:8
+
+--- Original notice ---
+#  Copyright (c) 2018, Microsoft Corporation
+
+Locations:
+  MdePkg/Library/UefiDebugLibDebugPortProtocol/UefiDebugLibDebugPortProtocol.inf:6
+  MdePkg/Library/UefiDebugLibStdErr/UefiDebugLibStdErr.inf:6
+  MdePkg/Library/UefiDebugLibConOut/UefiDebugLibConOut.inf:6
+
+--- Original notice ---
+#  Copyright (c) 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Scripts/GetUtcDateTime.py:4
+
+--- Original notice ---
+#  Copyright (c) 2019, Linaro Ltd. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Scripts/GetMaintainer.py:4
+
+--- Original notice ---
+#  Copyright (c) 2019, Linaro Ltd. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Scripts/SetupGit.py:4
+
+--- Original notice ---
+#  Copyright (c) 2020 - 2021, ARM Limited. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/build/build.py:7
+
+--- Original notice ---
+#  Copyright (c) 2020, ARM Limited. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/AutoGen/PlatformAutoGen.py:5
+
+--- Original notice ---
+#  Copyright (c) 2021, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/RegisterFilterLibNull/RegisterFilterLibNull.inf:4
+  BaseTools/Source/Python/Split/__init__.py:4
+  BaseTools/Source/Python/Split/Split.py:4
+  BaseTools/Source/Python/tests/Split/test_split.py:4
+
+--- Original notice ---
+#  Portions copyright (c) 2008 - 2009, Apple Inc. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/BaseLib.inf:5
+  BaseTools/Conf/tools_def.template:3
+
+--- Original notice ---
+#  Portions copyright (c) 2008 - 2009, Apple Inc. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseCacheMaintenanceLib/BaseCacheMaintenanceLib.inf:8
+  MdePkg/Library/BaseSynchronizationLib/BaseSynchronizationLib.inf:5
+  MdePkg/Library/BaseCpuLib/BaseCpuLib.inf:8
+  MdePkg/Library/BasePeCoffLib/BasePeCoffLib.inf:13
+  MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsic.inf:10
+  MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsicSev.inf:8
+  MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsicArmVirt.inf:5
+
+--- Original notice ---
+#  Portions copyright (c) 2008 - 2010, Apple Inc. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Conf/build_rule.template:3
+
+--- Original notice ---
+#  Portions copyright (c) 2011 - 2013, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/BaseLib.inf:6
+
+--- Original notice ---
+#  Portions copyright (c) 2011 - 2013, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseCpuLib/BaseCpuLib.inf:9
+
+--- Original notice ---
+#  Portions copyright (c) 2011 - 2014, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Conf/tools_def.template:4
+
+--- Original notice ---
+# (C) Copyright 2015-2018 Hewlett Packard Enterprise Development LP<BR>
+
+Locations:
+  BaseTools/Source/Python/Workspace/MetaFileParser.py:5
+
+--- Original notice ---
+# (C) Copyright 2016 Hewlett Packard Enterprise Development LP<BR>
+
+Locations:
+  BaseTools/BinWrappers/PosixLike/LzmaF86Compress:5
+
+--- Original notice ---
+# (C) Copyright 2016 Hewlett Packard Enterprise Development LP<BR>
+
+Locations:
+  MdePkg/MdePkg.dec:9
+  BaseTools/Source/Python/Workspace/WorkspaceDatabase.py:5
+  BaseTools/Source/Python/Workspace/DscBuildData.py:5
+  BaseTools/Source/Python/Workspace/DecBuildData.py:5
+  BaseTools/Source/Python/Workspace/InfBuildData.py:5
+
+--- Original notice ---
+# Copyright (c) 2006 - 2009, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseCpuLib/AArch64/CpuFlushTlb.S:5
+  MdePkg/Library/BaseCpuLib/AArch64/CpuSleep.S:5
+  MdePkg/Library/BaseLib/AArch64/SwitchStack.S:3
+  MdePkg/Library/BaseLib/AArch64/CpuBreakpoint.S:5
+  MdePkg/Library/BaseLib/AArch64/GetInterruptsState.S:5
+  MdePkg/Library/BaseLib/AArch64/DisableInterrupts.S:5
+  MdePkg/Library/BaseLib/AArch64/EnableInterrupts.S:5
+
+--- Original notice ---
+# Copyright (c) 2006 - 2014, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/PeiServicesTablePointerLibIdt/PeiServicesTablePointerLibIdt.inf:7
+
+--- Original notice ---
+# Copyright (c) 2006 - 2016, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/BuildEnv:5
+  edksetup.sh:2
+
+--- Original notice ---
+# Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/PeiSmbusLibSmbus2Ppi/PeiSmbusLibSmbus2Ppi.inf:4
+  MdePkg/Library/UefiMemoryLib/UefiMemoryLib.inf:7
+  MdePkg/Library/PeiDxePostCodeLibReportStatusCode/PeiDxePostCodeLibReportStatusCode.inf:6
+  MdePkg/Library/DxeSmbusLib/DxeSmbusLib.inf:4
+  MdePkg/Library/BaseS3IoLib/BaseS3IoLib.inf:7
+  MdePkg/Library/UefiScsiLib/UefiScsiLib.inf:7
+  MdePkg/Library/PeiHobLib/PeiHobLib.inf:6
+  MdePkg/Library/PeiMemoryLib/PeiMemoryLib.inf:7
+  MdePkg/Library/UefiRuntimeLib/UefiRuntimeLib.inf:8
+  MdePkg/Library/BaseS3PciLib/BaseS3PciLib.inf:7
+  MdePkg/Library/PeiIoLibCpuIo/PeiIoLibCpuIo.inf:7
+  MdePkg/Library/UefiUsbLib/UefiUsbLib.inf:7
+  MdePkg/Library/BaseCpuLib/Arm/CpuFlushTlb.S:5
+  MdePkg/Library/BaseCpuLib/Arm/CpuSleep.S:11
+  MdePkg/Library/BaseLib/Arm/CpuBreakpoint.S:5
+  MdePkg/Library/BaseLib/Arm/GetInterruptsState.S:5
+  MdePkg/Library/BaseLib/Arm/SetJumpLongJump.S:3
+  MdePkg/Library/BaseLib/Arm/DisableInterrupts.S:5
+  MdePkg/Library/BaseLib/Arm/EnableInterrupts.S:5
+
+--- Original notice ---
+# Copyright (c) 2007 - 2010, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/GNUmakefile:4
+  BaseTools/Source/C/Split/Makefile:4
+  BaseTools/Source/C/GenSec/Makefile:4
+  BaseTools/Source/C/EfiLdrImage/Makefile:4
+  BaseTools/Source/C/GenFv/Makefile:4
+  BaseTools/Source/C/GenCrc32/Makefile:4
+  BaseTools/Source/C/Makefiles/ms.lib:3
+  BaseTools/Source/C/GenPage/Makefile:4
+  BaseTools/Source/C/Common/Makefile:4
+  BaseTools/Source/C/VolInfo/Makefile:4
+  BaseTools/Source/C/TianoCompress/Makefile:4
+  BaseTools/Source/C/GenFfs/Makefile:4
+  BaseTools/Source/C/EfiRom/Makefile:4
+  BaseTools/Source/Python/GenFds/__init__.py:7
+  BaseTools/Source/Python/Common/__init__.py:7
+  BaseTools/Source/Python/build/__init__.py:7
+  BaseTools/Source/Python/TargetTool/__init__.py:7
+  BaseTools/Source/Python/Ecc/__init__.py:7
+  BaseTools/Source/Python/CommonDataClass/__init__.py:7
+  BaseTools/Source/Python/AutoGen/__init__.py:7
+
+--- Original notice ---
+# Copyright (c) 2007 - 2014, Intel Corporation. All rights reserved.
+
+Locations:
+  MdePkg/Library/SmmPciExpressLib/SmmPciExpressLib.inf:7
+
+--- Original notice ---
+# Copyright (c) 2007 - 2014, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/PyEfiCompressor/Makefile:4
+  BaseTools/Source/C/Makefiles/ms.common:4
+  BaseTools/Source/C/Makefiles/ms.rule:4
+  BaseTools/Source/C/Makefiles/ms.app:4
+  BaseTools/Source/C/Makefiles/app.makefile:4
+  BaseTools/Source/C/Makefiles/lib.makefile:4
+  BaseTools/Source/Python/Common/TargetTxtClassObject.py:4
+  BaseTools/Source/Python/Ecc/Database.py:4
+  BaseTools/Source/Python/Eot/Database.py:4
+
+--- Original notice ---
+# Copyright (c) 2007 - 2015, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/Ecc/config.ini:5
+
+--- Original notice ---
+# Copyright (c) 2007 - 2016, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/Makefiles/footer.makefile:4
+  BaseTools/Source/Python/Common/BuildToolError.py:4
+
+--- Original notice ---
+# Copyright (c) 2007 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/Makefiles/header.makefile:8
+
+--- Original notice ---
+# Copyright (c) 2007 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/MdePkg.dsc:4
+  MdePkg/Library/PeiPciLibPciCfg2/PeiPciLibPciCfg2.inf:10
+  MdePkg/Library/PeiServicesTablePointerLib/PeiServicesTablePointerLib.inf:8
+  MdePkg/Library/UefiPciSegmentLibPciRootBridgeIo/UefiPciSegmentLibPciRootBridgeIo.inf:10
+  MdePkg/Library/PeiServicesLib/PeiServicesLib.inf:4
+  MdePkg/Library/BaseS3SmbusLib/BaseS3SmbusLib.inf:7
+  MdePkg/Library/DxeServicesLib/DxeServicesLib.inf:8
+  MdePkg/Library/SecPeiDxeTimerLibCpu/SecPeiDxeTimerLibCpu.inf:16
+  MdePkg/Library/PeiExtractGuidedSectionLib/PeiExtractGuidedSectionLib.inf:6
+  MdePkg/Library/UefiDriverEntryPoint/UefiDriverEntryPoint.inf:4
+  MdePkg/Library/DxeRuntimePciExpressLib/DxeRuntimePciExpressLib.inf:10
+  MdePkg/Library/DxeCoreEntryPoint/DxeCoreEntryPoint.inf:4
+  MdePkg/Library/PeiCoreEntryPoint/PeiCoreEntryPoint.inf:4
+  MdePkg/Library/DxeExtractGuidedSectionLib/DxeExtractGuidedSectionLib.inf:6
+  MdePkg/Library/UefiApplicationEntryPoint/UefiApplicationEntryPoint.inf:4
+  MdePkg/Library/BaseS3BootScriptLibNull/BaseS3BootScriptLibNull.inf:8
+  MdePkg/Library/DxePcdLib/DxePcdLib.inf:21
+  MdePkg/Library/PeiResourcePublicationLib/PeiResourcePublicationLib.inf:6
+  MdePkg/Library/DxeHobLib/DxeHobLib.inf:7
+  MdePkg/Library/UefiBootServicesTableLib/UefiBootServicesTableLib.inf:4
+  MdePkg/Library/PeiMemoryAllocationLib/PeiMemoryAllocationLib.inf:7
+  MdePkg/Library/UefiDevicePathLib/UefiDevicePathLib.inf:6
+  MdePkg/Library/PeiPciSegmentLibPciCfg2/PeiPciSegmentLibPciCfg2.inf:9
+  MdePkg/Library/DxeCoreHobLib/DxeCoreHobLib.inf:7
+  MdePkg/Library/UefiRuntimeServicesTableLib/UefiRuntimeServicesTableLib.inf:4
+  MdePkg/Library/PeiPcdLib/PeiPcdLib.inf:18
+  MdePkg/Library/UefiMemoryAllocationLib/UefiMemoryAllocationLib.inf:7
+  MdePkg/Library/UefiLib/UefiLib.inf:10
+  MdePkg/Library/BaseS3StallLib/BaseS3StallLib.inf:7
+  MdePkg/Library/UefiPciLibPciRootBridgeIo/UefiPciLibPciRootBridgeIo.inf:10
+  MdePkg/Library/PeimEntryPoint/PeimEntryPoint.inf:4
+  MdePkg/Library/DxeServicesTableLib/DxeServicesTableLib.inf:7
+  BaseTools/Source/C/Split/GNUmakefile:4
+  BaseTools/Source/C/GenSec/GNUmakefile:4
+  BaseTools/Source/C/EfiLdrImage/GNUmakefile:4
+  BaseTools/Source/C/GenFv/GNUmakefile:4
+  BaseTools/Source/C/GenCrc32/GNUmakefile:4
+  BaseTools/Source/C/GenPage/GNUmakefile:4
+  BaseTools/Source/C/Common/GNUmakefile:4
+  BaseTools/Source/C/VolInfo/GNUmakefile:4
+  BaseTools/Source/C/TianoCompress/GNUmakefile:4
+  BaseTools/Source/C/GenFfs/GNUmakefile:4
+  BaseTools/Source/C/EfiRom/GNUmakefile:4
+  BaseTools/Source/Python/Workspace/BuildClassObject.py:4
+  BaseTools/Source/Python/Trim/Trim.py:4
+  BaseTools/Source/Python/Common/EdkLogger.py:4
+  BaseTools/Source/Python/Common/GlobalData.py:4
+  BaseTools/Source/Python/Common/StringUtils.py:4
+  BaseTools/Source/Python/Common/DataType.py:4
+  BaseTools/Source/Python/CommonDataClass/CommonClass.py:4
+  BaseTools/Source/Python/AutoGen/GenC.py:4
+  BaseTools/Source/Python/AutoGen/UniClassObject.py:7
+  BaseTools/Source/Python/AutoGen/BuildEngine.py:4
+  BaseTools/Source/Python/AutoGen/InfSectionParser.py:4
+  BaseTools/Source/Python/AutoGen/GenDepex.py:4
+  BaseTools/Source/Python/AutoGen/StrGather.py:5
+  BaseTools/Source/Python/Ecc/Xml/XmlRoutines.py:5
+
+--- Original notice ---
+# Copyright (c) 2007 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/MdePkg.dec:7
+  BaseTools/Source/Python/Common/Misc.py:4
+  BaseTools/Source/Python/AutoGen/AutoGen.py:4
+
+--- Original notice ---
+# Copyright (c) 2007 - 2021, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/Common/ToolDefClassObject.py:4
+  BaseTools/Source/Python/AutoGen/GenMake.py:4
+
+--- Original notice ---
+# Copyright (c) 2007, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/Eot/Identification.py:4
+
+--- Original notice ---
+# Copyright (c) 2008 - 2009, Apple Inc. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Bin/CYGWIN_NT-5.1-i686/armcc_wrapper.py:3
+
+--- Original notice ---
+# Copyright (c) 2008 - 2010, Apple Inc. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseMemoryLibOptDxe/Arm/CopyMem.S:9
+
+--- Original notice ---
+# Copyright (c) 2008 - 2010, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/VfrCompile/Makefile:4
+  BaseTools/Source/Python/Workspace/__init__.py:7
+  BaseTools/Source/Python/Table/__init__.py:7
+  BaseTools/Source/Python/Eot/EotToolError.py:4
+  BaseTools/Source/Python/Ecc/MetaFileWorkspace/__init__.py:7
+
+--- Original notice ---
+# Copyright (c) 2008 - 2014, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/CommonDataClass/DataClass.py:4
+  BaseTools/Source/Python/Eot/EotGlobalData.py:4
+
+--- Original notice ---
+# Copyright (c) 2008 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/VfrCompile/GNUmakefile:4
+
+--- Original notice ---
+# Copyright (c) 2008 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/Workspace/WorkspaceDatabase.py:4
+  BaseTools/Source/Python/Workspace/MetaFileTable.py:4
+  BaseTools/Source/Python/Workspace/MetaDataTable.py:4
+  BaseTools/Source/Python/Workspace/MetaFileParser.py:4
+  BaseTools/Source/Python/Workspace/DecBuildData.py:4
+  BaseTools/Source/Python/Workspace/InfBuildData.py:4
+  BaseTools/Source/Python/Common/Parsing.py:4
+  BaseTools/Source/Python/Table/TableIdentifier.py:4
+  BaseTools/Source/Python/Table/TableReport.py:4
+  BaseTools/Source/Python/Table/TableDataModel.py:4
+  BaseTools/Source/Python/Table/TableFunction.py:4
+  BaseTools/Source/Python/Table/TableDsc.py:5
+  BaseTools/Source/Python/Table/TableFile.py:4
+  BaseTools/Source/Python/Table/TableDec.py:4
+  BaseTools/Source/Python/Table/TablePcd.py:4
+  BaseTools/Source/Python/Table/TableFdf.py:4
+  BaseTools/Source/Python/Table/TableInf.py:4
+  BaseTools/Source/Python/Table/Table.py:4
+  BaseTools/Source/Python/Table/TableEotReport.py:4
+  BaseTools/Source/Python/Ecc/Configuration.py:4
+  BaseTools/Source/Python/Ecc/EccToolError.py:5
+  BaseTools/Source/Python/Ecc/EccGlobalData.py:4
+  BaseTools/Source/Python/Ecc/MetaDataParser.py:4
+  BaseTools/Source/Python/Eot/InfParserLite.py:4
+  BaseTools/Source/Python/Eot/Parser.py:5
+  BaseTools/Source/Python/Eot/EotMain.py:4
+  BaseTools/Source/Python/Eot/Report.py:4
+  BaseTools/Source/Python/GenPatchPcdTable/GenPatchPcdTable.py:8
+  BaseTools/Source/Python/Ecc/MetaFileWorkspace/MetaFileTable.py:4
+  BaseTools/Source/Python/Ecc/MetaFileWorkspace/MetaDataTable.py:4
+
+--- Original notice ---
+# Copyright (c) 2008 - 2020, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/Workspace/DscBuildData.py:4
+  BaseTools/Source/Python/Ecc/Check.py:5
+  BaseTools/Source/Python/Ecc/MetaFileWorkspace/MetaFileParser.py:4
+
+--- Original notice ---
+# Copyright (c) 2008, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/Table/TableQuery.py:4
+
+--- Original notice ---
+# Copyright (c) 2009 - 2010, Apple Inc. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/Arm/Math64.S:9
+
+--- Original notice ---
+# Copyright (c) 2009 - 2010, Intel Corporation  All rights reserved.
+
+Locations:
+  BaseTools/Source/Python/Ecc/C.g:24
+  BaseTools/Source/Python/Ecc/C.g:45
+  BaseTools/Source/Python/Eot/CParser4/CLexer.py:15
+  BaseTools/Source/Python/Eot/CParser4/CParser.py:16
+  BaseTools/Source/Python/Eot/CParser4/CListener.py:15
+  BaseTools/Source/Python/Ecc/CParser4/C.g4:23
+  BaseTools/Source/Python/Ecc/CParser4/CLexer.py:15
+  BaseTools/Source/Python/Ecc/CParser4/CParser.py:16
+  BaseTools/Source/Python/Ecc/CParser4/CListener.py:15
+
+--- Original notice ---
+# Copyright (c) 2009 - 2010, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Tests/GNUmakefile:4
+  BaseTools/Source/C/GenFw/Makefile:4
+
+--- Original notice ---
+# Copyright (c) 2009 - 2014, Apple Inc. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/sitecustomize.py:4
+
+--- Original notice ---
+# Copyright (c) 2009 - 2014, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/StandaloneMmServicesTableLib/StandaloneMmServicesTableLib.inf:4
+  MdePkg/Library/MmServicesTableLib/MmServicesTableLib.inf:4
+  MdePkg/Library/SmmServicesTableLib/SmmServicesTableLib.inf:4
+  MdePkg/Library/SmmIoLibSmmCpuIo2/SmmIoLibSmmCpuIo2.inf:6
+
+--- Original notice ---
+# Copyright (c) 2009 - 2016, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/LzmaCompress/Makefile:4
+
+--- Original notice ---
+# Copyright (c) 2009 - 2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/GNUmakefile:4
+
+--- Original notice ---
+# Copyright (c) 2009 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/SmmPciLibPciRootBridgeIo/SmmPciLibPciRootBridgeIo.inf:10
+  MdePkg/Library/BaseReportStatusCodeLibNull/BaseReportStatusCodeLibNull.inf:4
+  BaseTools/Source/C/Makefile:4
+  BaseTools/Source/C/GenFw/GNUmakefile:4
+  BaseTools/Source/C/LzmaCompress/GNUmakefile:4
+  BaseTools/Source/Python/Ecc/Exception.py:4
+  BaseTools/Source/Python/Ecc/ParserWarning.py:4
+  BaseTools/Source/Python/Ecc/EccMain.py:4
+  BaseTools/Source/Python/Eot/CParser3/CLexer.py:13
+  BaseTools/Source/Python/Eot/CParser3/CParser.py:15
+  BaseTools/Source/Python/Ecc/CParser3/CLexer.py:13
+  BaseTools/Source/Python/Ecc/CParser3/CParser.py:15
+
+--- Original notice ---
+# Copyright (c) 2009 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/Ecc/c.py:4
+
+--- Original notice ---
+# Copyright (c) 2009-2013, ARM Ltd.  All rights reserved.
+
+Locations:
+  MdePkg/Library/BaseLib/AArch64/SetJumpLongJump.S:3
+
+--- Original notice ---
+# Copyright (c) 2010 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/DxeIoLibCpuIo2/DxeIoLibCpuIo2.inf:6
+  MdePkg/Library/SmmMemoryAllocationLib/SmmMemoryAllocationLib.inf:7
+  BaseTools/Source/Python/Makefile:4
+  BaseTools/Source/Python/PatchPcdValue/PatchPcdValue.py:4
+  BaseTools/Source/Python/Common/VpdInfoFile.py:9
+  BaseTools/Source/Python/Common/VpdInfoFile.py:31
+  BaseTools/Source/Python/BPDG/StringTable.py:4
+  BaseTools/Source/Python/build/BuildReport.py:7
+
+--- Original notice ---
+# Copyright (c) 2010 -2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/BPDG/StringTable.py:29
+
+--- Original notice ---
+# Copyright (c) 2010, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/PatchPcdValue/__init__.py:7
+  BaseTools/Source/Python/BPDG/__init__.py:7
+  BaseTools/Source/Python/Eot/__init__.py:7
+  BaseTools/Source/Python/GenPatchPcdTable/__init__.py:7
+
+--- Original notice ---
+# Copyright (c) 2011 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/SmmPeriodicSmiLib/SmmPeriodicSmiLib.inf:4
+  BaseTools/Scripts/PackageDocumentTools/__init__.py:3
+  BaseTools/Scripts/PackageDocumentTools/packagedocapp.pyw:5
+  BaseTools/Scripts/PackageDocumentTools/packagedoc_cli.py:4
+  BaseTools/Scripts/PackageDocumentTools/plugins/__init__.py:3
+  BaseTools/Scripts/PackageDocumentTools/plugins/EdkPlugins/__init__.py:3
+  BaseTools/Scripts/PackageDocumentTools/plugins/EdkPlugins/basemodel/efibinary.py:3
+  BaseTools/Scripts/PackageDocumentTools/plugins/EdkPlugins/basemodel/__init__.py:3
+  BaseTools/Scripts/PackageDocumentTools/plugins/EdkPlugins/basemodel/message.py:3
+  BaseTools/Scripts/PackageDocumentTools/plugins/EdkPlugins/basemodel/inidocview.py:3
+  BaseTools/Scripts/PackageDocumentTools/plugins/EdkPlugins/basemodel/doxygen.py:3
+  BaseTools/Scripts/PackageDocumentTools/plugins/EdkPlugins/basemodel/ini.py:3
+  BaseTools/Scripts/PackageDocumentTools/plugins/EdkPlugins/edk2/__init__.py:3
+  BaseTools/Scripts/PackageDocumentTools/plugins/EdkPlugins/edk2/model/doxygengen_spec.py:6
+  BaseTools/Scripts/PackageDocumentTools/plugins/EdkPlugins/edk2/model/doxygengen.py:6
+  BaseTools/Scripts/PackageDocumentTools/plugins/EdkPlugins/edk2/model/__init__.py:3
+  BaseTools/Scripts/PackageDocumentTools/plugins/EdkPlugins/edk2/model/dec.py:3
+  BaseTools/Scripts/PackageDocumentTools/plugins/EdkPlugins/edk2/model/dsc.py:3
+  BaseTools/Scripts/PackageDocumentTools/plugins/EdkPlugins/edk2/model/inf.py:3
+  BaseTools/Scripts/PackageDocumentTools/plugins/EdkPlugins/edk2/model/baseobject.py:3
+  BaseTools/Source/Python/UPT/MkPkg.py:4
+  BaseTools/Source/Python/UPT/BuildVersion.py:5
+  BaseTools/Source/Python/UPT/UPT.py:5
+  BaseTools/Source/Python/UPT/RmPkg.py:4
+  BaseTools/Source/Python/UPT/InstallPkg.py:4
+  BaseTools/Source/Python/Common/BuildVersion.py:5
+  BaseTools/Source/Python/Common/Expression.py:4
+  BaseTools/Source/Python/Ecc/Xml/__init__.py:7
+  BaseTools/Source/Python/UPT/UnitTest/DecParserUnitTest.py:4
+  BaseTools/Source/Python/UPT/UnitTest/InfBinarySectionTest.py:4
+  BaseTools/Source/Python/UPT/UnitTest/CommentParsingUnitTest.py:4
+  BaseTools/Source/Python/UPT/UnitTest/CommentGeneratingUnitTest.py:4
+  BaseTools/Source/Python/UPT/UnitTest/DecParserTest.py:4
+  BaseTools/Source/Python/UPT/Core/DependencyRules.py:4
+  BaseTools/Source/Python/UPT/Core/PackageFile.py:5
+  BaseTools/Source/Python/UPT/Core/__init__.py:7
+  BaseTools/Source/Python/UPT/Core/DistributionPackageClass.py:4
+  BaseTools/Source/Python/UPT/Core/IpiDb.py:4
+  BaseTools/Source/Python/UPT/Logger/StringTable.py:4
+  BaseTools/Source/Python/UPT/Logger/Log.py:4
+  BaseTools/Source/Python/UPT/Logger/__init__.py:7
+  BaseTools/Source/Python/UPT/Logger/ToolError.py:4
+  BaseTools/Source/Python/UPT/Library/GlobalData.py:4
+  BaseTools/Source/Python/UPT/Library/Parsing.py:5
+  BaseTools/Source/Python/UPT/Library/StringUtils.py:5
+  BaseTools/Source/Python/UPT/Library/__init__.py:7
+  BaseTools/Source/Python/UPT/Library/ExpressionValidate.py:4
+  BaseTools/Source/Python/UPT/Library/CommentGenerating.py:4
+  BaseTools/Source/Python/UPT/Library/DataType.py:4
+  BaseTools/Source/Python/UPT/Library/CommentParsing.py:4
+  BaseTools/Source/Python/UPT/Library/ParserValidate.py:4
+  BaseTools/Source/Python/UPT/Parser/InfPcdSectionParser.py:4
+  BaseTools/Source/Python/UPT/Parser/InfDepexSectionParser.py:4
+  BaseTools/Source/Python/UPT/Parser/InfParser.py:4
+  BaseTools/Source/Python/UPT/Parser/InfBuildOptionSectionParser.py:4
+  BaseTools/Source/Python/UPT/Parser/InfBinarySectionParser.py:4
+  BaseTools/Source/Python/UPT/Parser/InfSourceSectionParser.py:4
+  BaseTools/Source/Python/UPT/Parser/InfGuidPpiProtocolSectionParser.py:4
+  BaseTools/Source/Python/UPT/Parser/__init__.py:7
+  BaseTools/Source/Python/UPT/Parser/InfAsBuiltProcess.py:4
+  BaseTools/Source/Python/UPT/Parser/InfParserMisc.py:4
+  BaseTools/Source/Python/UPT/Parser/DecParserMisc.py:4
+  BaseTools/Source/Python/UPT/Parser/InfLibrarySectionParser.py:4
+  BaseTools/Source/Python/UPT/Parser/DecParser.py:4
+  BaseTools/Source/Python/UPT/Parser/InfSectionParser.py:4
+  BaseTools/Source/Python/UPT/Parser/InfPackageSectionParser.py:4
+  BaseTools/Source/Python/UPT/Parser/InfDefineSectionParser.py:4
+  BaseTools/Source/Python/UPT/Xml/XmlParserMisc.py:4
+  BaseTools/Source/Python/UPT/Xml/CommonXml.py:4
+  BaseTools/Source/Python/UPT/Xml/PcdXml.py:4
+  BaseTools/Source/Python/UPT/Xml/__init__.py:7
+  BaseTools/Source/Python/UPT/Xml/GuidProtocolPpiXml.py:4
+  BaseTools/Source/Python/UPT/Xml/ModuleSurfaceAreaXml.py:4
+  BaseTools/Source/Python/UPT/Xml/XmlParser.py:4
+  BaseTools/Source/Python/UPT/Xml/IniToXml.py:4
+  BaseTools/Source/Python/UPT/Xml/PackageSurfaceAreaXml.py:4
+  BaseTools/Source/Python/UPT/Object/__init__.py:7
+  BaseTools/Source/Python/UPT/PomAdapter/InfPomAlignmentMisc.py:4
+  BaseTools/Source/Python/UPT/PomAdapter/DecPomAlignment.py:4
+  BaseTools/Source/Python/UPT/PomAdapter/__init__.py:7
+  BaseTools/Source/Python/UPT/PomAdapter/InfPomAlignment.py:4
+  BaseTools/Source/Python/UPT/GenMetaFile/__init__.py:7
+  BaseTools/Source/Python/UPT/GenMetaFile/GenMetaFileMisc.py:5
+  BaseTools/Source/Python/UPT/GenMetaFile/GenInfFile.py:5
+  BaseTools/Source/Python/UPT/GenMetaFile/GenDecFile.py:5
+  BaseTools/Source/Python/UPT/GenMetaFile/GenXmlFile.py:5
+  BaseTools/Source/Python/UPT/Object/POM/CommonObject.py:4
+  BaseTools/Source/Python/UPT/Object/POM/__init__.py:7
+  BaseTools/Source/Python/UPT/Object/POM/ModuleObject.py:4
+  BaseTools/Source/Python/UPT/Object/POM/PackageObject.py:4
+  BaseTools/Source/Python/UPT/Object/Parser/DecObject.py:5
+  BaseTools/Source/Python/UPT/Object/Parser/InfGuidObject.py:5
+  BaseTools/Source/Python/UPT/Object/Parser/InfCommonObject.py:5
+  BaseTools/Source/Python/UPT/Object/Parser/InfSoucesObject.py:5
+  BaseTools/Source/Python/UPT/Object/Parser/InfPcdObject.py:5
+  BaseTools/Source/Python/UPT/Object/Parser/InfDefineObject.py:5
+  BaseTools/Source/Python/UPT/Object/Parser/InfDepexObject.py:5
+  BaseTools/Source/Python/UPT/Object/Parser/__init__.py:7
+  BaseTools/Source/Python/UPT/Object/Parser/InfPpiObject.py:5
+  BaseTools/Source/Python/UPT/Object/Parser/InfMisc.py:5
+  BaseTools/Source/Python/UPT/Object/Parser/InfBinaryObject.py:5
+  BaseTools/Source/Python/UPT/Object/Parser/InfPackagesObject.py:5
+  BaseTools/Source/Python/UPT/Object/Parser/InfHeaderObject.py:5
+  BaseTools/Source/Python/UPT/Object/Parser/InfLibraryClassesObject.py:5
+  BaseTools/Source/Python/UPT/Object/Parser/InfBuildOptionObject.py:5
+  BaseTools/Source/Python/UPT/Object/Parser/InfDefineCommonObject.py:5
+  BaseTools/Source/Python/UPT/Object/Parser/InfUserExtensionObject.py:5
+  BaseTools/Source/Python/UPT/Object/Parser/InfProtocolObject.py:5
+  BaseTools/Source/Python/UPT/Library/Xml/XmlRoutines.py:5
+  BaseTools/Source/Python/UPT/Library/Xml/__init__.py:7
+
+--- Original notice ---
+# Copyright (c) 2011 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/UPT/Library/Misc.py:4
+
+--- Original notice ---
+# Copyright (c) 2011, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/CommonDataClass/Exceptions.py:4
+
+--- Original notice ---
+# Copyright (c) 2012 - 2020, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/Workspace/WorkspaceCommon.py:4
+
+--- Original notice ---
+# Copyright (c) 2012, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/BinWrappers/PosixLike/LzmaF86Compress:6
+  BaseTools/Bin/CYGWIN_NT-5.1-i686/LzmaF86Compress:5
+
+--- Original notice ---
+# Copyright (c) 2012, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/Workspace/MetaFileCommentParser.py:4
+
+--- Original notice ---
+# Copyright (c) 2013 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseSmbusLibNull/BaseSmbusLibNull.inf:4
+  MdePkg/Library/UefiDevicePathLib/UefiDevicePathLibOptionalDevicePathProtocol.inf:8
+  BaseTools/Tests/PythonTest.py:4
+  BaseTools/Source/Python/AutoGen/GenPcdDb.py:4
+  BaseTools/Source/Python/Rsa2048Sha256Sign/Rsa2048Sha256Sign.py:7
+  BaseTools/Source/Python/Rsa2048Sha256Sign/Rsa2048Sha256GenerateKeys.py:12
+
+--- Original notice ---
+# Copyright (c) 2013, ARM Ltd. All rights reserved.
+
+Locations:
+  MdePkg/Library/BaseLib/Arm/MemoryFence.S:5
+  MdePkg/Library/BaseLib/AArch64/MemoryFence.S:5
+
+--- Original notice ---
+# Copyright (c) 2014 - 2015, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/Common/LongFilePathSupport.py:4
+
+--- Original notice ---
+# Copyright (c) 2014 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/UPT/ReplacePkg.py:4
+  BaseTools/Source/Python/UPT/InventoryWs.py:4
+  BaseTools/Source/Python/Common/LongFilePathOs.py:4
+  BaseTools/Source/Python/UPT/Core/FileHook.py:4
+
+--- Original notice ---
+# Copyright (c) 2014 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/UPT/Library/UniClassObject.py:4
+
+--- Original notice ---
+# Copyright (c) 2014 Hewlett-Packard Development Company, L.P.<BR>
+
+Locations:
+  BaseTools/Source/Python/AutoGen/UniClassObject.py:5
+
+--- Original notice ---
+# Copyright (c) 2014, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/Common/LongFilePathOsPath.py:4
+
+--- Original notice ---
+# Copyright (c) 2015 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/DxeHstiLib/DxeHstiLib.inf:4
+  BaseTools/Source/Python/Common/RangeExpression.py:4
+  BaseTools/Source/Python/Common/MultipleWorkspace.py:7
+  BaseTools/Source/Python/Common/VariableAttributes.py:6
+  BaseTools/Source/Python/AutoGen/ValidCheckingInfoObject.py:1
+
+--- Original notice ---
+# Copyright (c) 2015, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/StandaloneMmDriverEntryPoint/StandaloneMmDriverEntryPoint.inf:4
+
+--- Original notice ---
+# Copyright (c) 2016 - 2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/UPT/TestInstall.py:4
+  BaseTools/Source/Python/Pkcs7Sign/Pkcs7Sign.py:9
+
+--- Original notice ---
+# Copyright (c) 2016 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BasePciSegmentLibPci/BasePciSegmentLibPci.inf:7
+  BaseTools/Scripts/MemoryProfileSymbolGen.py:6
+  BaseTools/Scripts/BinToPcd.py:4
+
+--- Original notice ---
+# Copyright (c) 2016, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/AutoGen/IdfClassObject.py:4
+
+--- Original notice ---
+# Copyright (c) 2016, Linaro Ltd. All rights reserved.<BR>
+
+Locations:
+  BaseTools/BuildEnv:6
+  edksetup.sh:3
+
+--- Original notice ---
+# Copyright (c) 2016, Linaro Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseMemoryLibOptDxe/Arm/CopyMem.S:10
+  MdePkg/Library/BaseMemoryLibOptDxe/Arm/SetMem.S:3
+
+--- Original notice ---
+# Copyright (c) 2016-2018, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/StandaloneMmDriverEntryPoint/StandaloneMmDriverEntryPoint.inf:5
+
+--- Original notice ---
+# Copyright (c) 2017 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/BinWrappers/PosixLike/BrotliCompress:5
+
+--- Original notice ---
+# Copyright (c) 2017 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/PciSegmentLibSegmentInfo/DxeRuntimePciSegmentLibSegmentInfo.inf:7
+  MdePkg/Library/PciSegmentLibSegmentInfo/BasePciSegmentLibSegmentInfo.inf:7
+  MdePkg/Library/BaseS3PciSegmentLib/BaseS3PciSegmentLib.inf:7
+  MdePkg/Library/BasePciSegmentInfoLibNull/BasePciSegmentInfoLibNull.inf:6
+  BaseTools/Source/C/BrotliCompress/GNUmakefile:4
+  BaseTools/Source/C/BrotliCompress/Makefile:4
+  BaseTools/Source/Python/AutoGen/GenVar.py:1
+
+--- Original notice ---
+# Copyright (c) 2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Scripts/RunMakefileSample.mak:4
+  BaseTools/Scripts/RunMakefile.py:4
+  BaseTools/Scripts/SmiHandlerProfileSymbolGen.py:6
+  BaseTools/Source/C/DevicePath/GNUmakefile:4
+  BaseTools/Source/C/DevicePath/Makefile:4
+
+--- Original notice ---
+# Copyright (c) 2017, Microsoft Corporation
+
+Locations:
+  MdePkg/Library/BaseSafeIntLib/BaseSafeIntLib.inf:8
+
+--- Original notice ---
+# Copyright (c) 2018 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/Capsule/GenerateCapsule.py:13
+  BaseTools/Source/Python/Common/Uefi/Capsule/FmpCapsuleHeader.py:5
+  BaseTools/Source/Python/Common/Uefi/Capsule/FmpAuthHeader.py:5
+
+--- Original notice ---
+# Copyright (c) 2018, Hewlett Packard Enterprise Development, L.P.<BR>
+
+Locations:
+  BaseTools/Source/Python/AutoGen/AutoGen.py:5
+
+--- Original notice ---
+# Copyright (c) 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Tests/TestRegularExpression.py:4
+  BaseTools/Scripts/ConvertFceToStructurePcd.py:8
+  BaseTools/Source/Python/Common/caching.py:4
+  BaseTools/Source/Python/Common/Uefi/__init__.py:7
+  BaseTools/Source/Python/Common/Edk2/__init__.py:7
+  BaseTools/Source/Python/Common/Edk2/Capsule/__init__.py:7
+  BaseTools/Source/Python/Common/Edk2/Capsule/FmpPayloadHeader.py:6
+  BaseTools/Source/Python/Common/Uefi/Capsule/__init__.py:7
+  BaseTools/Source/Python/Common/Uefi/Capsule/UefiCapsuleHeader.py:4
+
+--- Original notice ---
+# Copyright (c) 2018, Linaro, Limited. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/StandaloneMmDriverEntryPoint/StandaloneMmDriverEntryPoint.inf:6
+
+--- Original notice ---
+# Copyright (c) 2018, Linaro, Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/StandaloneMmServicesTableLib/StandaloneMmServicesTableLib.inf:5
+  MdePkg/Library/MmServicesTableLib/MmServicesTableLib.inf:5
+
+--- Original notice ---
+# Copyright (c) 2019 - 2020, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/AutoGen/IncludesAutoGen.py:4
+
+--- Original notice ---
+# Copyright (c) 2019 - 2021, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/AutoGen/ModuleAutoGenHelper.py:4
+  BaseTools/Source/Python/AutoGen/PlatformAutoGen.py:4
+
+--- Original notice ---
+# Copyright (c) 2019, American Megatrends, Inc. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/AutoGen/AutoGen.py:6
+
+--- Original notice ---
+# Copyright (c) 2019, Intel Corporation. All rights reserved.
+
+Locations:
+  BaseTools/Scripts/DetectNotUsedItem.py:4
+
+--- Original notice ---
+# Copyright (c) 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/Capsule/GenerateWindowsDriver.py:4
+  BaseTools/Source/Python/Capsule/WindowsCapsuleSupportHelper.py:10
+  BaseTools/Source/Python/AutoGen/DataPipe.py:4
+  BaseTools/Source/Python/AutoGen/AutoGenWorker.py:4
+  BaseTools/Source/Python/AutoGen/ModuleAutoGen.py:4
+  BaseTools/Source/Python/AutoGen/WorkspaceAutoGen.py:4
+  BaseTools/Source/Python/Common/Uefi/Capsule/CapsuleDependency.py:4
+
+--- Original notice ---
+# Copyright (c) 2019, Linaro Ltd. All rights reserved.
+
+Locations:
+  MdePkg/Library/BaseLib/Arm/SpeculationBarrier.S:5
+  MdePkg/Library/BaseLib/AArch64/SpeculationBarrier.S:5
+
+--- Original notice ---
+# Copyright (c) 2020 - 2021, Arm Limited. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/AutoGen/GenMake.py:5
+
+--- Original notice ---
+# Copyright (c) 2020, ARM Limited. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/AmlToC/AmlToC.py:9
+  BaseTools/Source/Python/AutoGen/IncludesAutoGen.py:5
+
+--- Original notice ---
+# Copyright (c) 2020, Arm Limited. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/Ecc/c.py:5
+
+--- Original notice ---
+# Copyright (c) 2021, Arm Limited. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/Ecc/EccToolError.py:4
+  BaseTools/Source/Python/Ecc/Check.py:4
+
+--- Original notice ---
+# Copyright (c) 2021, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/MdeLibs.dsc.inc:8
+
+--- Original notice ---
+# Copyright 2001-2016 by Vinay Sajip. All Rights Reserved.
+
+Locations:
+  BaseTools/Source/Python/Common/EdkLogger.py:8
+
+--- Original notice ---
+# Portions Copyright (c) 2020, Hewlett Packard Enterprise Development LP. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/Python/Common/DataType.py:6
+
+--- Original notice ---
+# Portions copyright (c) 2008 - 2009, Apple Inc. All rights reserved.<BR>
+
+Locations:
+  MdePkg/MdePkg.dec:8
+  MdePkg/MdePkg.dsc:5
+  MdePkg/Library/BaseCpuLib/Arm/CpuFlushTlb.S:6
+  MdePkg/Library/BaseCpuLib/Arm/CpuSleep.S:12
+  MdePkg/Library/BaseCpuLib/AArch64/CpuFlushTlb.S:6
+  MdePkg/Library/BaseCpuLib/AArch64/CpuSleep.S:6
+  MdePkg/Library/BaseLib/Arm/CpuBreakpoint.S:6
+  MdePkg/Library/BaseLib/Arm/GetInterruptsState.S:6
+  MdePkg/Library/BaseLib/Arm/SetJumpLongJump.S:4
+  MdePkg/Library/BaseLib/Arm/DisableInterrupts.S:6
+  MdePkg/Library/BaseLib/Arm/EnableInterrupts.S:6
+  MdePkg/Library/BaseLib/AArch64/SwitchStack.S:4
+  MdePkg/Library/BaseLib/AArch64/CpuBreakpoint.S:6
+  MdePkg/Library/BaseLib/AArch64/GetInterruptsState.S:6
+  MdePkg/Library/BaseLib/AArch64/DisableInterrupts.S:6
+  MdePkg/Library/BaseLib/AArch64/EnableInterrupts.S:6
+
+--- Original notice ---
+# Portions copyright (c) 2011 - 2013, ARM LTD. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseCpuLib/AArch64/CpuSleep.S:7
+
+--- Original notice ---
+# Portions copyright (c) 2011 - 2013, ARM Limited. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/AArch64/SwitchStack.S:5
+
+--- Original notice ---
+# Portions copyright (c) 2011 - 2013, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseCpuLib/AArch64/CpuFlushTlb.S:7
+  MdePkg/Library/BaseLib/AArch64/CpuBreakpoint.S:7
+  MdePkg/Library/BaseLib/AArch64/GetInterruptsState.S:7
+  MdePkg/Library/BaseLib/AArch64/DisableInterrupts.S:7
+  MdePkg/Library/BaseLib/AArch64/EnableInterrupts.S:7
+  BaseTools/Source/Python/Common/DataType.py:5
+
+--- Original notice ---
+# Portions copyright (c) 2016, American Megatrends, Inc. All rights reserved.
+
+Locations:
+  MdePkg/Library/SmmPciExpressLib/SmmPciExpressLib.inf:8
+
+--- Original notice ---
+(C) Copyright 2015 Hewlett Packard Enterprise Development LP<BR>
+
+Locations:
+  MdePkg/Include/Library/DxeServicesLib.h:6
+
+--- Original notice ---
+(C) Copyright 2015-2017 Hewlett Packard Enterprise Development LP<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/SmBios.h:5
+
+--- Original notice ---
+(C) Copyright 2016 Hewlett Packard Enterprise Development LP<BR>
+
+Locations:
+  MdePkg/Include/Uefi/UefiInternalFormRepresentation.h:7
+  MdePkg/Include/Protocol/HiiImageDecoder.h:4
+
+--- Original notice ---
+(C) Copyright 2016-2018 Hewlett Packard Enterprise Development LP<BR>
+
+Locations:
+  MdePkg/Include/Protocol/HiiImageEx.h:4
+
+--- Original notice ---
+/* Copyright 2010 Google Inc. All Rights Reserved.
+
+Locations:
+  BaseTools/Source/C/BrotliCompress/enc/hash_longest_match64_inc.h:2
+  BaseTools/Source/C/BrotliCompress/enc/find_match_length.h:1
+  BaseTools/Source/C/BrotliCompress/enc/entropy_encode.c:1
+  BaseTools/Source/C/BrotliCompress/enc/hash_longest_match_quickly_inc.h:2
+  BaseTools/Source/C/BrotliCompress/enc/entropy_encode.h:1
+  BaseTools/Source/C/BrotliCompress/enc/hash_longest_match_inc.h:2
+  BaseTools/Source/C/BrotliCompress/enc/write_bits.h:1
+  BaseTools/Source/C/BrotliCompress/enc/hash.h:1
+
+--- Original notice ---
+/* Copyright 2013 Google Inc. All Rights Reserved.
+
+Locations:
+  BaseTools/Source/C/BrotliCompress/enc/cluster.h:1
+  BaseTools/Source/C/BrotliCompress/enc/backward_references.h:1
+  BaseTools/Source/C/BrotliCompress/enc/utf8_util.h:1
+  BaseTools/Source/C/BrotliCompress/enc/backward_references_hq.c:1
+  BaseTools/Source/C/BrotliCompress/enc/bit_cost_inc.h:2
+  BaseTools/Source/C/BrotliCompress/enc/histogram.c:1
+  BaseTools/Source/C/BrotliCompress/enc/bit_cost.h:1
+  BaseTools/Source/C/BrotliCompress/enc/fast_log.h:1
+  BaseTools/Source/C/BrotliCompress/enc/block_splitter.c:1
+  BaseTools/Source/C/BrotliCompress/enc/static_dict.h:1
+  BaseTools/Source/C/BrotliCompress/enc/block_splitter_inc.h:2
+  BaseTools/Source/C/BrotliCompress/enc/cluster_inc.h:2
+  BaseTools/Source/C/BrotliCompress/enc/literal_cost.h:1
+  BaseTools/Source/C/BrotliCompress/enc/encode.c:1
+  BaseTools/Source/C/BrotliCompress/enc/backward_references_hq.h:1
+  BaseTools/Source/C/BrotliCompress/enc/cluster.c:1
+  BaseTools/Source/C/BrotliCompress/enc/backward_references.c:1
+  BaseTools/Source/C/BrotliCompress/enc/utf8_util.c:1
+  BaseTools/Source/C/BrotliCompress/enc/block_splitter.h:1
+  BaseTools/Source/C/BrotliCompress/enc/histogram.h:1
+  BaseTools/Source/C/BrotliCompress/enc/bit_cost.c:1
+  BaseTools/Source/C/BrotliCompress/enc/command.h:1
+  BaseTools/Source/C/BrotliCompress/enc/static_dict.c:1
+  BaseTools/Source/C/BrotliCompress/enc/histogram_inc.h:2
+  BaseTools/Source/C/BrotliCompress/enc/prefix.h:1
+  BaseTools/Source/C/BrotliCompress/enc/ringbuffer.h:1
+  BaseTools/Source/C/BrotliCompress/enc/literal_cost.c:1
+  BaseTools/Source/C/BrotliCompress/enc/backward_references_inc.h:2
+  BaseTools/Source/C/BrotliCompress/common/dictionary.c:1
+  BaseTools/Source/C/BrotliCompress/common/transform.c:1
+  BaseTools/Source/C/BrotliCompress/common/context.h:1
+  BaseTools/Source/C/BrotliCompress/common/dictionary.h:1
+  BaseTools/Source/C/BrotliCompress/dec/bit_reader.h:1
+  BaseTools/Source/C/BrotliCompress/dec/decode.c:1
+  BaseTools/Source/C/BrotliCompress/dec/huffman.c:1
+  BaseTools/Source/C/BrotliCompress/dec/bit_reader.c:1
+  BaseTools/Source/C/BrotliCompress/dec/prefix.h:1
+  BaseTools/Source/C/BrotliCompress/dec/huffman.h:1
+  BaseTools/Source/C/BrotliCompress/include/brotli/types.h:1
+  BaseTools/Source/C/BrotliCompress/include/brotli/encode.h:1
+  BaseTools/Source/C/BrotliCompress/include/brotli/decode.h:1
+
+--- Original notice ---
+/* Copyright 2014 Google Inc. All Rights Reserved.
+
+Locations:
+  BaseTools/Source/C/BrotliCompress/tools/brotli.c:1
+  BaseTools/Source/C/BrotliCompress/enc/brotli_bit_stream.h:1
+  BaseTools/Source/C/BrotliCompress/enc/block_encoder_inc.h:2
+  BaseTools/Source/C/BrotliCompress/enc/brotli_bit_stream.c:1
+
+--- Original notice ---
+/* Copyright 2015 Google Inc. All Rights Reserved.
+
+Locations:
+  BaseTools/Source/C/BrotliCompress/enc/dictionary_hash.c:1
+  BaseTools/Source/C/BrotliCompress/enc/memory.c:1
+  BaseTools/Source/C/BrotliCompress/enc/compress_fragment_two_pass.c:1
+  BaseTools/Source/C/BrotliCompress/enc/compress_fragment.h:1
+  BaseTools/Source/C/BrotliCompress/enc/static_dict_lut.h:1
+  BaseTools/Source/C/BrotliCompress/enc/metablock.h:1
+  BaseTools/Source/C/BrotliCompress/enc/metablock_inc.h:2
+  BaseTools/Source/C/BrotliCompress/enc/dictionary_hash.h:1
+  BaseTools/Source/C/BrotliCompress/enc/compress_fragment.c:1
+  BaseTools/Source/C/BrotliCompress/enc/compress_fragment_two_pass.h:1
+  BaseTools/Source/C/BrotliCompress/enc/entropy_encode_static.h:1
+  BaseTools/Source/C/BrotliCompress/enc/metablock.c:1
+  BaseTools/Source/C/BrotliCompress/dec/state.c:1
+  BaseTools/Source/C/BrotliCompress/dec/state.h:1
+
+--- Original notice ---
+/* Copyright 2016 Google Inc. All Rights Reserved.
+
+Locations:
+  BaseTools/Source/C/BrotliCompress/enc/hash_to_binary_tree_inc.h:2
+  BaseTools/Source/C/BrotliCompress/enc/quality.h:1
+  BaseTools/Source/C/BrotliCompress/enc/hash_forgetful_chain_inc.h:2
+  BaseTools/Source/C/BrotliCompress/enc/memory.h:1
+  BaseTools/Source/C/BrotliCompress/common/version.h:1
+  BaseTools/Source/C/BrotliCompress/common/constants.h:1
+  BaseTools/Source/C/BrotliCompress/common/platform.h:1
+  BaseTools/Source/C/BrotliCompress/include/brotli/port.h:1
+
+--- Original notice ---
+/* Copyright 2017 Google Inc. All Rights Reserved.
+
+Locations:
+  BaseTools/Source/C/BrotliCompress/enc/encoder_dict.h:1
+  BaseTools/Source/C/BrotliCompress/enc/params.h:1
+  BaseTools/Source/C/BrotliCompress/enc/encoder_dict.c:1
+
+--- Original notice ---
+/* Copyright 2018 Google Inc. All Rights Reserved.
+
+Locations:
+  BaseTools/Source/C/BrotliCompress/enc/hash_composite_inc.h:2
+  BaseTools/Source/C/BrotliCompress/enc/hash_rolling_inc.h:2
+
+--- Original notice ---
+//   Copyright (c) 2007 - 2015, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsicArmVirt.uni:4
+
+--- Original notice ---
+//   Copyright (c) 2017, AMD Incorporated. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsicArmVirt.uni:6
+
+--- Original notice ---
+//   Copyright (c) 2018, Linaro, Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsicArmVirt.uni:7
+
+--- Original notice ---
+//   Portions copyright (c) 2008 - 2009, Apple Inc. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsicArmVirt.uni:5
+
+--- Original notice ---
+//  Copyright (c) 2012-2015, ARM Limited. All rights reserved.
+
+Locations:
+  MdePkg/Library/BaseSynchronizationLib/Arm/Synchronization.S:3
+  MdePkg/Library/BaseSynchronizationLib/Arm/Synchronization.asm:3
+  MdePkg/Library/BaseSynchronizationLib/AArch64/Synchronization.S:3
+
+--- Original notice ---
+//  Copyright (c) 2015, Linaro Limited. All rights reserved.
+
+Locations:
+  MdePkg/Library/BaseSynchronizationLib/Arm/Synchronization.S:4
+  MdePkg/Library/BaseSynchronizationLib/Arm/Synchronization.asm:4
+  MdePkg/Library/BaseSynchronizationLib/AArch64/Synchronization.S:4
+
+--- Original notice ---
+// Copyright (C) 2014, Red Hat, Inc.
+
+Locations:
+  MdePkg/Library/BaseOrderedCollectionRedBlackTreeLib/BaseOrderedCollectionRedBlackTreeLib.uni:14
+
+--- Original notice ---
+// Copyright (c) 2006 - 2014, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/PeiServicesTablePointerLibIdt/PeiServicesTablePointerLibIdt.uni:7
+  MdePkg/Library/PeiSmbusLibSmbus2Ppi/PeiSmbusLibSmbus2Ppi.uni:6
+  MdePkg/Library/UefiMemoryLib/UefiMemoryLib.uni:7
+  MdePkg/Library/PeiDxePostCodeLibReportStatusCode/PeiDxePostCodeLibReportStatusCode.uni:6
+  MdePkg/Library/DxeSmbusLib/DxeSmbusLib.uni:6
+  MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.uni:6
+  MdePkg/Library/BaseSerialPortLibNull/BaseSerialPortLibNull.uni:6
+  MdePkg/Library/UefiScsiLib/UefiScsiLib.uni:7
+  MdePkg/Library/PeiHobLib/PeiHobLib.uni:6
+  MdePkg/Library/PeiMemoryLib/PeiMemoryLib.uni:7
+  MdePkg/Library/DxeRuntimeDebugLibSerialPort/DxeRuntimeDebugLibSerialPort.uni:7
+  MdePkg/Library/BaseMemoryLibMmx/BaseMemoryLibMmx.uni:7
+  MdePkg/Library/UefiRuntimeLib/UefiRuntimeLib.uni:8
+  MdePkg/Library/PeiIoLibCpuIo/PeiIoLibCpuIo.uni:7
+  MdePkg/Library/UefiUsbLib/UefiUsbLib.uni:7
+
+--- Original notice ---
+// Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BasePeCoffLib/BasePeCoffLib.uni:13
+  MdePkg/Library/BaseS3IoLib/BaseS3IoLib.uni:7
+  MdePkg/Library/BaseS3PciLib/BaseS3PciLib.uni:7
+  MdePkg/Library/BaseLib/Arm/SwitchStack.S:3
+
+--- Original notice ---
+// Copyright (c) 2007 - 2014, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/PeiPciLibPciCfg2/PeiPciLibPciCfg2.uni:10
+  MdePkg/Library/BaseCacheMaintenanceLib/BaseCacheMaintenanceLib.uni:7
+  MdePkg/Library/BasePciLibCf8/BasePciLibCf8.uni:7
+  MdePkg/Library/PeiServicesTablePointerLib/PeiServicesTablePointerLib.uni:8
+  MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.uni:6
+  MdePkg/Library/UefiPciSegmentLibPciRootBridgeIo/UefiPciSegmentLibPciRootBridgeIo.uni:10
+  MdePkg/Library/PeiServicesLib/PeiServicesLib.uni:6
+  MdePkg/Library/BasePciExpressLib/BasePciExpressLib.uni:7
+  MdePkg/Library/DxeServicesLib/DxeServicesLib.uni:8
+  MdePkg/Library/StandaloneMmDriverEntryPoint/StandaloneMmDriverEntryPoint.uni:5
+  MdePkg/Library/BaseLib/BaseLib.uni:6
+  MdePkg/Library/BaseMemoryLibRepStr/BaseMemoryLibRepStr.uni:7
+  MdePkg/Library/BaseSynchronizationLib/BaseSynchronizationLib.uni:6
+  MdePkg/Library/BaseCpuLib/BaseCpuLib.uni:7
+  MdePkg/Library/PeiExtractGuidedSectionLib/PeiExtractGuidedSectionLib.uni:6
+  MdePkg/Library/UefiDriverEntryPoint/UefiDriverEntryPoint.uni:6
+  MdePkg/Library/BaseMemoryLibOptDxe/BaseMemoryLibOptDxe.uni:7
+  MdePkg/Library/BasePerformanceLibNull/BasePerformanceLibNull.uni:6
+  MdePkg/Library/BasePcdLibNull/BasePcdLibNull.uni:7
+  MdePkg/Library/DxeCoreEntryPoint/DxeCoreEntryPoint.uni:6
+  MdePkg/Library/BasePostCodeLibPort80/BasePostCodeLibPort80.uni:6
+  MdePkg/Library/PeiCoreEntryPoint/PeiCoreEntryPoint.uni:6
+  MdePkg/Library/BasePciCf8Lib/BasePciCf8Lib.uni:7
+  MdePkg/Library/DxeExtractGuidedSectionLib/DxeExtractGuidedSectionLib.uni:6
+  MdePkg/Library/UefiApplicationEntryPoint/UefiApplicationEntryPoint.uni:6
+  MdePkg/Library/BaseMemoryLib/BaseMemoryLib.uni:6
+  MdePkg/Library/BaseTimerLibNullTemplate/BaseTimerLibNullTemplate.uni:9
+  MdePkg/Library/BaseMemoryLibSse2/BaseMemoryLibSse2.uni:6
+  MdePkg/Library/PeiResourcePublicationLib/PeiResourcePublicationLib.uni:6
+  MdePkg/Library/DxeHobLib/DxeHobLib.uni:7
+  MdePkg/Library/BaseExtractGuidedSectionLib/BaseExtractGuidedSectionLib.uni:12
+  MdePkg/Library/UefiBootServicesTableLib/UefiBootServicesTableLib.uni:6
+  MdePkg/Library/UefiDebugLibStdErr/UefiDebugLibStdErr.uni:6
+  MdePkg/Library/PeiMemoryAllocationLib/PeiMemoryAllocationLib.uni:7
+  MdePkg/Library/UefiDevicePathLib/UefiDevicePathLib.uni:6
+  MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsic.uni:8
+  MdePkg/Library/PeiPciSegmentLibPciCfg2/PeiPciSegmentLibPciCfg2.uni:9
+  MdePkg/Library/BasePeCoffGetEntryPointLib/BasePeCoffGetEntryPointLib.uni:6
+  MdePkg/Library/UefiDevicePathLibDevicePathProtocol/UefiDevicePathLibDevicePathProtocol.uni:7
+  MdePkg/Library/DxeCoreHobLib/DxeCoreHobLib.uni:7
+  MdePkg/Library/UefiRuntimeServicesTableLib/UefiRuntimeServicesTableLib.uni:6
+  MdePkg/Library/UefiMemoryAllocationLib/UefiMemoryAllocationLib.uni:7
+  MdePkg/Library/UefiDebugLibConOut/UefiDebugLibConOut.uni:6
+  MdePkg/Library/BasePciLibPciExpress/BasePciLibPciExpress.uni:7
+  MdePkg/Library/UefiLib/UefiLib.uni:10
+  MdePkg/Library/BasePostCodeLibDebug/BasePostCodeLibDebug.uni:7
+  MdePkg/Library/BaseMemoryLibOptPei/BaseMemoryLibOptPei.uni:7
+  MdePkg/Library/UefiPciLibPciRootBridgeIo/UefiPciLibPciRootBridgeIo.uni:10
+  MdePkg/Library/PeimEntryPoint/PeimEntryPoint.uni:6
+  MdePkg/Library/BasePrintLib/BasePrintLib.uni:6
+  MdePkg/Library/DxeServicesTableLib/DxeServicesTableLib.uni:7
+
+--- Original notice ---
+// Copyright (c) 2007 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/MdePkg.uni:7
+  MdePkg/Library/BaseS3SmbusLib/BaseS3SmbusLib.uni:7
+  MdePkg/Library/SecPeiDxeTimerLibCpu/SecPeiDxeTimerLibCpu.uni:16
+  MdePkg/Library/DxeRuntimePciExpressLib/DxeRuntimePciExpressLib.uni:11
+  MdePkg/Library/BaseS3BootScriptLibNull/BaseS3BootScriptLibNull.uni:8
+  MdePkg/Library/DxePcdLib/DxePcdLib.uni:16
+  MdePkg/Library/PeiPcdLib/PeiPcdLib.uni:18
+  MdePkg/Library/BaseS3StallLib/BaseS3StallLib.uni:7
+
+--- Original notice ---
+// Copyright (c) 2007 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseUefiDecompressLib/BaseUefiDecompressLib.uni:6
+
+--- Original notice ---
+// Copyright (c) 2009 - 2014, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/StandaloneMmServicesTableLib/StandaloneMmServicesTableLib.uni:5
+  MdePkg/Library/SmmPciLibPciRootBridgeIo/SmmPciLibPciRootBridgeIo.uni:10
+  MdePkg/Library/SmmLibNull/SmmLibNull.uni:6
+  MdePkg/Library/MmServicesTableLib/MmServicesTableLib.uni:8
+  MdePkg/Library/SmmServicesTableLib/SmmServicesTableLib.uni:6
+  MdePkg/Library/SmmIoLibSmmCpuIo2/SmmIoLibSmmCpuIo2.uni:7
+  MdePkg/Library/BaseReportStatusCodeLibNull/BaseReportStatusCodeLibNull.uni:6
+  MdePkg/Library/BasePeCoffExtraActionLibNull/PeCoffExtraActionLibNull.uni:6
+
+--- Original notice ---
+// Copyright (c) 2010 - 2014, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/SmmMemoryAllocationLib/SmmMemoryAllocationLib.uni:7
+
+--- Original notice ---
+// Copyright (c) 2010 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/DxeIoLibCpuIo2/DxeIoLibCpuIo2.uni:6
+
+--- Original notice ---
+// Copyright (c) 2010-2011, Linaro Limited
+
+Locations:
+  MdePkg/Library/BaseMemoryLibOptDxe/Arm/ScanMem.S:1
+
+--- Original notice ---
+// Copyright (c) 2011 - 2014, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseDebugPrintErrorLevelLib/BaseDebugPrintErrorLevelLib.uni:6
+  MdePkg/Library/SmmPeriodicSmiLib/SmmPeriodicSmiLib.uni:6
+
+--- Original notice ---
+// Copyright (c) 2012 - 2016, Linaro Limited
+
+Locations:
+  MdePkg/Library/BaseMemoryLibOptDxe/AArch64/CopyMem.S:2
+  MdePkg/Library/BaseMemoryLibOptDxe/AArch64/SetMem.S:2
+
+--- Original notice ---
+// Copyright (c) 2013 - 2014, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseSmbusLibNull/BaseSmbusLibNull.uni:6
+  MdePkg/Library/UefiDevicePathLib/UefiDevicePathLibOptionalDevicePathProtocol.uni:8
+
+--- Original notice ---
+// Copyright (c) 2013 - 2016, Linaro Limited
+
+Locations:
+  MdePkg/Library/BaseMemoryLibOptDxe/Arm/CompareMem.S:2
+
+--- Original notice ---
+// Copyright (c) 2013 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/MdePkgExtra.uni:4
+
+--- Original notice ---
+// Copyright (c) 2013, Linaro Limited
+
+Locations:
+  MdePkg/Library/BaseMemoryLibOptDxe/AArch64/CompareMem.S:2
+
+--- Original notice ---
+// Copyright (c) 2014, ARM Limited
+
+Locations:
+  MdePkg/Library/BaseMemoryLibOptDxe/AArch64/ScanMem.S:2
+
+--- Original notice ---
+// Copyright (c) 2014, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseStackCheckLib/BaseStackCheckLib.uni:6
+
+--- Original notice ---
+// Copyright (c) 2015 ARM Ltd
+
+Locations:
+  MdePkg/Library/BaseMemoryLibOptDxe/AArch64/CopyMem.S:30
+  MdePkg/Library/BaseMemoryLibOptDxe/AArch64/SetMem.S:30
+
+--- Original notice ---
+// Copyright (c) 2015, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/UefiDebugLibDebugPortProtocol/UefiDebugLibDebugPortProtocol.uni:6
+  MdePkg/Library/BaseRngLib/BaseRngLib.uni:7
+  MdePkg/Library/SmmMemLib/SmmMemLib.uni:9
+  MdePkg/Library/UefiFileHandleLib/UefiFileHandleLib.uni:6
+  MdePkg/Library/DxeHstiLib/DxeHstiLib.uni:4
+
+--- Original notice ---
+// Copyright (c) 2016 - 2018, ARM Limited. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/StandaloneMmDriverEntryPoint/StandaloneMmDriverEntryPoint.uni:6
+
+--- Original notice ---
+// Copyright (c) 2016, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BasePciSegmentLibPci/BasePciSegmentLibPci.uni:7
+
+--- Original notice ---
+// Copyright (c) 2016, Linaro Limited
+
+Locations:
+  MdePkg/Library/BaseMemoryLibOptDxe/Arm/CompareGuid.S:2
+  MdePkg/Library/BaseMemoryLibOptDxe/AArch64/CompareGuid.S:2
+
+--- Original notice ---
+// Copyright (c) 2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/PciSegmentLibSegmentInfo/DxeRuntimePciSegmentLibSegmentInfo.uni:7
+  MdePkg/Library/PciSegmentLibSegmentInfo/BasePciSegmentLibSegmentInfo.uni:7
+  MdePkg/Library/BaseS3PciSegmentLib/BaseS3PciSegmentLib.uni:7
+  MdePkg/Library/BasePciSegmentInfoLibNull/BasePciSegmentInfoLibNull.uni:6
+  MdePkg/Library/SmmIoLib/SmmIoLib.uni:8
+  MdePkg/Library/SmiHandlerProfileLibNull/SmiHandlerProfileLibNull.uni:6
+
+--- Original notice ---
+// Copyright (c) 2018, Linaro, Limited. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/StandaloneMmDriverEntryPoint/StandaloneMmDriverEntryPoint.uni:7
+
+--- Original notice ---
+// Copyright (c) 2018, Linaro, Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/StandaloneMmServicesTableLib/StandaloneMmServicesTableLib.uni:6
+  MdePkg/Library/MmServicesTableLib/MmServicesTableLib.uni:9
+
+--- Original notice ---
+// Copyright (c) 2021, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/RegisterFilterLibNull/RegisterFilterLibNull.uni:4
+
+--- Original notice ---
+// Portions copyright (c) 2008 - 2009, Apple Inc. All rights reserved.<BR>
+
+Locations:
+  MdePkg/MdePkg.uni:8
+  MdePkg/MdePkgExtra.uni:6
+  MdePkg/Library/BaseCacheMaintenanceLib/BaseCacheMaintenanceLib.uni:8
+  MdePkg/Library/BaseLib/BaseLib.uni:7
+  MdePkg/Library/BaseSynchronizationLib/BaseSynchronizationLib.uni:7
+  MdePkg/Library/BaseCpuLib/BaseCpuLib.uni:8
+  MdePkg/Library/BasePeCoffLib/BasePeCoffLib.uni:14
+  MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsic.uni:9
+  MdePkg/Library/BaseLib/Arm/SwitchStack.S:4
+
+--- Original notice ---
+// Portions copyright (c) 2011 - 2013, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/BaseLib.uni:8
+  MdePkg/Library/BaseCpuLib/BaseCpuLib.uni:9
+
+--- Original notice ---
+// Portions copyright (c) 2011, ARM Limited. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/Arm/SwitchStack.S:5
+
+--- Original notice ---
+;  Copyright (c) 2012-2015, ARM Limited. All rights reserved.
+
+Locations:
+  MdePkg/Library/BaseSynchronizationLib/AArch64/Synchronization.asm:3
+
+--- Original notice ---
+;  Copyright (c) 2014-2018, Linaro Limited. All rights reserved.
+
+Locations:
+  MdePkg/Library/BaseIoLibIntrinsic/Arm/ArmVirtMmio.asm:2
+  MdePkg/Library/BaseIoLibIntrinsic/AArch64/ArmVirtMmio.asm:2
+
+--- Original notice ---
+;  Copyright (c) 2015, Linaro Limited. All rights reserved.
+
+Locations:
+  MdePkg/Library/BaseSynchronizationLib/AArch64/Synchronization.asm:4
+
+--- Original notice ---
+; Copyright (c) 2006 - 2008, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseMemoryLibOptPei/X64/CompareMem.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/X64/ScanMem64.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/X64/ScanMem32.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/X64/SetMem.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/X64/ScanMem8.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/X64/ScanMem16.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/Ia32/CompareMem.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/Ia32/ScanMem64.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/Ia32/ScanMem32.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/Ia32/ScanMem8.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/Ia32/ScanMem16.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/X64/CompareMem.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/X64/ScanMem64.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/X64/ScanMem32.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/X64/ScanMem8.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/X64/ScanMem16.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/Ia32/CompareMem.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/Ia32/ScanMem64.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/Ia32/ScanMem32.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/Ia32/ScanMem8.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/Ia32/ScanMem16.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/X64/CompareMem.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/X64/ScanMem64.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/X64/ScanMem32.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/X64/ScanMem8.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/X64/ScanMem16.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/Ia32/CompareMem.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/Ia32/ScanMem64.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/Ia32/ScanMem32.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/Ia32/ScanMem8.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/Ia32/ScanMem16.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/X64/CompareMem.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/X64/ScanMem64.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/X64/ScanMem32.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/X64/SetMem.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/X64/ScanMem8.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/X64/ScanMem16.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/Ia32/CompareMem.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/Ia32/ScanMem64.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/Ia32/ScanMem32.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/Ia32/ScanMem8.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/Ia32/ScanMem16.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/X64/CompareMem.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/X64/ScanMem64.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/X64/ScanMem32.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/X64/ScanMem8.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/X64/ScanMem16.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/Ia32/CompareMem.nasm:3
+  MdePkg/Library/BaseLib/X64/SwitchStack.nasm:3
+  MdePkg/Library/BaseLib/X64/EnableCache.nasm:3
+  MdePkg/Library/BaseLib/X64/CpuIdEx.nasm:3
+  MdePkg/Library/BaseLib/X64/DisableCache.nasm:3
+  MdePkg/Library/BaseLib/X64/DisablePaging64.nasm:3
+  MdePkg/Library/BaseLib/X64/CpuId.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteDr5.nasm:3
+  MdePkg/Library/BaseLib/Ia32/EnableCache.nasm:3
+  MdePkg/Library/BaseLib/Ia32/DisableCache.nasm:3
+
+--- Original notice ---
+; Copyright (c) 2006 - 2009, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseCpuLib/AArch64/CpuFlushTlb.asm:5
+  MdePkg/Library/BaseCpuLib/AArch64/CpuSleep.asm:5
+  MdePkg/Library/BaseLib/AArch64/EnableInterrupts.asm:5
+  MdePkg/Library/BaseLib/AArch64/CpuBreakpoint.asm:5
+  MdePkg/Library/BaseLib/AArch64/DisableInterrupts.asm:5
+  MdePkg/Library/BaseLib/AArch64/GetInterruptsState.asm:5
+  MdePkg/Library/BaseLib/AArch64/SwitchStack.asm:3
+
+--- Original notice ---
+; Copyright (c) 2006 - 2010, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/X64/WriteIdtr.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteIdtr.nasm:3
+
+--- Original notice ---
+; Copyright (c) 2006 - 2012, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseIoLibIntrinsic/X64/IoFifo.nasm:3
+  MdePkg/Library/BaseIoLibIntrinsic/X64/IoFifoSev.nasm:3
+  MdePkg/Library/BaseIoLibIntrinsic/Ia32/IoFifo.nasm:3
+  MdePkg/Library/BaseIoLibIntrinsic/Ia32/IoFifoSev.nasm:3
+
+--- Original notice ---
+; Copyright (c) 2006 - 2013, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/Ia32/CpuIdEx.nasm:3
+  MdePkg/Library/BaseLib/Ia32/Thunk16.nasm:6
+
+--- Original notice ---
+; Copyright (c) 2006 - 2015, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseMemoryLibRepStr/Ia32/ScanMem64.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/Ia32/ScanMem32.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/Ia32/ScanMem8.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/Ia32/ScanMem16.nasm:3
+  MdePkg/Library/BaseLib/Ia32/RShiftU64.nasm:3
+  MdePkg/Library/BaseLib/Ia32/LShiftU64.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ARShiftU64.nasm:3
+  MdePkg/Library/BaseLib/Ia32/LRotU64.nasm:3
+  MdePkg/Library/BaseLib/Ia32/RRotU64.nasm:3
+  MdePkg/Library/BaseLib/Ia32/FlushCacheLine.nasm:3
+
+--- Original notice ---
+; Copyright (c) 2006 - 2016, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseSynchronizationLib/X64/InterlockedIncrement.nasm:3
+  MdePkg/Library/BaseSynchronizationLib/X64/InterlockedCompareExchange16.nasm:3
+  MdePkg/Library/BaseSynchronizationLib/X64/InterlockedCompareExchange64.nasm:3
+  MdePkg/Library/BaseSynchronizationLib/X64/InterlockedCompareExchange32.nasm:3
+  MdePkg/Library/BaseSynchronizationLib/Ia32/InterlockedIncrement.nasm:3
+  MdePkg/Library/BaseSynchronizationLib/Ia32/InterlockedCompareExchange16.nasm:3
+  MdePkg/Library/BaseSynchronizationLib/Ia32/InterlockedCompareExchange64.nasm:3
+  MdePkg/Library/BaseSynchronizationLib/Ia32/InterlockedCompareExchange32.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteLdtr.nasm:3
+  MdePkg/Library/BaseLib/Ia32/EnableInterrupts.nasm:3
+  MdePkg/Library/BaseLib/Ia32/EnableDisableInterrupts.nasm:3
+  MdePkg/Library/BaseLib/Ia32/CpuBreakpoint.nasm:2
+  MdePkg/Library/BaseLib/Ia32/Invd.nasm:3
+
+--- Original notice ---
+; Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseCpuLib/Arm/CpuFlushTlb.asm:5
+  MdePkg/Library/BaseCpuLib/Arm/CpuSleep.asm:11
+  MdePkg/Library/BaseSynchronizationLib/X64/InterlockedDecrement.nasm:3
+  MdePkg/Library/BaseSynchronizationLib/Ia32/InterlockedDecrement.nasm:3
+  MdePkg/Library/BaseLib/X64/Thunk16.nasm:6
+  MdePkg/Library/BaseLib/Arm/CpuPause.asm:5
+  MdePkg/Library/BaseLib/Arm/EnableInterrupts.asm:5
+  MdePkg/Library/BaseLib/Arm/SetJumpLongJump.asm:3
+  MdePkg/Library/BaseLib/Arm/CpuBreakpoint.asm:5
+  MdePkg/Library/BaseLib/Arm/DisableInterrupts.asm:5
+  MdePkg/Library/BaseLib/Arm/GetInterruptsState.asm:5
+  MdePkg/Library/BaseLib/Arm/SwitchStack.asm:3
+
+--- Original notice ---
+; Copyright (c) 2006 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/X64/SetJump.nasm:3
+  MdePkg/Library/BaseLib/X64/LongJump.nasm:3
+  MdePkg/Library/BaseLib/Ia32/SetJump.nasm:3
+  MdePkg/Library/BaseLib/Ia32/LongJump.nasm:3
+
+--- Original notice ---
+; Copyright (c) 2006, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseMemoryLibOptPei/X64/ZeroMem.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/X64/SetMem16.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/X64/SetMem64.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/X64/SetMem32.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/X64/CopyMem.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/Ia32/ZeroMem.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/Ia32/SetMem16.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/Ia32/SetMem.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/Ia32/SetMem64.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/Ia32/SetMem32.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/Ia32/CopyMem.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/X64/ZeroMem.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/X64/SetMem16.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/X64/SetMem.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/X64/SetMem64.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/X64/SetMem32.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/X64/CopyMem.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/Ia32/ZeroMem.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/Ia32/SetMem16.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/Ia32/SetMem.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/Ia32/SetMem64.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/Ia32/SetMem32.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/Ia32/CopyMem.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/X64/ZeroMem.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/X64/SetMem16.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/X64/SetMem.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/X64/SetMem64.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/X64/SetMem32.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/X64/CopyMem.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/Ia32/ZeroMem.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/Ia32/SetMem16.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/Ia32/SetMem.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/Ia32/SetMem64.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/Ia32/SetMem32.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/Ia32/CopyMem.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/X64/ZeroMem.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/X64/SetMem16.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/X64/SetMem64.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/X64/SetMem32.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/X64/CopyMem.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/Ia32/ZeroMem.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/Ia32/SetMem16.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/Ia32/SetMem.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/Ia32/SetMem64.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/Ia32/SetMem32.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/Ia32/CopyMem.nasm:3
+  MdePkg/Library/BaseCpuLib/X64/CpuSleep.nasm:2
+  MdePkg/Library/BaseCpuLib/X64/CpuFlushTlb.nasm:2
+  MdePkg/Library/BaseCpuLib/Ia32/CpuSleep.nasm:2
+  MdePkg/Library/BaseCpuLib/Ia32/CpuFlushTlb.nasm:2
+  MdePkg/Library/BaseMemoryLibRepStr/X64/ZeroMem.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/X64/SetMem16.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/X64/SetMem.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/X64/SetMem64.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/X64/SetMem32.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/X64/CopyMem.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/Ia32/ZeroMem.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/Ia32/SetMem16.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/Ia32/SetMem.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/Ia32/SetMem64.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/Ia32/SetMem32.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/Ia32/CopyMem.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteMm4.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteDr6.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteCr4.nasm:3
+  MdePkg/Library/BaseLib/X64/Mwait.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadFs.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadDs.nasm:3
+  MdePkg/Library/BaseLib/X64/FxRestore.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadMm4.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadDr6.nasm:3
+  MdePkg/Library/BaseLib/X64/CpuPause.nasm:2
+  MdePkg/Library/BaseLib/X64/ReadCr4.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteLdtr.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadDr7.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadMm5.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteMsr64.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadIdtr.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteDr7.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteMm5.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadMm2.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadDr0.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadEs.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadCr2.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteMm2.nasm:3
+  MdePkg/Library/BaseLib/X64/EnableInterrupts.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteDr0.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteCr2.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadGs.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteGdtr.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadCs.nasm:3
+  MdePkg/Library/BaseLib/X64/EnableDisableInterrupts.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteCr3.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteDr1.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteMm3.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadCr3.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadDr1.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadMm3.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadCr0.nasm:3
+  MdePkg/Library/BaseLib/X64/DisableInterrupts.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadDr2.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadMm0.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteCr0.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteDr2.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteMm0.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteMm1.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadTr.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteDr3.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadMm1.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadDr3.nasm:3
+  MdePkg/Library/BaseLib/X64/CpuBreakpoint.nasm:2
+  MdePkg/Library/BaseLib/X64/Invd.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadGdtr.nasm:3
+  MdePkg/Library/BaseLib/X64/Wbinvd.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadEflags.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteDr4.nasm:3
+  MdePkg/Library/BaseLib/X64/FlushCacheLine.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteMm6.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadLdtr.nasm:3
+  MdePkg/Library/BaseLib/X64/FxSave.nasm:3
+  MdePkg/Library/BaseLib/X64/Monitor.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadDr4.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadMm6.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadMsr64.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadMm7.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadDr5.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadSs.nasm:3
+  MdePkg/Library/BaseLib/X64/WriteMm7.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadPmc.nasm:3
+  MdePkg/Library/BaseLib/X64/ReadTsc.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteMm4.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteDr6.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteCr4.nasm:3
+  MdePkg/Library/BaseLib/Ia32/Mwait.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadFs.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadDs.nasm:3
+  MdePkg/Library/BaseLib/Ia32/FxRestore.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadMm4.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadDr6.nasm:3
+  MdePkg/Library/BaseLib/Ia32/CpuPause.nasm:2
+  MdePkg/Library/BaseLib/Ia32/ReadCr4.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadDr7.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadMm5.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteMsr64.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadIdtr.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteDr7.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteMm5.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadMm2.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadDr0.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadEs.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadCr2.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteMm2.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteDr0.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteCr2.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadGs.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteGdtr.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadCs.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteCr3.nasm:3
+  MdePkg/Library/BaseLib/Ia32/DivU64x64Remainder.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteDr1.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteMm3.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadCr3.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadDr1.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadMm3.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadCr0.nasm:3
+  MdePkg/Library/BaseLib/Ia32/DisableInterrupts.nasm:3
+  MdePkg/Library/BaseLib/Ia32/SwapBytes64.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadDr2.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadMm0.nasm:3
+  MdePkg/Library/BaseLib/Ia32/MultU64x64.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteCr0.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteDr2.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteMm0.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteMm1.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadTr.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteDr3.nasm:3
+  MdePkg/Library/BaseLib/Ia32/MultU64x32.nasm:3
+  MdePkg/Library/BaseLib/Ia32/DisablePaging32.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadMm1.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadDr3.nasm:3
+  MdePkg/Library/BaseLib/Ia32/DivU64x32.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadGdtr.nasm:3
+  MdePkg/Library/BaseLib/Ia32/Wbinvd.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadEflags.nasm:3
+  MdePkg/Library/BaseLib/Ia32/EnablePaging64.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteDr4.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteMm6.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadLdtr.nasm:3
+  MdePkg/Library/BaseLib/Ia32/DivU64x32Remainder.nasm:3
+  MdePkg/Library/BaseLib/Ia32/FxSave.nasm:3
+  MdePkg/Library/BaseLib/Ia32/Monitor.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadDr4.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadMm6.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadMsr64.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadMm7.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadDr5.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadSs.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteMm7.nasm:3
+  MdePkg/Library/BaseLib/Ia32/CpuId.nasm:3
+  MdePkg/Library/BaseLib/Ia32/WriteDr5.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadPmc.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ModU64x32.nasm:3
+  MdePkg/Library/BaseLib/Ia32/ReadTsc.nasm:3
+  MdePkg/Library/BaseLib/Ia32/EnablePaging32.nasm:3
+
+--- Original notice ---
+; Copyright (c) 2008 - 2010, Apple Inc. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseMemoryLibOptDxe/Arm/CopyMem.asm:9
+
+--- Original notice ---
+; Copyright (c) 2009-2013, ARM Ltd.  All rights reserved.
+
+Locations:
+  MdePkg/Library/BaseLib/AArch64/SetJumpLongJump.asm:3
+
+--- Original notice ---
+; Copyright (c) 2010-2011, Linaro Limited
+
+Locations:
+  MdePkg/Library/BaseMemoryLibOptDxe/Arm/ScanMem.asm:1
+
+--- Original notice ---
+; Copyright (c) 2013 - 2016, Linaro Limited
+
+Locations:
+  MdePkg/Library/BaseMemoryLibOptDxe/Arm/CompareMem.asm:2
+
+--- Original notice ---
+; Copyright (c) 2013, ARM Ltd. All rights reserved.
+
+Locations:
+  MdePkg/Library/BaseLib/Arm/MemoryFence.asm:5
+  MdePkg/Library/BaseLib/AArch64/MemoryFence.asm:5
+
+--- Original notice ---
+; Copyright (c) 2015 - 2016, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/X64/RdRand.nasm:3
+  MdePkg/Library/BaseLib/Ia32/RdRand.nasm:3
+
+--- Original notice ---
+; Copyright (c) 2015, Linaro Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseSynchronizationLib/X64/InterlockedCompareExchange16.nasm:4
+  MdePkg/Library/BaseSynchronizationLib/Ia32/InterlockedCompareExchange16.nasm:4
+
+--- Original notice ---
+; Copyright (c) 2016, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseMemoryLibOptPei/X64/IsZeroBuffer.nasm:3
+  MdePkg/Library/BaseMemoryLibOptPei/Ia32/IsZeroBuffer.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/X64/IsZeroBuffer.nasm:3
+  MdePkg/Library/BaseMemoryLibMmx/Ia32/IsZeroBuffer.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/X64/IsZeroBuffer.nasm:3
+  MdePkg/Library/BaseMemoryLibSse2/Ia32/IsZeroBuffer.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/X64/IsZeroBuffer.nasm:3
+  MdePkg/Library/BaseMemoryLibOptDxe/Ia32/IsZeroBuffer.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/X64/IsZeroBuffer.nasm:3
+  MdePkg/Library/BaseMemoryLibRepStr/Ia32/IsZeroBuffer.nasm:3
+  MdePkg/Library/BaseLib/Ia32/InternalSwitchStack.nasm:3
+
+--- Original notice ---
+; Copyright (c) 2016, Linaro Limited
+
+Locations:
+  MdePkg/Library/BaseMemoryLibOptDxe/Arm/CompareGuid.asm:2
+
+--- Original notice ---
+; Copyright (c) 2016, Linaro Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseMemoryLibOptDxe/Arm/CopyMem.asm:10
+  MdePkg/Library/BaseMemoryLibOptDxe/Arm/SetMem.asm:3
+
+--- Original notice ---
+; Copyright (c) 2017, AMD Incorporated. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseIoLibIntrinsic/X64/IoFifo.nasm:4
+  MdePkg/Library/BaseIoLibIntrinsic/X64/IoFifoSev.nasm:4
+  MdePkg/Library/BaseIoLibIntrinsic/Ia32/IoFifo.nasm:4
+  MdePkg/Library/BaseIoLibIntrinsic/Ia32/IoFifoSev.nasm:4
+
+--- Original notice ---
+; Copyright (c) 2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/X64/WriteTr.nasm:2
+  MdePkg/Library/BaseLib/Ia32/WriteTr.nasm:2
+
+--- Original notice ---
+; Copyright (c) 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/X64/Lfence.nasm:2
+  MdePkg/Library/BaseLib/Ia32/Lfence.nasm:2
+
+--- Original notice ---
+; Copyright (c) 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/X64/Nasm.inc:3
+
+--- Original notice ---
+; Copyright (c) 2019, Linaro Ltd. All rights reserved.
+
+Locations:
+  MdePkg/Library/BaseLib/Arm/SpeculationBarrier.asm:5
+  MdePkg/Library/BaseLib/AArch64/SpeculationBarrier.asm:5
+
+--- Original notice ---
+; Portions copyright (c) 2008 - 2009, Apple Inc. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseCpuLib/Arm/CpuFlushTlb.asm:6
+  MdePkg/Library/BaseCpuLib/AArch64/CpuFlushTlb.asm:6
+  MdePkg/Library/BaseCpuLib/AArch64/CpuSleep.asm:6
+  MdePkg/Library/BaseLib/Arm/CpuPause.asm:6
+  MdePkg/Library/BaseLib/Arm/EnableInterrupts.asm:6
+  MdePkg/Library/BaseLib/Arm/SetJumpLongJump.asm:4
+  MdePkg/Library/BaseLib/Arm/CpuBreakpoint.asm:6
+  MdePkg/Library/BaseLib/Arm/DisableInterrupts.asm:6
+  MdePkg/Library/BaseLib/Arm/GetInterruptsState.asm:6
+  MdePkg/Library/BaseLib/Arm/SwitchStack.asm:4
+  MdePkg/Library/BaseLib/AArch64/EnableInterrupts.asm:6
+  MdePkg/Library/BaseLib/AArch64/CpuBreakpoint.asm:6
+  MdePkg/Library/BaseLib/AArch64/DisableInterrupts.asm:6
+  MdePkg/Library/BaseLib/AArch64/GetInterruptsState.asm:6
+  MdePkg/Library/BaseLib/AArch64/SwitchStack.asm:4
+
+--- Original notice ---
+; Portions copyright (c) 2008 - 2011, Apple Inc. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseCpuLib/Arm/CpuSleep.asm:12
+
+--- Original notice ---
+; Portions copyright (c) 2011 - 2013, ARM LTD. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseCpuLib/AArch64/CpuSleep.asm:7
+
+--- Original notice ---
+; Portions copyright (c) 2011 - 2013, ARM Limited. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/AArch64/SwitchStack.asm:5
+
+--- Original notice ---
+; Portions copyright (c) 2011 - 2013, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseCpuLib/AArch64/CpuFlushTlb.asm:7
+  MdePkg/Library/BaseLib/AArch64/EnableInterrupts.asm:7
+  MdePkg/Library/BaseLib/AArch64/CpuBreakpoint.asm:7
+  MdePkg/Library/BaseLib/AArch64/DisableInterrupts.asm:7
+  MdePkg/Library/BaseLib/AArch64/GetInterruptsState.asm:7
+
+--- Original notice ---
+; Portions copyright (c) 2011, Apple Inc. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseLib/Ia32/InternalSwitchStack.nasm:4
+
+--- Original notice ---
+@REM (C) Copyright 2016 Hewlett Packard Enterprise Development LP<BR>
+
+Locations:
+  BaseTools/toolsetup.bat:7
+
+--- Original notice ---
+@REM Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/toolsetup.bat:6
+
+--- Original notice ---
+@REM Copyright (c) 2012 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/LzmaCompress/LzmaF86Compress.bat:5
+
+--- Original notice ---
+@REM Copyright (c) 2013-2014, ARM Limited. All rights reserved.
+
+Locations:
+  BaseTools/get_vsvars.bat:4
+
+--- Original notice ---
+@REM Copyright (c) 2014, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Scripts/SetVisualStudio.bat:13
+  BaseTools/Scripts/ShowEnvironment.bat:8
+
+--- Original notice ---
+@REM Copyright (c) 2016-2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/set_vsprefix_envs.bat:6
+
+--- Original notice ---
+@REM Copyright (c) 2017 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/BinWrappers/WindowsLike/BrotliCompress.bat:4
+
+--- Original notice ---
+Copyright (c) 1999 - 2014, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/Common/BinderFuncs.c:4
+  BaseTools/Source/C/Common/FirmwareVolumeBufferLib.h:4
+
+--- Original notice ---
+Copyright (c) 1999 - 2016, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/VolInfo/VolInfo.h:4
+
+--- Original notice ---
+Copyright (c) 1999 - 2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/Split/Split.c:5
+
+--- Original notice ---
+Copyright (c) 1999 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/Common/BinderFuncs.h:6
+  BaseTools/Source/C/Common/FirmwareVolumeBuffer.c:4
+  BaseTools/Source/C/VolInfo/VolInfo.c:4
+  BaseTools/Source/C/EfiRom/EfiRom.h:4
+  BaseTools/Source/C/EfiRom/EfiRom.c:4
+
+--- Original notice ---
+Copyright (c) 2004 - 2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/Common/EfiUtilityMsgs.c:4
+
+--- Original notice ---
+Copyright (c) 2004 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/GenSec/GenSec.c:4
+  BaseTools/Source/C/GenFfs/GenFfs.c:4
+
+--- Original notice ---
+Copyright (c) 2004 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/GenFw/GenFw.c:4
+  BaseTools/Source/C/GenFv/GenFvInternalLib.h:5
+  BaseTools/Source/C/GenFv/GenFvInternalLib.c:4
+  BaseTools/Source/C/Common/ParseInf.c:4
+  BaseTools/Source/C/Common/MyAlloc.h:4
+  BaseTools/Source/C/Common/MemoryFile.c:4
+  BaseTools/Source/C/Common/CommonLib.h:4
+  BaseTools/Source/C/Common/Decompress.c:5
+  BaseTools/Source/C/Common/EfiUtilityMsgs.h:4
+  BaseTools/Source/C/Common/BasePeCoff.c:5
+  BaseTools/Source/C/Common/FvLib.h:4
+  BaseTools/Source/C/Common/Crc32.c:4
+  BaseTools/Source/C/Common/SimpleFileParsing.c:4
+  BaseTools/Source/C/Common/ParseInf.h:4
+  BaseTools/Source/C/Common/CommonLib.c:4
+  BaseTools/Source/C/Common/Compress.h:5
+  BaseTools/Source/C/Common/PeCoffLoaderEx.c:4
+  BaseTools/Source/C/Common/MemoryFile.h:4
+  BaseTools/Source/C/Common/MyAlloc.c:4
+  BaseTools/Source/C/Common/Crc32.h:4
+  BaseTools/Source/C/Common/SimpleFileParsing.h:4
+  BaseTools/Source/C/Common/FvLib.c:4
+  BaseTools/Source/C/VfrCompile/VfrError.h:5
+  BaseTools/Source/C/VfrCompile/EfiVfr.h:4
+  BaseTools/Source/C/VfrCompile/VfrError.cpp:5
+
+--- Original notice ---
+Copyright (c) 2004 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/VfrCompile/VfrSyntax.g:4
+
+--- Original notice ---
+Copyright (c) 2004 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/VfrCompile/VfrCompiler.h:5
+  BaseTools/Source/C/VfrCompile/VfrCompiler.cpp:5
+  BaseTools/Source/C/VfrCompile/VfrFormPkg.cpp:5
+  BaseTools/Source/C/VfrCompile/VfrUtilityLib.cpp:5
+  BaseTools/Source/C/VfrCompile/VfrUtilityLib.h:5
+  BaseTools/Source/C/VfrCompile/VfrFormPkg.h:5
+
+--- Original notice ---
+Copyright (c) 2006 - 2008, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Library/UefiUsbLib.h:5
+  MdePkg/Include/Library/UefiRuntimeServicesTableLib.h:13
+  MdePkg/Include/Library/UefiBootServicesTableLib.h:5
+  MdePkg/Include/Library/StandaloneMmDriverEntryPoint.h:4
+
+--- Original notice ---
+Copyright (c) 2006 - 2011, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Bmp.h:4
+  MdePkg/Include/Library/TimerLib.h:4
+
+--- Original notice ---
+Copyright (c) 2006 - 2014, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/GenPage/VirtualMemory.h:10
+  BaseTools/Source/C/Common/WinNtInclude.h:4
+
+--- Original notice ---
+Copyright (c) 2006 - 2015, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Ppi/SecPlatformInformation.h:9
+
+--- Original notice ---
+Copyright (c) 2006 - 2016, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/GenPage/GenPage.c:18
+
+--- Original notice ---
+Copyright (c) 2006 - 2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/MpService.h:30
+  MdePkg/Include/Pi/PiHob.h:4
+  MdePkg/Include/Pi/PiFirmwareFile.h:4
+  BaseTools/Source/C/EfiLdrImage/EfiLdrImage.c:9
+
+--- Original notice ---
+Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/PiPei.h:9
+  MdePkg/Include/Uefi.h:9
+  MdePkg/Include/PiDxe.h:5
+  MdePkg/Include/Base.h:9
+  MdePkg/Library/PeiSmbusLibSmbus2Ppi/SmbusLib.c:4
+  MdePkg/Library/PeiSmbusLibSmbus2Ppi/InternalSmbusLib.h:4
+  MdePkg/Library/PeiSmbusLibSmbus2Ppi/PeiSmbusLib.c:4
+  MdePkg/Library/BaseMemoryLibRepStr/CompareMemWrapper.c:14
+  MdePkg/Library/UefiMemoryLib/CompareMemWrapper.c:14
+  MdePkg/Library/UefiDriverEntryPoint/DriverEntryPoint.c:4
+  MdePkg/Library/BaseMemoryLibOptDxe/CompareMemWrapper.c:14
+  MdePkg/Library/DxeCoreEntryPoint/DxeCoreEntryPoint.c:4
+  MdePkg/Library/PeiCoreEntryPoint/PeiCoreEntryPoint.c:4
+  MdePkg/Library/BaseMemoryLib/CompareMemWrapper.c:14
+  MdePkg/Library/DxeSmbusLib/DxeSmbusLib.c:4
+  MdePkg/Library/DxeSmbusLib/SmbusLib.c:4
+  MdePkg/Library/DxeSmbusLib/InternalSmbusLib.h:4
+  MdePkg/Library/BaseMemoryLibSse2/CompareMemWrapper.c:14
+  MdePkg/Library/DxePcdLib/DxePcdLib.c:4
+  MdePkg/Library/DxeHobLib/HobLib.c:4
+  MdePkg/Library/PeiMemoryLib/CompareMemWrapper.c:14
+  MdePkg/Library/DxeCoreHobLib/HobLib.c:4
+  MdePkg/Library/PeiPcdLib/PeiPcdLib.c:4
+  MdePkg/Library/BaseMemoryLibMmx/CompareMemWrapper.c:14
+  MdePkg/Library/UefiRuntimeLib/RuntimeLib.c:9
+  MdePkg/Library/UefiLib/UefiNotTiano.c:9
+  MdePkg/Library/BaseMemoryLibOptPei/CompareMemWrapper.c:14
+  MdePkg/Library/PeimEntryPoint/PeimEntryPoint.c:4
+  MdePkg/Include/Uefi/UefiPxe.h:6
+  MdePkg/Include/Uefi/UefiBaseType.h:4
+  MdePkg/Include/Uefi/UefiInternalFormRepresentation.h:6
+  MdePkg/Include/Uefi/UefiMultiPhase.h:4
+  MdePkg/Include/IndustryStandard/ElTorito.h:8
+  MdePkg/Include/IndustryStandard/Mbr.h:4
+  MdePkg/Include/IndustryStandard/PeImage.h:10
+  MdePkg/Include/IndustryStandard/Acpi10.h:4
+  MdePkg/Include/IndustryStandard/SmBios.h:4
+  MdePkg/Include/Library/PeiServicesTablePointerLib.h:4
+  MdePkg/Include/Library/UefiDecompressLib.h:9
+  MdePkg/Include/Library/PeimEntryPoint.h:4
+  MdePkg/Include/Library/PciCf8Lib.h:8
+  MdePkg/Include/Library/PeiCoreEntryPoint.h:4
+  MdePkg/Include/Library/PciSegmentLib.h:26
+  MdePkg/Include/Library/SynchronizationLib.h:4
+  MdePkg/Include/Library/DevicePathLib.h:7
+  MdePkg/Include/Library/PcdLib.h:17
+  MdePkg/Include/Library/UefiLib.h:16
+  MdePkg/Include/Library/PostCodeLib.h:4
+  MdePkg/Include/Library/PciLib.h:13
+  MdePkg/Include/Library/PciExpressLib.h:8
+  MdePkg/Include/Library/ReportStatusCodeLib.h:4
+  MdePkg/Include/Library/UefiScsiLib.h:8
+  MdePkg/Include/Library/UefiRuntimeLib.h:5
+  MdePkg/Include/Library/SerialPortLib.h:4
+  MdePkg/Include/Library/DxeCoreEntryPoint.h:4
+  MdePkg/Include/Library/PeCoffGetEntryPointLib.h:4
+  MdePkg/Include/Library/UefiDriverEntryPoint.h:5
+  MdePkg/Include/Library/BaseMemoryLib.h:8
+  MdePkg/Include/Library/DxeServicesLib.h:5
+  MdePkg/Include/Library/PeCoffLib.h:8
+  MdePkg/Include/Library/DxeServicesTableLib.h:14
+  MdePkg/Include/Library/SmbusLib.h:5
+  MdePkg/Include/Library/MemoryAllocationLib.h:9
+  MdePkg/Include/Library/ExtractGuidedSectionLib.h:13
+  MdePkg/Include/Library/ResourcePublicationLib.h:4
+  MdePkg/Include/Library/CacheMaintenanceLib.h:7
+  MdePkg/Include/Library/CpuLib.h:10
+  MdePkg/Include/Library/IoLib.h:4
+  MdePkg/Include/Library/PrintLib.h:5
+  MdePkg/Include/Library/PerformanceLib.h:4
+  MdePkg/Include/Library/HobLib.h:11
+  MdePkg/Include/Protocol/Tcp4.h:7
+  MdePkg/Include/Protocol/Bis.h:5
+  MdePkg/Include/Protocol/Udp4.h:7
+  MdePkg/Include/Protocol/FormBrowser2.h:7
+  MdePkg/Include/Protocol/Ip4.h:13
+  MdePkg/Include/Protocol/SimpleFileSystem.h:10
+  MdePkg/Include/Protocol/HiiConfigAccess.h:8
+  MdePkg/Include/Protocol/NetworkInterfaceIdentifier.h:4
+  MdePkg/Include/Protocol/UnicodeCollation.h:6
+  MdePkg/Include/Protocol/MonotonicCounter.h:6
+  MdePkg/Include/Protocol/ManagedNetwork.h:5
+  MdePkg/Include/Protocol/DriverDiagnostics.h:4
+  MdePkg/Include/Protocol/SimpleNetwork.h:12
+  MdePkg/Include/Protocol/HiiString.h:4
+  MdePkg/Include/Protocol/Ip4Config.h:5
+  MdePkg/Include/Protocol/SimpleTextOut.h:9
+  MdePkg/Include/Protocol/Dhcp4.h:7
+  MdePkg/Include/Protocol/PxeBaseCode.h:5
+  MdePkg/Include/Protocol/DriverBinding.h:7
+  MdePkg/Include/Protocol/PxeBaseCodeCallBack.h:5
+  MdePkg/Include/Protocol/Pcd.h:9
+  MdePkg/Include/Protocol/DevicePath.h:8
+  MdePkg/Include/Protocol/TapeIo.h:5
+  MdePkg/Include/Protocol/AuthenticationInfo.h:6
+  MdePkg/Include/Protocol/Capsule.h:13
+  MdePkg/Include/Protocol/HiiConfigRouting.h:8
+  MdePkg/Include/Protocol/HiiDatabase.h:5
+  MdePkg/Include/Protocol/Arp.h:10
+  MdePkg/Include/Protocol/LoadFile.h:10
+  MdePkg/Include/Protocol/FirmwareVolumeBlock.h:4
+  MdePkg/Include/Protocol/Hash.h:8
+  MdePkg/Include/Protocol/HiiFont.h:4
+  MdePkg/Include/Protocol/Mtftp4.h:4
+  MdePkg/Include/Protocol/DebugSupport.h:8
+  MdePkg/Include/Protocol/ComponentName.h:6
+  MdePkg/Include/Pi/PiDxeCis.h:4
+  MdePkg/Include/Pi/PiMultiPhase.h:4
+  MdePkg/Include/Guid/FileInfo.h:6
+  MdePkg/Include/Guid/EventGroup.h:4
+  MdePkg/Include/Guid/FileSystemInfo.h:6
+  MdePkg/Include/Guid/HiiPlatformSetupFormset.h:5
+  MdePkg/Include/Ppi/ReadOnlyVariable2.h:5
+  MdePkg/Include/Ppi/Pcd.h:9
+  MdePkg/Include/Ppi/CpuIo.h:5
+  BaseTools/Source/C/Common/TianoCompress.c:7
+  BaseTools/Source/C/Common/Decompress.h:4
+  BaseTools/Source/C/Common/EfiCompress.c:7
+
+--- Original notice ---
+Copyright (c) 2006 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Uefi/UefiSpec.h:8
+  MdePkg/Include/Uefi/UefiGpt.h:4
+  MdePkg/Include/Library/DebugLib.h:11
+  MdePkg/Include/Library/PeiServicesLib.h:4
+  MdePkg/Include/Pi/PiPeiCis.h:4
+
+--- Original notice ---
+Copyright (c) 2006 - 2020, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Pci.h:4
+
+--- Original notice ---
+Copyright (c) 2006 - 2021, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Library/BaseLib.h:5
+
+--- Original notice ---
+Copyright (c) 2007 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/UefiApplicationEntryPoint/ApplicationEntryPoint.c:4
+  MdePkg/Library/PeiHobLib/HobLib.c:4
+  MdePkg/Include/IndustryStandard/Atapi.h:5
+  MdePkg/Include/IndustryStandard/LegacyBiosMpTable.h:7
+  MdePkg/Include/Library/UefiApplicationEntryPoint.h:4
+  MdePkg/Include/Protocol/DriverFamilyOverride.h:4
+  MdePkg/Include/Protocol/TcgService.h:5
+  MdePkg/Include/Protocol/PciPlatform.h:7
+  MdePkg/Include/Protocol/PciHostBridgeResourceAllocation.h:6
+  MdePkg/Include/Protocol/IdeControllerInit.h:16
+  MdePkg/Include/Ppi/BlockIo.h:13
+  BaseTools/Source/C/GenFv/GenFv.c:7
+  BaseTools/Source/C/GenCrc32/GenCrc32.c:4
+  BaseTools/Source/C/Common/ParseGuidedSectionTools.h:4
+  BaseTools/Source/C/Common/StringFuncs.c:4
+  BaseTools/Source/C/Common/OsPath.c:4
+  BaseTools/Source/C/Common/ParseGuidedSectionTools.c:4
+  BaseTools/Source/C/Common/OsPath.h:5
+  BaseTools/Source/C/Common/StringFuncs.h:4
+  BaseTools/Source/C/TianoCompress/TianoCompress.c:8
+
+--- Original notice ---
+Copyright (c) 2008 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/Ip6Config.h:5
+
+--- Original notice ---
+Copyright (c) 2009 - 2010, Apple Inc. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/GenFw/elf_common.h:4
+  BaseTools/Source/C/GenFw/elf64.h:4
+  BaseTools/Source/C/GenFw/elf32.h:4
+
+--- Original notice ---
+Copyright (c) 2009 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/PiSmm.h:5
+  MdePkg/Include/Library/MmServicesTableLib.h:5
+  MdePkg/Include/Library/SmmServicesTableLib.h:5
+  MdePkg/Include/Pi/PiStatusCode.h:4
+  BaseTools/Source/C/PyEfiCompressor/EfiCompressor.c:4
+
+--- Original notice ---
+Copyright (c) 2009, 2010, 2013-2016 by the Brotli Authors.
+
+Locations:
+  BaseTools/Source/C/BrotliCompress/LICENSE:1
+
+--- Original notice ---
+Copyright (c) 2010 - 2018, Intel Corporation All Rights Reserved.
+
+Locations:
+  BaseTools/Source/Python/BPDG/StringTable.py:47
+
+--- Original notice ---
+Copyright (c) 2010 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/GenFw/ElfConvert.h:4
+  BaseTools/Source/C/GenFw/Elf64Convert.h:4
+  BaseTools/Source/C/GenFw/GenFw.h:4
+  BaseTools/Source/C/GenFw/Elf32Convert.c:4
+  BaseTools/Source/C/GenFw/ElfConvert.c:4
+  BaseTools/Source/C/GenFw/Elf32Convert.h:4
+  BaseTools/Source/C/GenFw/Elf64Convert.c:4
+
+--- Original notice ---
+Copyright (c) 2011 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Uefi/UefiAcpiDataTable.h:4
+  MdePkg/Include/Library/SmmPeriodicSmiLib.h:4
+  BaseTools/Source/C/Include/Common/BuildVersion.h:4
+
+--- Original notice ---
+Copyright (c) 2012 - 2014, ARM Ltd. All rights reserved.
+
+Locations:
+  MdePkg/Include/Library/SerialPortLib.h:5
+
+--- Original notice ---
+Copyright (c) 2013 - 2015, Intel Corporation. All rights reserved. <BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Tpm20.h:8
+
+--- Original notice ---
+Copyright (c) 2013 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/BaseSmbusLibNull/BaseSmbusLibNull.c:4
+  MdePkg/Library/UefiDevicePathLib/DevicePathFromText.c:4
+  MdePkg/Library/UefiDevicePathLib/DevicePathToText.c:5
+  MdePkg/Library/UefiDevicePathLib/UefiDevicePathLib.h:4
+  MdePkg/Include/Protocol/TrEEProtocol.h:4
+  MdePkg/Include/Protocol/Rng.h:6
+  MdePkg/Include/Pi/PiI2c.h:4
+
+--- Original notice ---
+Copyright (c) 2013 - 2019, Intel Corporation. All rights reserved. <BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Tpm2Acpi.h:4
+
+--- Original notice ---
+Copyright (c) 2013, Intel Corporation. All rights reserved. <BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/TcpaAcpi.h:4
+
+--- Original notice ---
+Copyright (c) 2015 - 2016, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Ppi/SecPlatformInformation2.h:7
+
+--- Original notice ---
+Copyright (c) 2015 - 2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/Pkcs7Verify.h:9
+
+--- Original notice ---
+Copyright (c) 2015 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/TcgPhysicalPresence.h:4
+  MdePkg/Include/Protocol/HiiConfigKeyword.h:6
+  MdePkg/Include/Protocol/Ip4Config2.h:5
+  MdePkg/Include/Protocol/Tcg2Protocol.h:5
+  MdePkg/Include/Ppi/Capsule.h:5
+
+--- Original notice ---
+Copyright (c) 2015 - 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Register/Intel/SmramSaveStateMap.h:10
+
+--- Original notice ---
+Copyright (c) 2015, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/StandaloneMmDriverEntryPoint/StandaloneMmDriverEntryPoint.c:4
+  MdePkg/Library/BaseRngLib/BaseRng.c:5
+  MdePkg/Include/Library/RngLib.h:4
+  MdePkg/Include/Protocol/Hash2.h:10
+  MdePkg/Include/Ppi/BlockIo2.h:5
+
+--- Original notice ---
+Copyright (c) 2015-2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/RegularExpressionProtocol.h:5
+
+--- Original notice ---
+Copyright (c) 2016 - 2018, ARM Limited. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Library/MmServicesTableLib.h:6
+  MdePkg/Include/Library/StandaloneMmDriverEntryPoint.h:5
+
+--- Original notice ---
+Copyright (c) 2016 - 2018, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/StandaloneMmDriverEntryPoint/StandaloneMmDriverEntryPoint.c:5
+
+--- Original notice ---
+Copyright (c) 2016 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/TcgStorageOpal.h:18
+  MdePkg/Include/IndustryStandard/TpmPtp.h:5
+  MdePkg/Include/IndustryStandard/TcgStorageCore.h:9
+  MdePkg/Include/IndustryStandard/TpmTis.h:5
+
+--- Original notice ---
+Copyright (c) 2016, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/PciExpress31.h:6
+
+--- Original notice ---
+Copyright (c) 2017 - 2018, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Ppi/SecHobData.h:6
+  BaseTools/Source/C/Common/PcdValueCommon.c:4
+  BaseTools/Source/C/DevicePath/DevicePath.c:4
+  BaseTools/Source/C/DevicePath/DevicePathFromText.c:4
+  BaseTools/Source/C/Include/Protocol/DevicePath.h:8
+
+--- Original notice ---
+Copyright (c) 2017, AMD Incorporated. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Library/IoLib.h:5
+
+--- Original notice ---
+Copyright (c) 2017, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/PiMm.h:5
+  MdePkg/Include/Library/SmiHandlerProfileLib.h:15
+  MdePkg/Include/Protocol/NvdimmLabel.h:8
+  MdePkg/Include/Guid/Btt.h:7
+  BaseTools/Source/C/Common/PcdValueCommon.h:4
+  BaseTools/Source/C/DevicePath/UefiDevicePathLib.h:4
+
+--- Original notice ---
+Copyright (c) 2018, American Megatrends, Inc. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/PciExpress40.h:6
+
+--- Original notice ---
+Copyright (c) 2018, Linaro, Limited. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Library/StandaloneMmDriverEntryPoint/StandaloneMmDriverEntryPoint.c:6
+  MdePkg/Include/Library/StandaloneMmDriverEntryPoint.h:6
+
+--- Original notice ---
+Copyright (c) 2019, Intel Corporation. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Spdm.h:5
+
+--- Original notice ---
+Copyright (c) 2019, NVIDIA Corporation. All rights reserved.
+
+Locations:
+  MdePkg/Include/Library/UefiLib.h:15
+
+--- Original notice ---
+Copyright (c) 2020, American Megatrends International LLC. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/PciExpress50.h:6
+
+--- Original notice ---
+Copyright (c) 2020, Arm Limited. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/IndustryStandard/Acpi10.h:5
+
+--- Original notice ---
+Portions Copyright (c) 2011 - 2013, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/GenFw/elf_common.h:5
+  BaseTools/Source/C/GenFv/GenFvInternalLib.c:5
+  BaseTools/Source/C/Common/BasePeCoff.c:6
+  BaseTools/Source/C/Common/PeCoffLoaderEx.c:5
+
+--- Original notice ---
+Portions Copyright (c) 2016 HP Development Company, L.P.<BR>
+
+Locations:
+  BaseTools/Source/C/GenFv/GenFvInternalLib.c:6
+
+--- Original notice ---
+Portions Copyright (c) 2020, Hewlett Packard Enterprise Development LP. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Library/BaseLib.h:8
+
+--- Original notice ---
+Portions Copyright (c) 2022, Loongson Technology Corporation Limited. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Library/BaseLib.h:9
+
+--- Original notice ---
+Portions copyright (c) 2008 - 2009, Apple Inc. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Base.h:10
+  MdePkg/Include/IndustryStandard/PeImage.h:11
+  MdePkg/Include/Library/BaseLib.h:6
+
+--- Original notice ---
+Portions copyright (c) 2011 - 2013, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Protocol/DebugSupport.h:9
+
+--- Original notice ---
+Portions copyright (c) 2011 - 2016, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  MdePkg/Include/Uefi/UefiBaseType.h:5
+
+--- Original notice ---
+Portions copyright (c) 2013, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/GenFw/Elf32Convert.c:5
+
+--- Original notice ---
+Portions copyright (c) 2013-2014, ARM Ltd. All rights reserved.<BR>
+
+Locations:
+  BaseTools/Source/C/GenFw/Elf64Convert.c:5
+

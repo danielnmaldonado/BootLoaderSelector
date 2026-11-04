@@ -292,8 +292,8 @@ verify_release_version_metadata() {
   text_version="$(sed -n 's/^#define BLS_VERSION_TEXT[[:space:]]*L"BootLoaderSelector v\([^"]*\)"/\1/p' BootLoaderSelectorPkg/BootLoaderSelector/Utils.h)"
   inf_version="$(sed -n 's/^[[:space:]]*VERSION_STRING[[:space:]]*=[[:space:]]*//p' BootLoaderSelectorPkg/BootLoaderSelector/BootLoaderSelector.inf)"
   dsc_version="$(sed -n 's/^[[:space:]]*PLATFORM_VERSION[[:space:]]*=[[:space:]]*//p' BootLoaderSelector.dsc)"
-  info_version="$(sed -n 's/^Versão atual:[[:space:]]*//p' INFO.txt)"
-  changelog_version="$(sed -n 's/^Versão atual:[[:space:]]*//p' CHANGELOG.txt)"
+  info_version="$(sed -n 's/^Current version:[[:space:]]*//p' INFO.txt)"
+  changelog_version="$(sed -n 's/^Current version:[[:space:]]*//p' CHANGELOG.txt)"
 
   if [ -z "$code_version" ] || [ -z "$text_version" ] || [ -z "$inf_version" ] ||
      [ -z "$dsc_version" ] || [ -z "$info_version" ] || [ -z "$changelog_version" ]; then
@@ -629,7 +629,7 @@ if [ "$STATUS" -eq 0 ]; then
       STATUS=1
     fi
     if [ "$STATUS" -eq 0 ] && ! cp -R "$PROJECT_ROOT/LICENSE" "$PROJECT_ROOT/LICENSES" \
-         "$PROJECT_ROOT/THIRD-PARTY-NOTICES.txt" "$RELEASE_STAGE/"; then
+         "$PROJECT_ROOT/THIRD-PARTY-NOTICES.txt" "$PROJECT_ROOT/CREDITS.md" "$RELEASE_STAGE/"; then
       echo "Unable to stage binary distribution license notices" | tee -a "$LOG"
       STATUS=1
     fi

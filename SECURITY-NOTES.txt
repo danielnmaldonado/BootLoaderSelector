@@ -1,4 +1,4 @@
-BootLoaderSelector v2.32 — source security notes
+BootLoaderSelector v2.33 — source security notes
 ===============================================
 Credits: ©DNMTechLabs / dnmtechlabs@gmail.com
 

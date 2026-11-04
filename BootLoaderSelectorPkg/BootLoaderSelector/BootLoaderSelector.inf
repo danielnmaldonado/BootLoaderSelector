@@ -8,7 +8,7 @@
   BASE_NAME                      = BootLoaderSelector
   FILE_GUID                      = F9C8E131-0A87-4C6C-A3E4-CA03DE31F6F1
   MODULE_TYPE                    = UEFI_APPLICATION
-  VERSION_STRING = 2.32
+  VERSION_STRING = 2.33
   ENTRY_POINT                    = UefiMain
 
 [Sources]

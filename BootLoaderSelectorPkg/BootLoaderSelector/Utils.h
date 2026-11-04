@@ -9,8 +9,8 @@
 #include <Protocol/SimpleFileSystem.h>
 #include <Guid/FileInfo.h>
 
-#define BLS_VERSION_ASCII "2.32"
-#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.32"
+#define BLS_VERSION_ASCII "2.33"
+#define BLS_VERSION_TEXT  L"BootLoaderSelector v2.33"
 
 #define BLS_MAX_TEXT      128
 #define BLS_MAX_PATH      192
