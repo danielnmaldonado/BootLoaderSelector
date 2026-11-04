@@ -1624,7 +1624,12 @@ Returns:
         fpOut = NULL;
         goto Finish;
       }
-      fread (OutputFileBuffer, 1, OutputFileLength, fpOut);
+      if (fread (OutputFileBuffer, 1, OutputFileLength, fpOut) != OutputFileLength) {
+        Error (NULL, 0, 0004, "Error reading file", "%s", OutImageName);
+        fclose (fpOut);
+        fpOut = NULL;
+        goto Finish;
+      }
       fclose (fpOut);
       fpOut = NULL;
     }
@@ -1657,7 +1662,11 @@ Returns:
     fclose (fpIn);
     goto Finish;
   }
-  fread (InputFileBuffer, 1, InputFileLength, fpIn);
+  if (fread (InputFileBuffer, 1, InputFileLength, fpIn) != InputFileLength) {
+    Error (NULL, 0, 0004, "Error reading file", "%s", mInImageName);
+    fclose (fpIn);
+    goto Finish;
+  }
   fclose (fpIn);
   DebugMsg (NULL, 0, 9, "input file info", "the input file size is %u bytes", (unsigned) InputFileLength);
 
@@ -1684,7 +1693,11 @@ Returns:
         goto Finish;
       }
       FileLength = _filelength (fileno (fpIn));
-      fread (&HiiPackageHeader, 1, sizeof (HiiPackageHeader), fpIn);
+      if (fread (&HiiPackageHeader, 1, sizeof (HiiPackageHeader), fpIn) != sizeof (HiiPackageHeader)) {
+        Error (NULL, 0, 0004, "Error reading HII package header", "%s", InputFileName [Index]);
+        fclose (fpIn);
+        goto Finish;
+      }
       if (HiiPackageHeader.Type == EFI_HII_PACKAGE_FORM) {
         if (HiiPackageHeader.Length != FileLength) {
           Error (NULL, 0, 3000, "Invalid", "The wrong package size is in HII package file %s", InputFileName [Index]);
@@ -1692,7 +1705,11 @@ Returns:
           goto Finish;
         }
         if (memcmp (&HiiPackageListGuid, &mZeroGuid, sizeof (EFI_GUID)) == 0) {
-          fread (&IfrFormSet, 1, sizeof (IfrFormSet), fpIn);
+          if (fread (&IfrFormSet, 1, sizeof (IfrFormSet), fpIn) != sizeof (IfrFormSet)) {
+            Error (NULL, 0, 0004, "Error reading HII form set", "%s", InputFileName [Index]);
+            fclose (fpIn);
+            goto Finish;
+          }
           memcpy (&HiiPackageListGuid, &IfrFormSet.Guid, sizeof (EFI_GUID));
         }
         NumberOfFormPackage ++;
@@ -1732,7 +1749,12 @@ Returns:
       }
 
       FileLength = _filelength (fileno (fpIn));
-      fread (HiiPackageDataPointer, 1, FileLength, fpIn);
+      if (fread (HiiPackageDataPointer, 1, FileLength, fpIn) != FileLength) {
+        Error (NULL, 0, 0004, "Error reading file", "%s", InputFileName [Index]);
+        fclose (fpIn);
+        free (HiiPackageListBuffer);
+        goto Finish;
+      }
       fclose (fpIn);
       HiiPackageDataPointer = HiiPackageDataPointer + FileLength;
     }
@@ -1828,7 +1850,11 @@ Returns:
         goto Finish;
       }
 
-      fread (FileBuffer, 1, FileLength, fpIn);
+      if (fread (FileBuffer, 1, FileLength, fpIn) != FileLength) {
+        Error (NULL, 0, 0004, "Error reading file", "%s", InputFileName [Index]);
+        fclose (fpIn);
+        goto Finish;
+      }
       fclose (fpIn);
       //
       // write input file to out file

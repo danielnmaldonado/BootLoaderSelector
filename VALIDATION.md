@@ -26,6 +26,7 @@ cuja lista de 951 arquivos e respectivos hashes é conferida antes de executar.
 | Política de certificado, bootstrap e assinatura PE/COFF | Aprovados |
 | Publicação, rollback, lock e cancelamentos | Aprovados; 9 cenários HUP/INT/TERM |
 | BaseTools sob GNU GCC com fortificação e `-O2 -Werror` | Compilação e seis casos válidos de mensagens aprovados; compilador selecionado respeitado |
+| GenFv/GenFw sob diagnóstico de retornos de stdio | Compilação GNU/Clang e conversões válidas de EFI/HII/FV/cápsula aprovadas |
 | Workflow GitHub Actions | Sintaxe/semântica conferidas com actionlint; ações oficiais fixadas por commit |
 | Boot UEFI isolado e chainload de child que retorna sucesso | Log confirma início, chamada e retorno `call=0x0 child=0x0` |
 

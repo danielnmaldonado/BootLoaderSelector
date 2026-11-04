@@ -336,7 +336,7 @@ fe42ec2d5ef3432542a795f8103a80ab994c27bbe20f511e29ee446909024754  ./BaseTools/So
 f155dd7c67fef012e834cd4aacffa912b2011d24aa9d868e9674f0bcb9cb7a03  ./BaseTools/Source/C/GenFfs/Makefile
 f8ad83185cfd02b595978cf59fea74398584a646e44d5d5daf3f4995f483f62b  ./BaseTools/Source/C/GenFv/GNUmakefile
 83984f251f2a6e421f7478694384b7ddad6dc082b142f0d6ee436009eefb6e2b  ./BaseTools/Source/C/GenFv/GenFv.c
-d023d3d66624dbe22f8a72f1e4965bcb7379b462da298f48ecf4420014a1adf7  ./BaseTools/Source/C/GenFv/GenFvInternalLib.c
+9248f9241754c6a6315cc96c23a3995812639d037d5784c8f3e37597dfb91590  ./BaseTools/Source/C/GenFv/GenFvInternalLib.c
 cf68d43df0ca59a5fac06a852dc6518a50bd3ae3b6037d1b954a8c219ac602f6  ./BaseTools/Source/C/GenFv/GenFvInternalLib.h
 5259f22d5a3150a1e0b967ab86de2bfa5fa78669d2d9c1082e231f128f0f2c5e  ./BaseTools/Source/C/GenFv/Makefile
 699554aa1bd2697fea80ded24637bf0dcea2d2e6b6d1c289e9fa4fd6115f6dc9  ./BaseTools/Source/C/GenFw/Elf32Convert.c
@@ -346,7 +346,7 @@ eba46720acf9338d08dd546a87e55e27af5562304aa3f3eccf32a398c20d04a6  ./BaseTools/So
 107de7a2b44ac02507b316c551fac643f1a8b45b49acd52be4b179323acef559  ./BaseTools/Source/C/GenFw/ElfConvert.c
 62bc5e6b991993e1a3393249fdc92413c9e3eb4129c9627564ab6106130c4e60  ./BaseTools/Source/C/GenFw/ElfConvert.h
 fa6e9ec24752b27e782a218367f8a03d61510cdcc4c9a482851d4c176b8fbc43  ./BaseTools/Source/C/GenFw/GNUmakefile
-39ff3888c277928b8941ac163c39e8a95520ae34f7895039bdf06237dc204ca5  ./BaseTools/Source/C/GenFw/GenFw.c
+deae197764dcd2109c49c01e6fb311e82e99b6d1883543b8bb6b80c7c2496cb1  ./BaseTools/Source/C/GenFw/GenFw.c
 0ca656271fa882d2e29ed4ad41c158fc8519b13ddd9bd0646ba6c2d23028b257  ./BaseTools/Source/C/GenFw/GenFw.h
 87ba9236fc48a39a81c8ef793ecfd28159efa9641d4d203d57befbee7c6f2741  ./BaseTools/Source/C/GenFw/GenFw.xcodeproj/project.pbxproj
 a1a64db4813cb582ee2ba41ea954aa8a2518499ec92221b36619028907a8b12a  ./BaseTools/Source/C/GenFw/GenFw.xcodeproj/project.xcworkspace/contents.xcworkspacedata
@@ -950,10 +950,10 @@ c1ec0f975ed1dbf3d7d528e2ca2193d007b35b19048e9e4a857a518241008aac  ./BootLoaderSe
 8c88b36d3167c462303aaa99dd90978351f80036088c926f10b6399179055af4  ./BootScan.plist
 4100378ffafa9c8330d1ea25cce439594085aa3d95e20e16646710dc7fe08389  ./Build-BootLoaderSelector-Release.command
 e757c945ba6e6af0c48a414851a3185fd5001ca4917170284c08d7d8e001779a  ./Build-Debug-Full-Log.command
-fa7a662fa9b9d8cb396bf4c015b56e635480c3e38f2648d885af7861e5e9a9e6  ./CHANGELOG.txt
+2ce8704ba59cfedc73d3f5d9ef8b5d484e10b9ee1bb0209d50ceb6fffcc2776a  ./CHANGELOG.txt
 8c88b36d3167c462303aaa99dd90978351f80036088c926f10b6399179055af4  ./Config.plist
 8c88b36d3167c462303aaa99dd90978351f80036088c926f10b6399179055af4  ./HardwareInfo.plist
-747e012232dcc7b7641ff47d928f39431bfbe93a7a7ff351b62d3b4a6ac60dfd  ./INFO.txt
+d6956a8b2f28cf5c0b213bb939041623fc694fb9e961b013b850c912f54cc884  ./INFO.txt
 9c85baaf05fecb69a966a8969ec0f99db21c22eb7a32fe6adfee8b4ea310bc80  ./LICENSE
 50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80  ./LICENSES/BSD-2-Clause-Patent.txt
 60ae0f13e76cc2eaaa108677eefa4ce16b647f6bbe8cf0a1ac9429d82eca7248  ./LICENSES/MIT-Brotli.txt
@@ -2568,5 +2568,5 @@ d178ff1f97a14efcb0bc01f3f6fd5d3b60959f2f9eb0184fe797e3ca2f9562c6  ./THIRD-PARTY-
 53d8010aecd6ba67fa5f736f4c6f81006267f6d1ce15fbe419ad8aaa563647ff  ./Toolchains/gcc102-snb.sha256
 8c88b36d3167c462303aaa99dd90978351f80036088c926f10b6399179055af4  ./Ui.plist
 8c88b36d3167c462303aaa99dd90978351f80036088c926f10b6399179055af4  ./Utils.plist
-c06baec208ac0b8d05a77959439f6fb9c63cfa2aa20293c360dafdc43cb8b2e9  ./VALIDATION.md
+99f460c58a17574c840fb39d7182dc358702cf0d7d95d6d9a106e667b3a199e5  ./VALIDATION.md
 678a5f4a5dabd6a440a73b38a3bd1c3c182942e1310018fdace2f320f81f3b56  ./edksetup.sh

@@ -952,13 +952,17 @@ Returns:
         // function list
         //
         FunctionType = 1;
-        fgets (Line, MAX_LINE_LEN, PeMapFile);
+        if (fgets (Line, MAX_LINE_LEN, PeMapFile) == NULL) {
+          break;
+        }
       } else if (stricmp (KeyWord, "Static") == 0) {
         //
         // static function list
         //
         FunctionType = 2;
-        fgets (Line, MAX_LINE_LEN, PeMapFile);
+        if (fgets (Line, MAX_LINE_LEN, PeMapFile) == NULL) {
+          break;
+        }
       } else if (stricmp (KeyWord, "Preferred") ==0) {
         if (sscanf (Line + strlen (" Preferred load address is"), "%llx", &TempLongAddress) == 1) {
           LinkTimeBaseAddress = (UINT64) TempLongAddress;
@@ -988,6 +992,14 @@ Returns:
         fprintf (FvMapFile, "%s\n", FunctionName);
       }
     }
+  }
+  //
+  // EOF while skipping a map separator is harmless; report actual read errors.
+  //
+  if (ferror (PeMapFile)) {
+    Error (NULL, 0, 0004, "Error reading file", "%s", PeMapFileName);
+    fclose (PeMapFile);
+    return EFI_ABORTED;
   }
   //
   // Close PeMap file
@@ -1235,7 +1247,7 @@ Returns:
   //
   if (NumBytesRead != sizeof (UINT8) * FileSize) {
     free  (FileBuffer);
-    Error (NULL, 0, 0004, "Error reading file", FvInfo->FvFiles[Index]);
+    Error (NULL, 0, 0004, "Error reading file", "%s", FvInfo->FvFiles[Index]);
     return EFI_ABORTED;
   }
 
@@ -2519,7 +2531,12 @@ Returns:
     //
     // Read the FV Extension Header
     //
-    fread (FvExtHeader, sizeof (UINT8), FileSize, FvExtHeaderFile);
+    if (fread (FvExtHeader, sizeof (UINT8), FileSize, FvExtHeaderFile) != FileSize) {
+      Error (NULL, 0, 0004, "Error reading file", "%s", mFvDataInfo.FvExtHeaderFile);
+      fclose (FvExtHeaderFile);
+      free (FvExtHeader);
+      return EFI_ABORTED;
+    }
     fclose (FvExtHeaderFile);
 
     //
@@ -3094,7 +3111,12 @@ Returns:
     //
     // Read Ffs File header
     //
-    fread (&FfsHeader, sizeof (UINT8), sizeof (EFI_FFS_FILE_HEADER), fpin);
+    if (FvInfoPtr->IsPiFvImage &&
+        fread (&FfsHeader, sizeof (UINT8), sizeof (EFI_FFS_FILE_HEADER), fpin) != sizeof (EFI_FFS_FILE_HEADER)) {
+      Error (NULL, 0, 0004, "Error reading file", "%s", FvInfoPtr->FvFiles[Index]);
+      fclose (fpin);
+      return EFI_ABORTED;
+    }
     //
     // close file
     //
@@ -3516,7 +3538,12 @@ Returns:
           //
           // Read Pe File
           //
-          fread (PeFileBuffer, sizeof (UINT8), PeFileSize, PeFile);
+          if (fread (PeFileBuffer, sizeof (UINT8), PeFileSize, PeFile) != PeFileSize) {
+            Error (NULL, 0, 0004, "Error reading file", "%s", PeFileName);
+            fclose (PeFile);
+            free (PeFileBuffer);
+            return EFI_ABORTED;
+          }
           //
           // close file
           //
@@ -3777,7 +3804,12 @@ Returns:
         //
         // Read Pe File
         //
-        fread (PeFileBuffer, sizeof (UINT8), PeFileSize, PeFile);
+        if (fread (PeFileBuffer, sizeof (UINT8), PeFileSize, PeFile) != PeFileSize) {
+          Error (NULL, 0, 0004, "Error reading file", "%s", PeFileName);
+          fclose (PeFile);
+          free (PeFileBuffer);
+          return EFI_ABORTED;
+        }
         //
         // close file
         //
@@ -4255,7 +4287,12 @@ Returns:
       return EFI_ABORTED;
     }
     FileSize = _filelength (fileno (fpin));
-    fread (CapBuffer + CapSize, 1, FileSize, fpin);
+    if (fread (CapBuffer + CapSize, 1, FileSize, fpin) != FileSize) {
+      Error (NULL, 0, 0004, "Error reading file", "%s", mCapDataInfo.CapFiles[Index]);
+      fclose (fpin);
+      free (CapBuffer);
+      return EFI_ABORTED;
+    }
     fclose (fpin);
     Index ++;
     CapSize += FileSize;
