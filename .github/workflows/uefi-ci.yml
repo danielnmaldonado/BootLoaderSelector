@@ -14,7 +14,7 @@ jobs:
   host-sanitizers:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install host verification dependencies
         run: sudo apt-get update && sudo apt-get install -y clang lld gcc g++ make binutils nasm sbsigntool openssl
       - name: Complete Linux quality gate
@@ -23,12 +23,13 @@ jobs:
   macos-quality:
     runs-on: macos-15-intel
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install host verification dependencies
-        run: brew install jsign llvm@21 gcc@15 openssl@3
+        run: brew install jsign llvm@21 lld@21 gcc@15 openssl@3
       - name: Expose LLVM linker and Clang
         run: |
           echo "$(brew --prefix llvm@21)/bin" >> "$GITHUB_PATH"
+          echo "$(brew --prefix lld@21)/bin" >> "$GITHUB_PATH"
           echo "$(brew --prefix openssl@3)/bin" >> "$GITHUB_PATH"
       - name: Complete macOS quality gate
         run: BLS_QUALITY_BUILD=0 AuditTests/Run-Release-Quality-Gate.command
@@ -37,7 +38,7 @@ jobs:
     needs: [host-sanitizers, macos-quality]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Release pipeline integrity regressions
         shell: bash
         run: |
@@ -162,7 +163,7 @@ jobs:
           test -n "$BLS_VERSION"
           AuditTools/Sign-PeCoff-AdHoc.command sign "$SMOKE_CHILD" Release/SmokeChild.efi Release/SmokeChild-AdHoc.pem "$BLS_VERSION" Release/SmokeChild-SIGNING.txt
           AuditTools/Sign-PeCoff-AdHoc.command verify Release/SmokeChild.efi Release/SmokeChild-AdHoc.pem
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: BootLoaderSelector-release
           path: Release/
@@ -172,8 +173,8 @@ jobs:
     needs: linux-release-compile
     runs-on: macos-15-intel
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: BootLoaderSelector-release
           path: Release
@@ -194,8 +195,8 @@ jobs:
     needs: linux-release-compile
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: BootLoaderSelector-release
           path: Release
@@ -258,8 +259,8 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: BootLoaderSelector-release
           path: Release

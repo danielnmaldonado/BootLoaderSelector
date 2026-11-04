@@ -16,6 +16,8 @@ b7d91a29817891dd51e523da66d4c565932197210511e5c723191f615fc10892.
   pública, mantendo a política leaf/codeSigning.
 - Testes: capacidades de compilador/sanitizer detectadas, regressões de
   publicação compatíveis com Bash do macOS e CI com gates obrigatórios.
+- BaseTools: concatenação de mensagens com limites explícitos sob GCC/fortificação;
+  dependências dos testes deep reconstruídas pelo compilador selecionado.
 - Build: rollback em cancelamento e abertura do Finder somente por opção.
 - Distribuição pública de fontes com BSD-3-Clause para o código próprio,
   avisos upstream preservados e toolchain binária externa, verificada por hashes.

@@ -358,6 +358,35 @@ Returns:
   va_end (List);
 }
 
+//
+// Append as much text as fits while preserving the message's NUL terminator.
+// Buffer is initialized and NUL-terminated within BufferSize bytes.
+//
+STATIC
+VOID
+AppendMessageString (
+  CHAR8        *Buffer,
+  size_t       BufferSize,
+  const CHAR8  *Text
+  )
+{
+  size_t  Length;
+  size_t  CopyLength;
+
+  if (BufferSize == 0) {
+    return;
+  }
+
+  Length = strlen (Buffer);
+  CopyLength = 0;
+  while ((CopyLength < BufferSize - Length - 1) && (Text[CopyLength] != '\0')) {
+    CopyLength++;
+  }
+
+  memcpy (Buffer + Length, Text, CopyLength);
+  Buffer[Length + CopyLength] = '\0';
+}
+
 VOID
 PrintMessage (
   CHAR8   *Type,
@@ -457,10 +486,10 @@ Notes:
     }
     if (Cptr != NULL) {
       strcpy (Line, ": ");
-      strncat (Line, Cptr, MAX_LINE_LEN - strlen (Line) - 1);
+      AppendMessageString (Line, sizeof (Line), Cptr);
       if (LineNumber != 0) {
         snprintf (Line2, sizeof (Line2), "(%u)", (unsigned) LineNumber);
-        strncat (Line, Line2, MAX_LINE_LEN - strlen (Line) - 1);
+        AppendMessageString (Line, sizeof (Line), Line2);
       }
     }
   } else {
@@ -475,7 +504,7 @@ Notes:
       Line[MAX_LINE_LEN - 1] = 0;
       if (LineNumber != 0) {
         snprintf (Line2, sizeof (Line2), "(%u)", (unsigned) LineNumber);
-        strncat (Line, Line2, MAX_LINE_LEN - strlen (Line) - 1);
+        AppendMessageString (Line, sizeof (Line), Line2);
       }
     } else {
       if (mUtilityName[0] != '\0') {
@@ -498,11 +527,11 @@ Notes:
   // Have to print an error code or Visual Studio won't find the
   // message for you. It has to be decimal digits too.
   //
-  strncat (Line, ": ", MAX_LINE_LEN - strlen (Line) - 1);
-  strncat (Line, Type, MAX_LINE_LEN - strlen (Line) - 1);
+  AppendMessageString (Line, sizeof (Line), ": ");
+  AppendMessageString (Line, sizeof (Line), Type);
   if (MessageCode != 0) {
     snprintf (Line2, sizeof (Line2), " %04u", (unsigned) MessageCode);
-    strncat (Line, Line2, MAX_LINE_LEN - strlen (Line) - 1);
+    AppendMessageString (Line, sizeof (Line), Line2);
   }
   fprintf (stdout, "%s", Line);
   //

@@ -37,7 +37,9 @@ COMMON_FLAGS=(
 )
 LINK_FLAGS=(-fsanitize="$SANITIZERS" -L "$C_ROOT/libs" -lCommon)
 
-make -C "$C_ROOT/Common" >/dev/null
+# Discard copied build products so every compiler matrix entry rebuilds Common.
+make -C "$C_ROOT/Common" BUILD_CC="$COMPILER" clean >/dev/null
+make -C "$C_ROOT/Common" BUILD_CC="$COMPILER" >/dev/null
 
 "$COMPILER" "${COMMON_FLAGS[@]}" \
   -c "$C_ROOT/Common/FirmwareVolumeBuffer.c" -o "$WORK_DIR/FirmwareVolumeBuffer.o"

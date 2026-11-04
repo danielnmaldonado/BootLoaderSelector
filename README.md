@@ -44,7 +44,9 @@ BLS_QUALITY_BUILD=0 ./AuditTests/Run-Release-Quality-Gate.command
 ```
 
 O gate executa testes de runtime e BaseTools, regressões de assinatura/publicação
-e análises estáticas. Para os testes de assinatura, `lld-link` deve estar no PATH.
+e análises estáticas. Para os testes de assinatura, `lld-link` deve estar no PATH. No Homebrew,
+instale `lld@21` separadamente e exponha `$(brew --prefix lld@21)/bin`;
+o pacote `llvm@21` sozinho não fornece esse comando.
 Clang e GNU GCC são identificados pela implementação, não apenas pelo nome.
 Recursos de sanitizer indisponíveis são informados como `SKIP`, não como aprovados.
 O CI exige os gates Linux e macOS antes de compilar os artefatos de entrega e

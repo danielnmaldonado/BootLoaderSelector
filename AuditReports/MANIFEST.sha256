@@ -1,6 +1,6 @@
 0efae97d12f12fb72734e18ba052cd3f2082a342e0fe728c37ca76e47568c894  ./.gitattributes
 3587a7aeae5f6079e5993fd96f052a750ba38a6758739c79fd5c66b93f14c311  ./.github/FUNDING.yml
-00c708b7ab921235eab249dd9e49f89a428fdae6ae02e016f96c57853a812a5c  ./.github/workflows/uefi-ci.yml
+acc638313b1f7161d1dbbf8afc92c2d9991c322714cec063a28a139d28557b37  ./.github/workflows/uefi-ci.yml
 e4b9ecd8c162f20b5594a4df877e0ef459c5e3071cc4244ef99e8c59d74fdf14  ./.gitignore
 956969618ba00729d3814058723e4d6c42f739f530042b8bf0400e9a2e237258  ./AuditReports/AUDIT-REPORT.txt
 de519771aee17b405808635efd6782c1668d3fa41ddb0b0993fa817704e510b3  ./AuditReports/CHANGES.patch
@@ -46,7 +46,7 @@ ccdf36fd1174624e9046ff839c32e19431dcaaac5f49ac120b807ea948d2a2c5  ./AuditTests/H
 7ccf2e7df56dd933ba0f6696cf60b9316716a7235a234f1ac66000a43fc83fe7  ./AuditTests/Host/test_volinfo_section_bounds.c
 5fcae4a3a41bb7e0cb0a3485a5146ec8de87a505a0850c98ab72a5081c034782  ./AuditTests/Host/test_watchdog_lifecycle.c
 07680ce79d634d34d0250394dd498a059d5845f7e4e2dcfc1a64bbb005cb33d1  ./AuditTests/Run-Audit-Tests.command
-770ce2be55d447966da1befb57320e9834be96eb2781c21ec386ba34dfe597dd  ./AuditTests/Run-BaseTools-Deep-Tests.command
+273c9d594c32e2b4e63c6c242a0e065f9eb6e5a010dc2c4f5b5b6b1ccd49ae0b  ./AuditTests/Run-BaseTools-Deep-Tests.command
 16f83a93e25ce4197de288be6f495f3e549608dc2fda1d8b54676101fc2b3eff  ./AuditTests/Run-Release-Quality-Gate.command
 655e7335d0a385c3b0f6e881dd15bb126da53adeebc71da856dac32f9a7195b4  ./AuditTests/Support/Compiler-Capabilities.sh
 2114de055561006abb6e0f40b8ba80596916624016e4ee318f95eff67f3a624a  ./AuditTests/Test-AdHoc-Signing.command
@@ -285,7 +285,7 @@ d7e75533e3e3b9397c5f75a04bd1d1fb7cd74b61bbf440bfe8745939e285c806  ./BaseTools/So
 bfc37def2c73ee548fa8a6abc05440663b3f0a6c83d4c6dbaaf297a48a073712  ./BaseTools/Source/C/Common/Decompress.c
 0ceceaddf2289f0d9a30f65a05cc5eb93a94cb185a367f4c9a3d9d2cb06eb888  ./BaseTools/Source/C/Common/Decompress.h
 2bdf902d93d61e575d0dd19cf472546955ba1d3f50b1cf67f3aceab938c21879  ./BaseTools/Source/C/Common/EfiCompress.c
-9ab0274181afc37d969fa3f6f5e76ddbe2a6ab1d3df7ff5bfe0753487b89f919  ./BaseTools/Source/C/Common/EfiUtilityMsgs.c
+ce74a412621ca059f54fd5481de758646568548bb35ba5d43eefff21f484a73c  ./BaseTools/Source/C/Common/EfiUtilityMsgs.c
 88baeadfb92c470c080f3a3ffd30d8462a9f1ecac9fea9579859fa6fbc780b98  ./BaseTools/Source/C/Common/EfiUtilityMsgs.h
 8e03407811faf0d3f8737a5e2524966f6ab955bcd11cbd90a972d37adfb39c41  ./BaseTools/Source/C/Common/FirmwareVolumeBuffer.c
 f7bd288fbeacb6af2cc497a31cb3f0487517ebfb473fdd0a945b19cab749439a  ./BaseTools/Source/C/Common/FirmwareVolumeBufferLib.h
@@ -950,10 +950,10 @@ c1ec0f975ed1dbf3d7d528e2ca2193d007b35b19048e9e4a857a518241008aac  ./BootLoaderSe
 8c88b36d3167c462303aaa99dd90978351f80036088c926f10b6399179055af4  ./BootScan.plist
 4100378ffafa9c8330d1ea25cce439594085aa3d95e20e16646710dc7fe08389  ./Build-BootLoaderSelector-Release.command
 e757c945ba6e6af0c48a414851a3185fd5001ca4917170284c08d7d8e001779a  ./Build-Debug-Full-Log.command
-da83fcc5a95d8bcc3645790cbf3f527d16f5ea3f225c0abf4c4eaec61e709f73  ./CHANGELOG.txt
+fa7a662fa9b9d8cb396bf4c015b56e635480c3e38f2648d885af7861e5e9a9e6  ./CHANGELOG.txt
 8c88b36d3167c462303aaa99dd90978351f80036088c926f10b6399179055af4  ./Config.plist
 8c88b36d3167c462303aaa99dd90978351f80036088c926f10b6399179055af4  ./HardwareInfo.plist
-2e3b55699833ebd1ed239c89b09e4290ca0ff789ec96f8d9034833c8224fda07  ./INFO.txt
+747e012232dcc7b7641ff47d928f39431bfbe93a7a7ff351b62d3b4a6ac60dfd  ./INFO.txt
 9c85baaf05fecb69a966a8969ec0f99db21c22eb7a32fe6adfee8b4ea310bc80  ./LICENSE
 50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80  ./LICENSES/BSD-2-Clause-Patent.txt
 60ae0f13e76cc2eaaa108677eefa4ce16b647f6bbe8cf0a1ac9429d82eca7248  ./LICENSES/MIT-Brotli.txt
@@ -2560,7 +2560,7 @@ db2d6cbcad91dcde8799f7a025061af61621fee6c327091bd9387ec66062dfef  ./MdePkg/MdePk
 3e825da00d8989fcdadcde122b9052ffa5dbf857f569a3a03e30c69b007601da  ./MdePkg/MdePkg.uni
 98a0fec056598076d8ee3db5cac19e8316d02b7f62cf9e7f2f6722e9848325e1  ./MdePkg/MdePkgExtra.uni
 8c88b36d3167c462303aaa99dd90978351f80036088c926f10b6399179055af4  ./Menu.plist
-17be7e0d7f7576b2bc05b0f40deda51abc101ec0a7c64f4a7ec6ac197c375075  ./README.md
+10e4389a8be1318d155fb93a8d5ad12f914111d66b7fd6c725ee021433cdf7ed  ./README.md
 3fd241cb062eadc3e01242fec5158c455fbacd7f4a9c872b08a412521547c6f7  ./SECURITY-NOTES.txt
 8c88b36d3167c462303aaa99dd90978351f80036088c926f10b6399179055af4  ./Screenshot.plist
 d178ff1f97a14efcb0bc01f3f6fd5d3b60959f2f9eb0184fe797e3ca2f9562c6  ./THIRD-PARTY-NOTICES.txt
@@ -2568,5 +2568,5 @@ d178ff1f97a14efcb0bc01f3f6fd5d3b60959f2f9eb0184fe797e3ca2f9562c6  ./THIRD-PARTY-
 53d8010aecd6ba67fa5f736f4c6f81006267f6d1ce15fbe419ad8aaa563647ff  ./Toolchains/gcc102-snb.sha256
 8c88b36d3167c462303aaa99dd90978351f80036088c926f10b6399179055af4  ./Ui.plist
 8c88b36d3167c462303aaa99dd90978351f80036088c926f10b6399179055af4  ./Utils.plist
-cf3008525e0fd78e3aa98935d90f04eee27926b5b33d39290649dba54a4a25c3  ./VALIDATION.md
+c06baec208ac0b8d05a77959439f6fb9c63cfa2aa20293c360dafdc43cb8b2e9  ./VALIDATION.md
 678a5f4a5dabd6a440a73b38a3bd1c3c182942e1310018fdace2f320f81f3b56  ./edksetup.sh

@@ -25,7 +25,8 @@ cuja lista de 951 arquivos e respectivos hashes é conferida antes de executar.
 | Certificado positivo pela API PEM/DER | 2 testes aprovados |
 | Política de certificado, bootstrap e assinatura PE/COFF | Aprovados |
 | Publicação, rollback, lock e cancelamentos | Aprovados; 9 cenários HUP/INT/TERM |
-| Workflow GitHub Actions | Sintaxe/semântica conferidas com actionlint |
+| BaseTools sob GNU GCC com fortificação e `-O2 -Werror` | Compilação e seis casos válidos de mensagens aprovados; compilador selecionado respeitado |
+| Workflow GitHub Actions | Sintaxe/semântica conferidas com actionlint; ações oficiais fixadas por commit |
 | Boot UEFI isolado e chainload de child que retorna sucesso | Log confirma início, chamada e retorno `call=0x0 child=0x0` |
 
 O novo teste usa a DevicePathLib real: 26 conversões válidas e 76 posições de
